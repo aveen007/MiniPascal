@@ -42,7 +42,7 @@ type:
 ;
 
 expr:
-		NUM
+		NUMBER
 		| IDENT 
 		| IDENT '=' expr 
 		| expr '+' expr
@@ -51,7 +51,7 @@ stmt:
 		expr ';'
 		| type
 		expr ';'
-		| IF '(' expr ')' stmt %prec IF_PREC
+		| IF '(' expr ')' stmt %prec IFPREC
 		| IF '(' expr ')' stmt ELSE stmt
 		| '{' stmts '}' 
 ;
