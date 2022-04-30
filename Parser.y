@@ -17,10 +17,12 @@
 %nonassoc ELSE
 %nonassoc IFPREC
 
+
+/* %left '-' */
+/* %left '*' */
+%left '+'
 %left '='
-%left '-'
-%left '*'
-%left MINUS
+/* %left MINUS */
 
 %%
 func:
