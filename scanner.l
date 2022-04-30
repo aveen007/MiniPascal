@@ -9,7 +9,7 @@
 %option noyywrap
 
 %%
-
+"int"		return INT;
 if return IF;
 else return ELSE;
 [0-9]+ return NUMBER;
