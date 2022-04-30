@@ -10,7 +10,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/run.bat",
-            "args": [],
+            "args": ["<","${workspaceFolder}/input.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

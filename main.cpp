@@ -7,6 +7,7 @@ extern int yyerror(const char *);
 int main()
 {
     yyparse();
+    cout << "parsing is done! \n";
     system("pause");
     return 0;
 }

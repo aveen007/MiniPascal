@@ -14,7 +14,8 @@ if return IF;
 else return ELSE;
 [0-9]+ return NUMBER;
 [a-z][a-z0-9]* return IDENT;
-[=;\-()] return *yytext;
+[=;\-{}(),+] return *yytext;
+[ \n\t]			/*IGNORE*/;
 
 
 	

@@ -27,6 +27,10 @@
 %%
 func:
 type IDENT '(' args_e ')' '{' stmts '}' 
+					{ 
+						cout<<"parsing is done correctly! \n";
+						
+						 }		
 ;
 arg :
 type IDENT
