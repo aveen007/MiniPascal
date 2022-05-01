@@ -11,7 +11,6 @@
 %x commentOneLiner
 
 %option noyywrap
-%option case-insensitive
 
 %%
 "{"								{BEGIN(comment); col += yyleng;}
@@ -37,81 +36,80 @@
 						col =1;
 						lin++;
 						}
-"program" {
+						 
+(i?:program) {
 		col += yyleng;
 		return PROGRAM;
-		}						 
-
-"var" {
+		}
+(i?:var) {
 		col += yyleng;
 		return VAR;
 		}
-"real" {
+(i?:real) {
 		col += yyleng;
 		return REAL;
 	}
-"integer" {
+(i?:integer) {
 		col += yyleng;
 		return INTEGER;
 		}
-"function" {
+(i?:function) {
 		col += yyleng;
 		return FUNCTION;
 		}
-"procedure" {
+(i?:procedure) {
 		col += yyleng;
 		return PROCEDURE;
 		}		
-"while" {
+(i?:while) {
 		col += yyleng;
 		return WHILE;
 		}
-"do" {
+(i?:do) {
 		col += yyleng;
 		return DO;
 		}
-"begin" {
+(i?:begin) {
 		col += yyleng;
 		return BEGINN;
 		}
-"end" {
+(i?:end) {
 		col += yyleng;
 		return END;
 		}
-"if" {
+(i?:if) {
 		col += yyleng;
 		return IF;
 		}
-"then" {
+(i?:then) {
 		col += yyleng;
 		return THEN;
 		}
-"else" {
+(i?:else) {
 		col += yyleng;
 		return ELSE;
 		}
-"array" {
-	cout<<"array";
+(i?:array) {
 		col += yyleng;
 		return ARRAY;
 		}
-"of" {
+(i?:of) {
 		col += yyleng;
 		return OF;
 		}
-"div" {
+(i?:div) {
 		col += yyleng;
 		return DIV;
 		}	
-"not" {
+(i?:not) {
 		col += yyleng;
 		return NOT;
 		}
-"and" {
+(i?:and) {
 		col += yyleng;
 		return AND;
 		}
-"or" {
+(i?:or) {
 		col += yyleng;
 		return OR;
 		}
@@ -136,7 +134,11 @@
 	return REALNUM;
 }
  
+"<>" {
 
+		col+=yyleng;
+				return NEQ;
+}
 
 [-(),{}=;?:!+*/<>\[\]\%]  {
 				col+=yyleng;

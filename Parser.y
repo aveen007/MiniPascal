@@ -33,6 +33,7 @@
 %token ID
 %token INTNUM
 %token REALNUM
+%token NEQ
 
 
 
@@ -44,13 +45,33 @@
 %nonassoc IFPREC
 
 
-/* %left '-' */
-/* %left '*' */
+%left DIV
+%left ','
+%left '/'
+%left '.'
+%left '*'
+%left '-'
 %left '+'
 %left '='
-/* %left MINUS */
+%left NEQ
+%left '>'
+%left '<'
+%left NOT
+%left AND
+%left OR
 
 %%
+
+
+
+
+
+
+
+
+
+
+
 func:
 type IDENT '(' args_e ')' '{' stmts '}' 
 					{ 
