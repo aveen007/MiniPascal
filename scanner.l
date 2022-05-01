@@ -134,7 +134,11 @@
 	return REALNUM;
 }
  
+"<>" {
 
+		col+=yyleng;
+				return NEQ;
+}
 
 [-(),{}=;?:!+*/<>\[\]\%]  {
 				col+=yyleng;
