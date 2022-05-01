@@ -9,9 +9,35 @@
 
 %}
 
+%token PROGRAM
+%token VAR
+%token REAL
+%token INTEGER
+%token FUNCTION
+%token PROCEDURE
+%token WHILE
+%token DO
+%token BEGINN
+%token END
+%token IF
+%token THEN
+%token ELSE
+%token ARRAY
+%token OF
+%token DIV
+%token NOT
+%token AND
+%token OR
+
+%token ALPHA
+%token ID
+%token INTNUM
+%token REALNUM
+
+
+
 %token NUMBER
 %token IDENT
-%token IF
 %token INT
 
 %nonassoc ELSE

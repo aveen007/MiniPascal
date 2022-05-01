@@ -4,12 +4,14 @@
 	using std::cout;
 	using std::endl;
 	int lin=1, col=1;
+	int errorno=0;
 %}
 
 %x comment
 %x commentOneLiner
 
 %option noyywrap
+%option case-insensitive
 
 %%
 "{"								{BEGIN(comment); col += yyleng;}
@@ -25,13 +27,130 @@
 
 
 
-"int"		return INT;
-if return IF;
-else return ELSE;
-[0-9]+ return NUMBER;
-[a-z][a-z0-9]* return IDENT;
-[=;\-{}(),+] return *yytext;
-[ \n\t]			/*IGNORE*/;
+[\t]*	{
+						col += 4*yyleng;
+						}
+[ ]*	{
+						col += yyleng;
+						}
+[\n]	{
+						col =1;
+						lin++;
+						}
+"program" {
+		col += yyleng;
+		return PROGRAM;
+		}						 
+
+"var" {
+		col += yyleng;
+		return VAR;
+		}
+"real" {
+		col += yyleng;
+		return REAL;
+	}
+"integer" {
+		col += yyleng;
+		return INTEGER;
+		}
+"function" {
+		col += yyleng;
+		return FUNCTION;
+		}
+"procedure" {
+		col += yyleng;
+		return PROCEDURE;
+		}		
+"while" {
+		col += yyleng;
+		return WHILE;
+		}
+"do" {
+		col += yyleng;
+		return DO;
+		}
+"begin" {
+		col += yyleng;
+		return BEGINN;
+		}
+"end" {
+		col += yyleng;
+		return END;
+		}
+"if" {
+		col += yyleng;
+		return IF;
+		}
+"then" {
+		col += yyleng;
+		return THEN;
+		}
+"else" {
+		col += yyleng;
+		return ELSE;
+		}
+"array" {
+	cout<<"array";
+		col += yyleng;
+		return ARRAY;
+		}
+"of" {
+		col += yyleng;
+		return OF;
+		}
+"div" {
+		col += yyleng;
+		return DIV;
+		}	
+"not" {
+		col += yyleng;
+		return NOT;
+		}
+"and" {
+		col += yyleng;
+		return AND;
+		}
+"or" {
+		col += yyleng;
+		return OR;
+		}
+
+[a-zA-Z] {
+		col+=yyleng;
+		return ALPHA;
+		}												
+[a-zA-Z_][_a-z0-9A-Z]* {
+		col+=yyleng;
+		return ID;
+		}
+0|[1-9][0-9]* {
+	col+=yyleng;
+	return INTNUM;
+	}
+
+(0|[1-9][0-9]*)"."[0-9]*([eE][-+]?(0|[1-9][0-9]*))? |
+"."[0-9]+([eE][-+]?(0|[1-9][0-9]*))?				|
+(0|[1-9][0-9]*)([eE][-+]?(0|[1-9][0-9]*)) {
+	col+=yyleng;
+	return REALNUM;
+}
+ 
+
+
+[-(),{}=;?:!+*/<>\[\]\%]  {
+				col+=yyleng;
+				return *yytext;
+				}
+
+. {
+	col += yyleng;
+	errorno++;
+	cout<<"\n\n_________________________Parser Error_________________________"<<endl;
+	cout<<"Error Number: " <<errorno<<" "<<*yytext<<endl;
+	cout<<"input.txt, Line: "<<lin <<" , col: "<<col<<endl;
+	cout<<"Lexical Error"<<endl;
+	}
 
 
 	
