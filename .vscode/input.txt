@@ -1,0 +1,6 @@
+int f1 (int x1, int x2)
+{
+    int x;
+    x = x1 + x2;
+
+}

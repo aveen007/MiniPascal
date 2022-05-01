@@ -12,25 +12,68 @@
 %token NUMBER
 %token IDENT
 %token IF
-
+%token INT
 
 %nonassoc ELSE
 %nonassoc IFPREC
 
-%left '-'
-%left '*'
-%left MINUS
+
+/* %left '-' */
+/* %left '*' */
+%left '+'
+%left '='
+/* %left MINUS */
 
 %%
+func:
+type IDENT '(' args_e ')' '{' stmts '}' 
+					{ 
+						cout<<"parsing is done correctly! \n";
+						
+						 }		
+;
+arg :
+type IDENT
+;
+args:
+		arg
+		| args ',' arg 
+;
+args_e:
+		/* empty */
+		| args
+;
+type:
+		INT 
+;
 
-stmts: stmt | stmts stmt
+expr:
+		NUMBER
+		| IDENT 
+		| IDENT '=' expr 
+		| expr '+' expr
+;
+stmt:
+		expr ';'
+		| type
+		expr ';'
+		| IF '(' expr ')' stmt %prec IFPREC
+		| IF '(' expr ')' stmt ELSE stmt
+		| '{' stmts '}' 
+;
+stmts:
+		/* Empty */
+		|stmts stmt
+;
+
+/* stmts: stmt | stmts stmt
 ;
 
 stmt: IDENT '=' expr ';' | IF '(' expr ')' stmt %prec IFPREC | IF '(' expr ')' stmts ELSE stmts
 ;
 
 expr: NUMBER | IDENT | expr '-' expr | expr '*' expr | '-' expr %prec MINUS
-;
+; */
 
 
 %%
