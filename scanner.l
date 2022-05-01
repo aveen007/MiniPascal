@@ -113,7 +113,18 @@
 		col += yyleng;
 		return OR;
 		}
-
+(i?:true) {
+		col += yyleng;
+		return TRUEE;
+		}
+(i?:false) {
+		col += yyleng;
+		return FALSEE;
+		}
+(i?:boolean) {
+		col += yyleng;
+		return BOOLEANN;
+		}
 [a-zA-Z] {
 		col+=yyleng;
 		return ALPHA;
