@@ -9,5 +9,6 @@ int main()
     yyparse();
     cout << "parsing is done! \n";
     // system("pause");
+    cout << "somar";
     return 0;
 }
