@@ -64,7 +64,7 @@ identifier_list:
 		identifier_list ',' ID
 		;
 declarations:
-	declarations VAR identifier_list ':' type
+	declarations VAR identifier_list ':' type ';'
 	|
 	;
 type:
@@ -76,10 +76,13 @@ standard_type:
 		INTEGER
 		|REAL
 		|BOOLEANN
-;	
+;
 subprogram_declarations:
-		subprogram_head compound_statement
+		subprogram_declarations subprogram_declaration ';'
 		|
+;	
+subprogram_declaration:
+		subprogram_head compound_statement
 ;
 subprogram_head:
 		FUNCTION ID arguments ':' standard_type ';'
