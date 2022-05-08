@@ -127,14 +127,14 @@
 		col += yyleng;
 		return BOOLEANN;
 		}
-[a-zA-Z] {
-		col+=yyleng;
-		return ALPHA;
-		}												
 [a-zA-Z_][_a-z0-9A-Z]* {
 		col+=yyleng;
 		return ID;
 		}
+[a-zA-Z] {
+		col+=yyleng;
+		return ALPHA;
+		}												
 0|[1-9][0-9]* {
 	col+=yyleng;
 	return INTNUM;
