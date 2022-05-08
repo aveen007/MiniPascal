@@ -79,6 +79,7 @@ standard_type:
 ;	
 subprogram_declarations:
 		subprogram_head compound_statement
+		|
 ;
 subprogram_head:
 		FUNCTION ID arguments ':' standard_type ';'
