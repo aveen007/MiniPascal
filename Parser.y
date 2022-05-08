@@ -41,19 +41,12 @@
 
 %nonassoc ELSE
 %nonassoc IFPREC
+%nonassoc Uoperator
 
-
-%left DIV
-%left ','
-%left '/'
-%left '.'
-%left '*'
-%left '-'
-%left '+'
-%left '='
-%left NEQ
-%left '>'
-%left '<'
+%left '*' '.' '/' ',' DIV
+%left '+' '-'
+%left '>' '<'
+%left '=' NEQ
 %left NOT
 %left AND
 %left OR
@@ -114,7 +107,7 @@ statement:
 		variable ':''=' expression
 		|procedure_statement
 		|compound_statement
-		|IF expression THEN statement
+		|IF expression THEN statement %prec IFPREC
 		|IF expression THEN statement ELSE statement
 		|WHILE expression DO statement
 		;
@@ -138,7 +131,7 @@ expression:
 		|FALSEE
 		|ID '(' expression_list ')' 
 		|'(' expression ')'
-		|expression unary_operator expression
+		|expression unary_operator expression %prec Uoperator
 		|NOT expression
 		;
 unary_operator:
