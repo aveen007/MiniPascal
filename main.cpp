@@ -6,12 +6,12 @@ extern int yyerror(const char *);
 
 int main()
 {
-    extern FILE *yyin;
-    yyin = fopen("input.txt", "r");
+    // extern FILE *yyin;
+    // yyin = fopen("input.txt", "r");
     yyparse();
 
     cout << "parsing is done! \n";
-    system("pause");
+    // system("pause");
     return 0;
 }
 // ifiuisdbo
