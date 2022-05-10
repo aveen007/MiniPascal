@@ -127,6 +127,8 @@
 		col += yyleng;
 		return BOOLEANN;
 		}
+"\'"[^\t]"\'" {return CHAR;}
+"\""[^\n\t]*"\""|"\'"[^\n\t]*"\'" {return STRING;}
 [a-zA-Z_][_a-z0-9A-Z]* {
 		col+=yyleng;
 		return ID;

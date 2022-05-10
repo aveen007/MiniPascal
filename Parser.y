@@ -6,6 +6,7 @@
 	using std::endl;
 	extern int yylex();
 	extern int yyerror(const char *);
+	extern int lin,col;
 
 %}
 
@@ -13,6 +14,9 @@
 %token VAR
 %token REAL
 %token INTEGER
+%token STRING
+%token CHAR
+
 %token FUNCTION
 %token PROCEDURE
 %token WHILE
@@ -104,11 +108,11 @@ optional_statement:
 		|
 		;
 statement_list:
-		statement
-		|statement_list ';' statement
+		statement ';'
+		|statement_list statement ';'
 		;
 statement:
-		variable ':''=' expression
+		variable ':''=' expression 
 		|procedure_statement
 		|compound_statement
 		|IF expression THEN statement %prec IFPREC
@@ -137,6 +141,8 @@ expression:
 		|'(' expression ')'
 		|expression unary_operator expression %prec Uoperator
 		|NOT expression
+		|STRING
+		|CHAR
 		;
 unary_operator:
 		'*'|'+'|'-'|'/'|DIV|'>'|'>''='|'<'|'<''='|'='|NEQ|NOT|OR|AND
@@ -149,7 +155,8 @@ unary_operator:
 
 int yyerror(const char * s){
 
-	cout << "Syntax Error.... " << endl;
+//	cout << "Syntax Error.... " << endl;
+	fprintf(stderr, "%s %d %s %d\n", "Syntax Error....",lin,"  ", col);
 	return 1;
 
 }
