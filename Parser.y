@@ -23,6 +23,10 @@
 %token PROCEDURE
 %token WHILE
 %token DO
+%token FOR
+%token TO
+
+
 %token BEGINN
 %token END
 %token IF
@@ -53,7 +57,7 @@
 
 %left '*' '.' '/' ',' DIV
 %left '+' '-'
-%left '>' '<'
+%left '>' '<' GREATEREQ LESSEREQ
 %left '=' NEQ
 %left NOT
 %left AND
@@ -65,7 +69,8 @@ program:
 	PROGRAM ID ';'
  	declarations
  	subprogram_declarations
- 	compound_statement
+ 	compound_statement '.'
+	 
  ;
 identifier_list:
 	 ID|
@@ -89,11 +94,14 @@ standard_type:
 subprogram_declarations:
 		subprogram_declarations subprogram_declaration ';'
 		|
+
 ;	
 subprogram_declaration:
 		subprogram_head subprogram_variables compound_statement
+
 ;
 subprogram_variables:	subprogram_variables VAR identifier_list ':' type ';'
+
 						|
 ;
 subprogram_head:
@@ -109,7 +117,8 @@ parameter_list:
 		| parameter_list ';' identifier_list ':' type
 		;
 compound_statement:
-		BEGINN optional_statement END '.'
+		BEGINN optional_statement END
+
 		;
 optional_statement:
 		statement_list
@@ -122,10 +131,11 @@ statement_list:
 statement:
 		variable ':''=' expression 
 		|procedure_statement
-		|compound_statement
+		|compound_statement 
 		|IF expression THEN statement %prec IFPREC
 		|IF expression THEN statement ELSE statement
 		|WHILE expression DO statement
+		|FOR variable ':''=' expression  TO INTNUM DO  BEGINN optional_statement END
 		;
 variable:
 		ID
@@ -154,7 +164,7 @@ expression:
 		|CHAR
 		;
 unary_operator:
-		'*'|'+'|'-'|'/'|DIV|'>'|'>''='|'<'|'<''='|'='|NEQ|NOT|OR|AND
+		'*'|'+'|'-'|'/'|DIV|'>'|LESSEREQ|'<'|GREATEREQ|'='|NEQ|NOT|OR|AND
 		;
 
 

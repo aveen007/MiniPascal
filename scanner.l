@@ -80,6 +80,15 @@
 		col += yyleng;
 		return DO;
 		}
+"for" {
+		col += yyleng;
+		return FOR;
+}
+"to" {
+		col += yyleng;
+		return TO;
+}
+
 "begin" {
 		col += yyleng;
 		return BEGINN;
@@ -165,7 +174,16 @@
 		col+=yyleng;
 				return NEQ;
 }
+"<=" {
 
+		col+=yyleng;
+				return GREATEREQ;
+}
+">=" {
+
+		col+=yyleng;
+				return LESSEREQ;
+}
 [-(),{}=;?:!+*/<>\[\]\%\.]  {
 				col+=yyleng;
 	
