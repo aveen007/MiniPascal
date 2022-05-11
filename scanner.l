@@ -51,6 +51,11 @@
 		col += yyleng;
 		return VAR;
 		}
+"uses" {
+		col += yyleng;
+		return USES;
+
+}
 "real" {
 		col += yyleng;
 		return REAL;

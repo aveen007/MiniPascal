@@ -12,6 +12,8 @@
 
 %token PROGRAM
 %token VAR
+%token USES
+
 %token REAL
 %token INTEGER
 %token STRING
@@ -71,6 +73,7 @@ identifier_list:
 		;
 declarations:
 	declarations VAR identifier_list ':' type ';'
+	|declarations USES identifier_list ';'
 	|
 	;
 type:
@@ -88,7 +91,10 @@ subprogram_declarations:
 		|
 ;	
 subprogram_declaration:
-		subprogram_head compound_statement
+		subprogram_head subprogram_variables compound_statement
+;
+subprogram_variables:	subprogram_variables VAR identifier_list ':' type ';'
+						|
 ;
 subprogram_head:
 		FUNCTION ID arguments ':' standard_type ';'
