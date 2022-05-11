@@ -37,6 +37,11 @@
 						col =1;
 						lin++;
 						}
+".."	{
+					col += 2;
+					
+					return TWODOTS;
+						}
 "program" {
 		col += yyleng;
 		return PROGRAM;
@@ -91,7 +96,6 @@
 		return ELSE;
 		}
 "array" {
-	cout<<"array";
 		col += yyleng;
 		return ARRAY;
 		}
@@ -131,6 +135,7 @@
 "\""[^\n\t]*"\""|"\'"[^\n\t]*"\'" {return STRING;}
 [a-zA-Z_][_a-z0-9A-Z]* {
 		col+=yyleng;
+
 		return ID;
 		}
 [a-zA-Z] {
@@ -139,6 +144,7 @@
 		}												
 0|[1-9][0-9]* {
 	col+=yyleng;
+
 	return INTNUM;
 	}
 
@@ -155,8 +161,9 @@
 				return NEQ;
 }
 
-[-(),{}=;?:!+*/<>\[\]\%]  {
+[-(),{}=;?:!+*/<>\[\]\%\.]  {
 				col+=yyleng;
+	
 				return *yytext;
 				}
 

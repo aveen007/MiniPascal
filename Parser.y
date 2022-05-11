@@ -27,6 +27,8 @@
 %token THEN
 %token ELSE
 %token ARRAY
+%token TWODOTS
+
 %token OF
 %token DIV
 %token NOT
@@ -73,7 +75,7 @@ declarations:
 	;
 type:
 		standard_type
-		| ARRAY '[' INTNUM '.''.' INTNUM ']' OF
+		| ARRAY '[' INTNUM TWODOTS INTNUM ']' OF
 		standard_type
 ;	
 standard_type:
@@ -101,7 +103,7 @@ parameter_list:
 		| parameter_list ';' identifier_list ':' type
 		;
 compound_statement:
-		BEGINN optional_statement END
+		BEGINN optional_statement END '.'
 		;
 optional_statement:
 		statement_list
@@ -139,6 +141,7 @@ expression:
 		|FALSEE
 		|ID '(' expression_list ')' 
 		|'(' expression ')'
+		|ID '[' expression ']'
 		|expression unary_operator expression %prec Uoperator
 		|NOT expression
 		|STRING
