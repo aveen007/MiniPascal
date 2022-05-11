@@ -152,10 +152,7 @@
 
 		return ID;
 		}
-[a-zA-Z] {
-		col+=yyleng;
-		return ALPHA;
-		}												
+
 0|[1-9][0-9]* {
 	col+=yyleng;
 

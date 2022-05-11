@@ -41,7 +41,7 @@
 %token AND
 %token OR
 
-%token ALPHA
+/* %token ALPHA */
 %token ID
 %token INTNUM
 %token REALNUM
