@@ -4,11 +4,31 @@
 	#include <iostream>
 	using std::cout;
 	using std::endl;
+
+	include "ast.h";
+
 	extern int yylex();
 	extern int yyerror(const char *);
 	extern int lin,col;
 
 %}
+%union
+{
+	Program *tProgram ;
+	Declarations *tDeclarations ;
+	Identifier_list *tIdentifier_list ;
+	Id *tId ;
+	Subprogram_declarations *tSubprogram_declarations ;
+	Compound_statement *tCompound_statement ;
+	
+}
+
+%type <tProgram> program 
+%type <tDeclarations> declarations
+%type <tIdentifier_list> identifier_list
+%type <tSubprogram_declarations> subprogram_declarations
+%type <tCompound_statement> compound_statement
+
 
 %token PROGRAM
 %token VAR
@@ -42,7 +62,7 @@
 %token OR
 
 /* %token ALPHA */
-%token ID
+%token <tId> ID
 %token INTNUM
 %token REALNUM
 %token NEQ
@@ -70,7 +90,9 @@ program:
  	declarations
  	subprogram_declarations
  	compound_statement '.'
-	 
+	 {
+		 $$ = new Program($2 , $4 , $5 , $6 , lin , col) ;
+	 }
  ;
 identifier_list:
 	 ID|
@@ -78,8 +100,19 @@ identifier_list:
 		;
 declarations:
 	declarations VAR identifier_list ':' type ';'
+	{
+		$$ = $1 ;
+		$$->AddDeclaration( new DeclarationVar($3 , $5 , lin , col)) ;
+	}
 	|declarations USES identifier_list ';'
+	{
+		$$ = $1 ;
+		$$->AddDeclaration( new Declaration($3 , lin , col)) ;
+	}
 	|
+	{
+		$$ = new Declarations(lin , col) ;
+	}
 	;
 type:
 		standard_type
@@ -108,6 +141,7 @@ subprogram_head:
 		FUNCTION ID arguments ':' standard_type ';'
 			| PROCEDURE ID arguments ';'
 			;
+
 arguments:
 		'(' parameter_list ')'
 		|
