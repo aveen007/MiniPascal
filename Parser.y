@@ -20,7 +20,9 @@
 	Id *tId ;
 	Subprogram_declarations *tSubprogram_declarations ;
 	Compound_statement *tCompound_statement ;
-	
+	Standard_type *tStandard_type;
+	Array_type *tArray_type;
+	Type *tType;
 }
 
 %type <tProgram> program 
@@ -28,7 +30,8 @@
 %type <tIdentifier_list> identifier_list
 %type <tSubprogram_declarations> subprogram_declarations
 %type <tCompound_statement> compound_statement
-
+%type <tStandard_type> standard_type
+%type <tType> type;
 
 %token PROGRAM
 %token VAR
@@ -116,13 +119,24 @@ declarations:
 	;
 type:
 		standard_type
-		| ARRAY '[' INTNUM TWODOTS INTNUM ']' OF
-		standard_type
+		| ARRAY '[' INTNUM TWODOTS INTNUM ']' OF standard_type
+		{
+			$$ = new Array_type($3 ,$5 ,$8 ,lin ,col);
+		}
 ;	
 standard_type:
 		INTEGER
+		{
+			$$ = new Standard_type(1,lin,col);
+		}
 		|REAL
+		{
+			$$ = new Standard_type(2,lin,col);
+		}
 		|BOOLEANN
+		{
+			$$ = new Standard_type(3,lin,col);
+		}
 ;
 subprogram_declarations:
 		subprogram_declarations subprogram_declaration ';'

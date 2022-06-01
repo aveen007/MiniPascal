@@ -1,9 +1,9 @@
 
 #include "ast.h"
 
-
 /// Node
-Node::Node(int line, int column) {
+Node::Node(int line, int column)
+{
     this->line = line;
     this->column = column;
     this->father = NULL;
@@ -13,7 +13,8 @@ Node::Node(int line, int column) {
 Program::Program(Id *id, Declarations *declarations,
                  Subprogram_declarations *subprogramDeclarations,
                  Compound_statement *compoundStatement,
-                 int l, int c) : Node(l, c) {
+                 int l, int c) : Node(l, c)
+{
     this->id = id;
     this->declarations = declarations;
     this->subprogramDeclarations = subprogramDeclarations;
@@ -24,20 +25,40 @@ Program::Program(Id *id, Declarations *declarations,
     compoundStatement->father = this;
 }
 /// Declarations
-Declaration::Declaration(Identifier_list * identifierList, int l , int r)
-: Node(l , r){
-    this->identifierList = identifierList ;
+Declaration::Declaration(Identifier_list *identifierList, int l, int r)
+    : Node(l, r)
+{
+    this->identifierList = identifierList;
     identifierList->father = this;
 }
-DeclarationVar::DeclarationVar(Identifier_list * identifierList, int type, int l, int r)
-: Declaration(identifierList , l , r){
-    this->type = type ;
+DeclarationVar::DeclarationVar(Identifier_list *identifierList, Type *type, int l, int r)
+    : Declaration(identifierList, l, r)
+{
+    this->type = type;
+    type->father = this;
 }
-Declarations::Declarations(int l , int r) : Node(l,r){
-    this->declarations = new vector<Declaration *>() ;
+Declarations::Declarations(int l, int r) : Node(l, r)
+{
+    this->declarations = new vector<Declaration *>();
 }
-void Declarations::AddDeclaration(Declaration * declaration) {
-    this->declarations->push_back(declaration) ;
-    declaration->father = this ;
+void Declarations::AddDeclaration(Declaration *declaration)
+{
+    this->declarations->push_back(declaration);
+    declaration->father = this;
 }
 
+/// Type
+Type::Type(int l, int r) : Node(l, r)
+{
+}
+Standard_type::Standard_type(int type, int l, int r) : Type(l, r)
+{
+    this->type = type;
+}
+Array_type::Array_type(int first, int last, Standard_type *StandardType, int l, int r) : Type(l, r)
+{
+    this->first = first;
+    this->last = last;
+    this->StandardType = StandardType;
+    StandardType->father = this;
+}
