@@ -19,8 +19,9 @@ class Subprogram_declarations;
 
 class Compound_statement;
 
-class Node {
-public :
+class Node
+{
+public:
     int line;
     int column;
     Node *father;
@@ -28,7 +29,8 @@ public :
 };
 
 /// Program
-class Program : public Node {
+class Program : public Node
+{
 public:
     Id *id;
     Declarations *declarations;
@@ -40,21 +42,24 @@ public:
 };
 
 /// Declarations
-class Declaration : public Node {
+class Declaration : public Node
+{
 public:
     Identifier_list *identifierList;
 
     Declaration(Identifier_list *, int, int);
 };
 
-class DeclarationVar : public Declaration {
+class DeclarationVar : public Declaration
+{
 public:
-    int type;
+    Type *type;
 
-    DeclarationVar(Identifier_list *, int type, int, int);
+    DeclarationVar(Identifier_list *, Type *, int, int);
 };
 
-class Declarations : public Node {
+class Declarations : public Node
+{
 public:
     vector<Declaration *> *declarations;
     Declarations(int, int);
@@ -62,6 +67,28 @@ public:
 };
 
 /// Id
-class  Id : public Node{
+class Id : public Node
+{
+};
 
+/// Type
+class Type : public Node
+{
+public:
+    Type(int, int);
+};
+class Standard_type : public Type
+{
+public:
+    int type; // 1 integer, 2 Real, 3 Boolean
+    Standard_type(int, int, int);
+};
+
+class Array_type : public Type
+{
+public:
+    int first;
+    int last;
+    Standard_type *StandardType;
+    Array_type(int, int, Standard_type *, int, int);
 };
