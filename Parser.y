@@ -138,13 +138,24 @@ standard_type:
 			$$ = new Standard_type(3,lin,col);
 		}
 ;
+/// From here /////////////////////////////////////////////////////
 subprogram_declarations:
 		subprogram_declarations subprogram_declaration ';'
+		{
+			$$ = $1 ;
+			$$->AddSubprogramDeclaration($2) ;
+		}
 		|
+		{
+			$$ =  new Subprogram_declarations(lin , col);
+		}
 
 ;	
 subprogram_declaration:
 		subprogram_head subprogram_variables compound_statement
+		{
+			$$ = new Subprogram_declaration($1 , $2 , $3 , lin , col) ;
+		}
 
 ;
 subprogram_variables:	subprogram_variables VAR identifier_list ':' type ';'

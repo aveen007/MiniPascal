@@ -62,3 +62,22 @@ Array_type::Array_type(int first, int last, Standard_type *StandardType, int l, 
     this->StandardType = StandardType;
     StandardType->father = this;
 }
+/// subprogram_declarations
+Subprogram_declaration::Subprogram_declaration(Subprogram_head * subprogramHead,
+                                               Subprogram_variables * subprogramVariables ,
+                                               Compound_statement *compoundStatement,
+                                               int l , int r) : Node(l,r) {
+    this->subprogramHead = subprogramHead ;
+    this->subprogramVariables = subprogramVariables ;
+    this->compoundStatement = compoundStatement ;
+    subprogramHead->father = this ;
+    subprogramVariables->father = this ;
+    compoundStatement->father = this;
+}
+Subprogram_declarations::Subprogram_declarations(int l , int r) : Node(l,r) {
+    this->subprogram_declarations = new vector<Subprogram_declaration *>();
+}
+void Subprogram_declarations::AddSubprogramDeclaration(Subprogram_declaration * subprogramDeclaration) {
+    this->subprogram_declarations->push_back(subprogramDeclaration) ;
+    subprogramDeclaration->father = this ;
+}
