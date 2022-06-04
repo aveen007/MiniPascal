@@ -141,3 +141,70 @@ void Parameter_list::AddParameter(Identifier_list *identifierList, Type *type)
     identifierList->father = this;
     type->father = this;
 }
+/// ------------------------------------ Ghaffar
+/// Statement
+Statement::Statement(int l , int r): Node(l , r) {} ;
+
+Compound_statement::Compound_statement(Optional_statement* optionalStatement, int l , int r)
+: Statement(l , r){
+    this->optionalStatement = optionalStatement ;
+    optionalStatement->father = this ;
+}
+Optional_statement::Optional_statement(Statement_list * statementList, int l,  int r)
+: Statement(l , r){
+    this->statementList = statementList ;
+    statementList->father = this ;
+}
+Variable_Expression::Variable_Expression(Variable * variable, Expression * expression, int l , int r)
+: Statement(l ,r){
+    this->variable = variable ;
+    this->expression = expression ;
+    variable->father = this ;
+    expression->father = this ;
+}
+Procedure_statement::Procedure_statement(Expression_list * expressionList, int l , int r)
+: Statement(l , r){
+    this->expressionList = expressionList ;
+    expressionList->father = this ;
+}
+If::If(Expression * expression, Statement * thenStatement, int l , int r)
+: Statement(l ,r){
+    this->expression = expression ;
+    this->thenStatement = thenStatement ;
+    expression->father = this ;
+    thenStatement->father = this;
+}
+IfElse::IfElse(Expression * expression, Statement * thenStatement, Statement * elseStatement, int l , int r)
+: Statement(l , r){
+    this->expression = expression ;
+    this->thenStatement = thenStatement ;
+    this->elseStatement = elseStatement ;
+    expression->father = this ;
+    thenStatement->father = this ;
+    elseStatement->father = this ;
+}
+While::While(Expression * expression, Statement * doStatement, int l, int r)
+: Statement(l , r){
+    this->expression = expression ;
+    this->doStatement = doStatement ;
+    expression->father = this ;
+    doStatement ->father = this ;
+}
+For::For(Variable * variable, Expression * expression, Optional_statement * optionalStatement, int l, int r)
+: Statement(l , r){
+    this->variable = variable ;
+    this->expression = expression ;
+    this->optionalStatement = optionalStatement ;
+    variable->father = this ;
+    expression->father = this ;
+    optionalStatement->father = this ;
+}
+/// Statement list
+Statement_list::Statement_list(int l , int r)
+: Node(l , r){
+    this->statement_list = new vector<Statement *>() ;
+};
+void Statement_list::AddStatement(Statement * statement) {
+    this->statement_list->push_back(statement) ;
+    statement->father = this ;
+}

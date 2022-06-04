@@ -20,6 +20,20 @@ class Type;
 class Compound_statement;
 class Subprogram_head;
 class Subprogram_variables;
+class Arguments ;
+class Parameter_list;
+class Statement_list ;
+class Optional_statement;
+class Compound_statement ;
+class Variable ;
+class Expression ;
+class Procedure_statement;
+class If ;
+class IfElse ;
+class While ;
+class For ;
+class Expression_list ;
+
 class Node
 {
 public:
@@ -162,4 +176,75 @@ public:
     vector<pair<Identifier_list *, Type *>> *parameters;
     Parameter_list(int, int);
     void AddParameter(Identifier_list *, Type *);
+};
+/// ---------------------------- Ghaffar
+class Statement : public Node
+{
+public:
+    Statement(int , int) ;
+};
+class Compound_statement : public Statement
+{
+public:
+    Optional_statement* optionalStatement;
+    Compound_statement(Optional_statement * , int , int) ;
+};
+class Optional_statement: public Statement
+{
+public:
+    Statement_list * statementList ;
+    Optional_statement(Statement_list * , int , int);
+};
+/// Statement_list
+
+class Variable_Expression : public Statement
+{
+public:
+    Variable * variable ;
+    Expression * expression ;
+    Variable_Expression(Variable * , Expression * , int , int) ;
+};
+class Procedure_statement : public Statement
+{
+public:
+    Expression_list * expressionList ;
+    Procedure_statement(Expression_list * , int , int) ;
+
+};
+class If : public Statement
+{
+public:
+    Expression * expression ;
+    Statement * thenStatement ;
+    If(Expression * , Statement * , int , int) ;
+};
+class IfElse : public Statement
+{
+public:
+    Expression * expression ;
+    Statement * thenStatement ;
+    Statement * elseStatement ;
+    IfElse(Expression * , Statement * , Statement * , int , int) ;
+};
+class While : public Statement
+{
+public:
+    Expression * expression ;
+    Statement * doStatement ;
+    While(Expression * , Statement * , int, int) ;
+};
+class For : public Statement
+{
+public:
+    Variable * variable ;
+    Expression * expression ;
+    Optional_statement * optionalStatement ;
+    For(Variable * , Expression * , Optional_statement * , int , int ) ;
+};
+class Statement_list: public Node
+{
+public:
+    vector<Statement *> *statement_list ;
+    Statement_list(int , int) ;
+    void AddStatement(Statement * ) ;
 };
