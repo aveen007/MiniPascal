@@ -20,25 +20,25 @@ class Type;
 class Compound_statement;
 class Subprogram_head;
 class Subprogram_variables;
-class Arguments ;
+class Arguments;
 class Parameter_list;
-class Statement_list ;
+class Statement_list;
 class Optional_statement;
-class Compound_statement ;
-class Variable ;
-class Expression ;
+class Compound_statement;
+class Variable;
+class Expression;
 class Procedure_statement;
-class If ;
-class IfElse ;
-class While ;
-class For ;
-class Expression_list ;
-class ExpressionWithList ;
-class IdSquareBrackets ;
-class Bracket ;
-class UnaryExpression ;
-class Not ;
-class Unary_operator ;
+class If;
+class IfElse;
+class While;
+class For;
+class Expression_list;
+class ExpressionWithList;
+class IdSquareBrackets;
+class Bracket;
+class UnaryExpression;
+class Not;
+class Unary_operator;
 class Node
 {
 public:
@@ -186,138 +186,140 @@ public:
 class Statement : public Node
 {
 public:
-    Statement(int , int) ;
+    Statement(int, int);
 };
 class Compound_statement : public Statement
 {
 public:
-    Optional_statement* optionalStatement;
-    Compound_statement(Optional_statement * , int , int) ;
+    Optional_statement *optionalStatement;
+    Compound_statement(Optional_statement *, int, int);
 };
-class Optional_statement: public Statement
+class Optional_statement : public Statement
 {
 public:
-    Statement_list * statementList ;
-    Optional_statement(Statement_list * , int , int);
+    Statement_list *statementList;
+    Optional_statement(Statement_list *, int, int);
 };
-/// Statement_list
-
+class Empty_optional_statement : public Statement
+{
+public:
+    Empty_optional_statement(int, int);
+};
 class Variable_Expression : public Statement
 {
 public:
-    Variable * variable ;
-    Expression * expression ;
-    Variable_Expression(Variable * , Expression * , int , int) ;
+    Variable *variable;
+    Expression *expression;
+    Variable_Expression(Variable *, Expression *, int, int);
 };
 class Procedure_statement : public Statement
 {
 public:
-    Expression_list * expressionList ;
-    Procedure_statement(Expression_list * , int , int) ;
-
+    Expression_list *expressionList;
+    Procedure_statement(Expression_list *, int, int);
 };
 class If : public Statement
 {
 public:
-    Expression * expression ;
-    Statement * thenStatement ;
-    If(Expression * , Statement * , int , int) ;
+    Expression *expression;
+    Statement *thenStatement;
+    If(Expression *, Statement *, int, int);
 };
 class IfElse : public Statement
 {
 public:
-    Expression * expression ;
-    Statement * thenStatement ;
-    Statement * elseStatement ;
-    IfElse(Expression * , Statement * , Statement * , int , int) ;
+    Expression *expression;
+    Statement *thenStatement;
+    Statement *elseStatement;
+    IfElse(Expression *, Statement *, Statement *, int, int);
 };
 class While : public Statement
 {
 public:
-    Expression * expression ;
-    Statement * doStatement ;
-    While(Expression * , Statement * , int, int) ;
+    Expression *expression;
+    Statement *doStatement;
+    While(Expression *, Statement *, int, int);
 };
 class For : public Statement
 {
 public:
-    Variable * variable ;
-    Expression * expression ;
-    Optional_statement * optionalStatement ;
-    For(Variable * , Expression * , Optional_statement * , int , int ) ;
+    Variable *variable;
+    Expression *expression;
+    Optional_statement *optionalStatement;
+    For(Variable *, Expression *, Optional_statement *, int, int);
 };
-class Statement_list: public Node
+class Statement_list : public Node
 {
 public:
-    vector<Statement *> *statement_list ;
-    Statement_list(int , int) ;
-    void AddStatement(Statement * ) ;
+    vector<Statement *> *statement_list;
+    Statement_list(int, int);
+    void AddStatement(Statement *);
 };
 /// Expression
 /*
  * ID
-		0|INTNUM
-		1|REALNUM
-		2|TRUEE
-		3|FALSEE
-		4|ID '(' expression_list ')'
-		5|'(' expression ')'
-		6|ID '[' expression ']'
-		7|expression unary_operator expression %prec Uoperator
-		8|NOT expression
-		9|STRING
-		10|CHAR
+        0|INTNUM
+        1|REALNUM
+        2|TRUEE
+        3|FALSEE
+        4|ID '(' expression_list ')'
+        5|'(' expression ')'
+        6|ID '[' expression ']'
+        7|expression unary_operator expression %prec Uoperator
+        8|NOT expression
+        9|STRING
+        10|CHAR
  */
-class Expression: public Node
+class Expression : public Node
 {
 public:
-    int id ;
-    Expression(int , int, int) ;
+    int id;
+    Expression(int, int, int);
 };
 class ExpressionWithList : public Expression
 {
 public:
-    Expression_list * expressionList ;
-    ExpressionWithList(Expression_list * , int , int ,int) ;
+    Expression_list *expressionList;
+    ExpressionWithList(Id *, Expression_list *, int, int);
 };
 class ExpressionWithExpression : public Expression
 {
 public:
-    Expression * expression ;
-    ExpressionWithExpression(Expression * , int , int, int) ;
+    Expression *expression;
+    ExpressionWithExpression(Expression *, int, int, int);
 };
 class UnaryExpression : public Expression
 {
 public:
-    Expression * leftExpression ;
-    Unary_operator * unaryOperator ;
-    Expression * rightExpression ;
-    UnaryExpression(Expression * ,Unary_operator * , Expression * , int , int , int) ;
+    Expression *leftExpression;
+    Unary_operator *unaryOperator;
+    Expression *rightExpression;
+    UnaryExpression(Expression *, Unary_operator *, Expression *, int, int, int);
 };
 /// UOperator
 class Unary_operator : public Node
 {
 public:
-    int id ;
-    Unary_operator(int , int, int) ;
+    int id;
+    Unary_operator(int, int, int);
 };
-class Expression_list: public Node
+class Expression_list : public Node
 {
 public:
-    vector<Expression * > * expressionList ;
-    Expression_list(int , int) ;
+    vector<Expression *> *expressionList;
+    Expression_list(int, int);
     void AddExpression(Expression *);
 };
 /// Var
-class Variable: public Node
+class Variable : public Node
 {
 public:
-    int id ;
-    Variable(int , int , int) ;
+    int id;
+    Variable(int, int, int);
 };
 class VariableExpression : public Variable
 {
 public:
-    Expression * expression ;
-    VariableExpression(Expression *,int , int , int ) ;
+    Expression *expression;
+    VariableExpression(Expression *, int, int, int);
 };

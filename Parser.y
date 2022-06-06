@@ -27,7 +27,11 @@
 	Subprogram_variables Parameter_list*tSubprogram_variables;
 	Subprogram_head *tSubprogram_head;
 	Arguments *tArguments;
-	 *tParameter_list;
+	Parameter_list *tParameter_list;
+	Optional_statement *tOptional_statement;
+	Statement_list *tStatement_list;
+	Statement *tStatement;
+	Expression *tExpression;
 }
 
 %type <tProgram> program 
@@ -42,7 +46,10 @@
 %type <tSubprogram_head> subprogram_head;
 %type <tArguments> arguments;
 %type <tParameter_list> parameter_list;
-
+%type <tOptional_statement> optional_statement;
+%type <tStatement_list> statement_list;
+%type <tStatement> statement;
+%type <tExpression> expression;
 
 %token PROGRAM
 %token VAR
@@ -220,24 +227,58 @@ parameter_list:
 ;
 compound_statement:
 		BEGINN optional_statement END
-
+		{
+			$$ = new Compound_statement($2, lin, col);
+		}
 		;
 optional_statement:
 		statement_list
+		{
+			$$ = new Optional_statement($1, lin, col);
+		}
 		|
-		;
+		{
+			$$ = new Empty_optional_statement(lin, col);
+		}
+;
 statement_list:
 		statement ';'
+		{
+			$$ = new Statement_list(lin, col);
+			$$->AddStatement($1);
+		}
 		|statement_list statement ';'
-		;
+		{
+			$$ = $1;
+			$$->AddStatement($2);
+		}
+;
 statement:
-		variable ':''=' expression 
+		variable ':''=' expression
+		{
+			$$ = new Variable_Expression($1, $3 ,lin, col);
+		}
 		|procedure_statement
-		|compound_statement 
+		{
+			$$ = new Procedure_statement($1, $3 ,lin, col);
+		}
+		|compound_statement
 		|IF expression THEN statement %prec IFPREC
+		{
+			$$ = new If($2, $4 ,lin, col);
+		}
 		|IF expression THEN statement ELSE statement
+		{
+			$$ = new IfElse($2, $4 , $6, lin, col);
+		}
 		|WHILE expression DO statement
+		{
+			$$ = new While($2, $4 ,lin, col);
+		}
 		|FOR variable ':''=' expression  TO INTNUM DO  BEGINN optional_statement END
+		{
+			$$ = new For($2, $5, $10, lin, col);
+		}
 		;
 variable:
 		ID
@@ -253,11 +294,29 @@ expression_list:
 		;
 expression:
 		ID
+		{
+			$$ = new Expression(1, lin, col);
+		}
 		|INTNUM
+		{
+			$$ = new Expression(2, lin, col);
+		}
 		|REALNUM
+		{
+			$$ = new Expression(3, lin, col);
+		}
 		|TRUEE
+		{
+			$$ = new Expression(4, lin, col);
+		}
 		|FALSEE
+		{
+			$$ = new Expression(5, lin, col);
+		}
 		|ID '(' expression_list ')' 
+		{
+			$$  new ExpressionWithList($1 ,$3, lin, col);
+		}
 		|'(' expression ')'
 		|ID '[' expression ']'
 		|expression unary_operator expression %prec Uoperator /// What is Uoperator // By Ghaffar

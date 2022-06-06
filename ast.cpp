@@ -1,9 +1,9 @@
 
 #include "ast.h"
 
-
 /// Node
-Node::Node(int line, int column) {
+Node::Node(int line, int column)
+{
     this->line = line;
     this->column = column;
     this->father = NULL;
@@ -13,7 +13,8 @@ Node::Node(int line, int column) {
 Program::Program(Id *id, Declarations *declarations,
                  Subprogram_declarations *subprogramDeclarations,
                  Compound_statement *compoundStatement,
-                 int l, int c) : Node(l, c) {
+                 int l, int c) : Node(l, c)
+{
     this->id = id;
     this->declarations = declarations;
     this->subprogramDeclarations = subprogramDeclarations;
@@ -26,35 +27,42 @@ Program::Program(Id *id, Declarations *declarations,
 
 /// Declarations
 Declaration::Declaration(Identifier_list *identifierList, int l, int r)
-        : Node(l, r) {
+    : Node(l, r)
+{
     this->identifierList = identifierList;
     identifierList->father = this;
 }
 
 DeclarationVar::DeclarationVar(Identifier_list *identifierList, Type *type, int l, int r)
-        : Declaration(identifierList, l, r) {
+    : Declaration(identifierList, l, r)
+{
     this->type = type;
     type->father = this;
 }
 
-Declarations::Declarations(int l, int r) : Node(l, r) {
+Declarations::Declarations(int l, int r) : Node(l, r)
+{
     this->declarations = new vector<Declaration *>();
 }
 
-void Declarations::AddDeclaration(Declaration *declaration) {
+void Declarations::AddDeclaration(Declaration *declaration)
+{
     this->declarations->push_back(declaration);
     declaration->father = this;
 }
 
 /// Type
-Type::Type(int l, int r) : Node(l, r) {
+Type::Type(int l, int r) : Node(l, r)
+{
 }
 
-Standard_type::Standard_type(int type, int l, int r) : Type(l, r) {
+Standard_type::Standard_type(int type, int l, int r) : Type(l, r)
+{
     this->type = type;
 }
 
-Array_type::Array_type(int first, int last, Standard_type *StandardType, int l, int r) : Type(l, r) {
+Array_type::Array_type(int first, int last, Standard_type *StandardType, int l, int r) : Type(l, r)
+{
     this->first = first;
     this->last = last;
     this->StandardType = StandardType;
@@ -65,7 +73,8 @@ Array_type::Array_type(int first, int last, Standard_type *StandardType, int l, 
 Subprogram_declaration::Subprogram_declaration(Subprogram_head *subprogramHead,
                                                Subprogram_variables *subprogramVariables,
                                                Compound_statement *compoundStatement,
-                                               int l, int r) : Node(l, r) {
+                                               int l, int r) : Node(l, r)
+{
     this->subprogramHead = subprogramHead;
     this->subprogramVariables = subprogramVariables;
     this->compoundStatement = compoundStatement;
@@ -74,40 +83,48 @@ Subprogram_declaration::Subprogram_declaration(Subprogram_head *subprogramHead,
     compoundStatement->father = this;
 }
 
-Subprogram_declarations::Subprogram_declarations(int l, int r) : Node(l, r) {
+Subprogram_declarations::Subprogram_declarations(int l, int r) : Node(l, r)
+{
     this->subprogram_declarations = new vector<Subprogram_declaration *>();
 }
 
-void Subprogram_declarations::AddSubprogramDeclaration(Subprogram_declaration *subprogramDeclaration) {
+void Subprogram_declarations::AddSubprogramDeclaration(Subprogram_declaration *subprogramDeclaration)
+{
     this->subprogram_declarations->push_back(subprogramDeclaration);
     subprogramDeclaration->father = this;
 }
 
 // From Here--------------------somar
-Id::Id(string name, int l, int r) : Node(l, r) {
+Id::Id(string name, int l, int r) : Node(l, r)
+{
     this->name = name;
 }
 
-Identifier_list::Identifier_list(int l, int r) : Node(l, r) {
+Identifier_list::Identifier_list(int l, int r) : Node(l, r)
+{
     this->Ids = new vector<Id *>();
 }
 
-void Identifier_list::AddId(Id *id) {
+void Identifier_list::AddId(Id *id)
+{
     this->Ids->push_back(id);
     id->father = this;
 }
 
-Subprogram_variables::Subprogram_variables(int l, int r) : Node(l, r) {
+Subprogram_variables::Subprogram_variables(int l, int r) : Node(l, r)
+{
     this->subprogramVariables = new vector<pair<Identifier_list *, Type *>>();
 }
 
-void Subprogram_variables::AddVar(Identifier_list *identifierList, Type *type) {
+void Subprogram_variables::AddVar(Identifier_list *identifierList, Type *type)
+{
     this->subprogramVariables->push_back({identifierList, type});
     identifierList->father = this;
     type->father = this;
 }
 
-Subprogram_head::Subprogram_head(Id *id, Arguments *arguments, int l, int r) : Node(l, r) {
+Subprogram_head::Subprogram_head(Id *id, Arguments *arguments, int l, int r) : Node(l, r)
+{
     this->id = id;
     this->arguments = arguments;
     id->father = this;
@@ -115,25 +132,30 @@ Subprogram_head::Subprogram_head(Id *id, Arguments *arguments, int l, int r) : N
 }
 
 Function_head::Function_head(Id *id, Arguments *arguments, Standard_type *standardType, int l, int r)
-        : Subprogram_head(id, arguments, l, r) {
+    : Subprogram_head(id, arguments, l, r)
+{
     this->standardType = standardType;
     standardType->father = this;
 }
 
 Procedure_head::Procedure_head(Id *id, Arguments *arguments, int l, int r)
-        : Subprogram_head(id, arguments, l, r) {
+    : Subprogram_head(id, arguments, l, r)
+{
 }
 
-Arguments::Arguments(Parameter_list *ParameterList, int l, int r) : Node(l, r) {
+Arguments::Arguments(Parameter_list *ParameterList, int l, int r) : Node(l, r)
+{
     this->parameterList = ParameterList;
     ParameterList->father = this;
 }
 
-Parameter_list::Parameter_list(int l, int r) : Node(l, r) {
+Parameter_list::Parameter_list(int l, int r) : Node(l, r)
+{
     this->parameters = new vector<pair<Identifier_list *, Type *>>();
 }
 
-void Parameter_list::AddParameter(Identifier_list *identifierList, Type *type) {
+void Parameter_list::AddParameter(Identifier_list *identifierList, Type *type)
+{
     this->parameters->push_back({identifierList, type});
     identifierList->father = this;
     type->father = this;
@@ -141,22 +163,26 @@ void Parameter_list::AddParameter(Identifier_list *identifierList, Type *type) {
 
 /// ------------------------------------ Ghaffar
 /// Statement
-Statement::Statement(int l, int r) : Node(l, r) {};
+Statement::Statement(int l, int r) : Node(l, r){};
 
 Compound_statement::Compound_statement(Optional_statement *optionalStatement, int l, int r)
-        : Statement(l, r) {
+    : Statement(l, r)
+{
     this->optionalStatement = optionalStatement;
     optionalStatement->father = this;
 }
 
 Optional_statement::Optional_statement(Statement_list *statementList, int l, int r)
-        : Statement(l, r) {
+    : Statement(l, r)
+{
     this->statementList = statementList;
     statementList->father = this;
 }
+Empty_optional_statement::Empty_optional_statement(int l, int r) : Statement(l, r){};
 
 Variable_Expression::Variable_Expression(Variable *variable, Expression *expression, int l, int r)
-        : Statement(l, r) {
+    : Statement(l, r)
+{
     this->variable = variable;
     this->expression = expression;
     variable->father = this;
@@ -164,13 +190,15 @@ Variable_Expression::Variable_Expression(Variable *variable, Expression *express
 }
 
 Procedure_statement::Procedure_statement(Expression_list *expressionList, int l, int r)
-        : Statement(l, r) {
+    : Statement(l, r)
+{
     this->expressionList = expressionList;
     expressionList->father = this;
 }
 
 If::If(Expression *expression, Statement *thenStatement, int l, int r)
-        : Statement(l, r) {
+    : Statement(l, r)
+{
     this->expression = expression;
     this->thenStatement = thenStatement;
     expression->father = this;
@@ -178,7 +206,8 @@ If::If(Expression *expression, Statement *thenStatement, int l, int r)
 }
 
 IfElse::IfElse(Expression *expression, Statement *thenStatement, Statement *elseStatement, int l, int r)
-        : Statement(l, r) {
+    : Statement(l, r)
+{
     this->expression = expression;
     this->thenStatement = thenStatement;
     this->elseStatement = elseStatement;
@@ -188,7 +217,8 @@ IfElse::IfElse(Expression *expression, Statement *thenStatement, Statement *else
 }
 
 While::While(Expression *expression, Statement *doStatement, int l, int r)
-        : Statement(l, r) {
+    : Statement(l, r)
+{
     this->expression = expression;
     this->doStatement = doStatement;
     expression->father = this;
@@ -196,7 +226,8 @@ While::While(Expression *expression, Statement *doStatement, int l, int r)
 }
 
 For::For(Variable *variable, Expression *expression, Optional_statement *optionalStatement, int l, int r)
-        : Statement(l, r) {
+    : Statement(l, r)
+{
     this->variable = variable;
     this->expression = expression;
     this->optionalStatement = optionalStatement;
@@ -207,36 +238,43 @@ For::For(Variable *variable, Expression *expression, Optional_statement *optiona
 
 /// Statement list
 Statement_list::Statement_list(int l, int r)
-        : Node(l, r) {
+    : Node(l, r)
+{
     this->statement_list = new vector<Statement *>();
 };
 
-void Statement_list::AddStatement(Statement *statement) {
+void Statement_list::AddStatement(Statement *statement)
+{
     this->statement_list->push_back(statement);
     statement->father = this;
 }
 
 /// Expressions
 Expression::Expression(int id, int l, int r)
-        : Node(l, r) {
+    : Node(l, r)
+{
     this->id = id;
 }
 
-ExpressionWithList::ExpressionWithList(Expression_list *expressionList, int id, int l, int r)
-        : Expression(id, l, r) {
+ExpressionWithList::ExpressionWithList(Id *id, Expression_list *expressionList, int l, int r)
+    : Expression(id, l, r)
+{
+
     this->expressionList = expressionList;
     expressionList->father = this;
 }
 
 ExpressionWithExpression::ExpressionWithExpression(Expression *expression, int id, int l, int r)
-        : Expression(id, l, r) {
+    : Expression(id, l, r)
+{
     this->expression = expression;
     expression->father = this;
 }
 
 UnaryExpression::UnaryExpression(Expression *LExpression, Unary_operator *unaryOperator, Expression *RExpression,
                                  int id, int l, int r)
-        : Expression(id, l, r) {
+    : Expression(id, l, r)
+{
     this->leftExpression = LExpression;
     this->unaryOperator = unaryOperator;
     this->rightExpression = RExpression;
@@ -246,27 +284,32 @@ UnaryExpression::UnaryExpression(Expression *LExpression, Unary_operator *unaryO
 }
 
 Unary_operator::Unary_operator(int id, int l, int r)
-        : Node(l, r) {
+    : Node(l, r)
+{
     this->id = id;
 }
 
 Expression_list::Expression_list(int l, int r)
-        : Node(l, r) {
+    : Node(l, r)
+{
     this->expressionList = new vector<Expression *>();
 }
 
-void Expression_list::AddExpression(Expression *expression) {
+void Expression_list::AddExpression(Expression *expression)
+{
     this->expressionList->push_back(expression);
     expression->father = this;
 }
 
 /// Var
 Variable::Variable(int id, int l, int r)
-        : Node(l, r) {
+    : Node(l, r)
+{
     this->id = id;
 }
-VariableExpression::VariableExpression(Expression * expression,int id, int l, int r)
-: Variable(id , l , r){
-    this->expression = expression ;
-    expression->father = this ;
+VariableExpression::VariableExpression(Expression *expression, int id, int l, int r)
+    : Variable(id, l, r)
+{
+    this->expression = expression;
+    expression->father = this;
 }
