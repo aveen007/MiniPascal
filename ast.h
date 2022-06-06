@@ -33,7 +33,12 @@ class IfElse ;
 class While ;
 class For ;
 class Expression_list ;
-
+class ExpressionWithList ;
+class IdSquareBrackets ;
+class Bracket ;
+class UnaryExpression ;
+class Not ;
+class Unary_operator ;
 class Node
 {
 public:
@@ -247,4 +252,72 @@ public:
     vector<Statement *> *statement_list ;
     Statement_list(int , int) ;
     void AddStatement(Statement * ) ;
+};
+/// Expression
+/*
+ * ID
+		0|INTNUM
+		1|REALNUM
+		2|TRUEE
+		3|FALSEE
+		4|ID '(' expression_list ')'
+		5|'(' expression ')'
+		6|ID '[' expression ']'
+		7|expression unary_operator expression %prec Uoperator
+		8|NOT expression
+		9|STRING
+		10|CHAR
+ */
+class Expression: public Node
+{
+public:
+    int id ;
+    Expression(int , int, int) ;
+};
+class ExpressionWithList : public Expression
+{
+public:
+    Expression_list * expressionList ;
+    ExpressionWithList(Expression_list * , int , int ,int) ;
+};
+class ExpressionWithExpression : public Expression
+{
+public:
+    Expression * expression ;
+    ExpressionWithExpression(Expression * , int , int, int) ;
+};
+class UnaryExpression : public Expression
+{
+public:
+    Expression * leftExpression ;
+    Unary_operator * unaryOperator ;
+    Expression * rightExpression ;
+    UnaryExpression(Expression * ,Unary_operator * , Expression * , int , int , int) ;
+};
+/// UOperator
+class Unary_operator : public Node
+{
+public:
+    int id ;
+    Unary_operator(int , int, int) ;
+};
+class Expression_list: public Node
+{
+public:
+    vector<Expression * > * expressionList ;
+    Expression_list(int , int) ;
+    void AddExpression(Expression *);
+};
+/// Var
+class Variable: public Node
+{
+public:
+    int id ;
+    Variable(int , int , int) ;
+};
+class VariableExpression : public Variable
+{
+public:
+    Expression * expression ;
+    VariableExpression(Expression *,int , int , int ) ;
 };
