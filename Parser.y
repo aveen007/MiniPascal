@@ -2,24 +2,23 @@
 %{
 
 	#include <iostream>
-	#include "ast.cpp"
+	#include "ast.h"
+	
 
 	using std::cout;
 	using std::endl;
 
-	extern int yylex();
+	extern int yylex(void);
 	extern int yyerror(const char *);
 	Program *root ;
 	extern int lin ,col;
 
 %}
-%union
-{
-	Procedure_statement *tProcedure_statement ;
+%union{
+	Id *tId ;
 	Program *tProgram ;
 	Declarations *tDeclarations ;
 	Identifier_list *tIdentifier_list ;
-	Id *tId ;
 	Subprogram_declarations *tSubprogram_declarations ;
 	Subprogram_declaration *tSubprogram_declaration;
 	Compound_statement *tCompound_statement ;
@@ -41,6 +40,7 @@
 	Bool *tBool;
 	Unary_operator *tUnary_operator;
 	Variable *tVariable ;
+	Procedure_statement *tProcedure_statement ;
 }
 
 %type <tProgram> program 
