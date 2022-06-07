@@ -11,9 +11,9 @@ using std::endl;
 
 class Declarations;
 
-class Statement ;
+class Statement;
 
-class Expression_list ;
+class Expression_list;
 
 class Identifier_list;
 
@@ -139,8 +139,8 @@ public:
 class Array_type : public Type
 {
 public:
-    IntNum * first;
-    IntNum * last;
+    IntNum *first;
+    IntNum *last;
     Standard_type *StandardType;
 
     Array_type(IntNum *, IntNum *, Standard_type *, int, int);
@@ -322,7 +322,7 @@ public:
     Optional_statement(Statement_list *, int, int);
 };
 
-class Empty_optional_statement : public Statement
+class Empty_optional_statement : public Optional_statement
 {
 public:
     Empty_optional_statement(int, int);
@@ -340,15 +340,14 @@ public:
 class Procedure_statement : public Statement
 {
 public:
-    Id * id ;
+    Id *id;
     Procedure_statement(Id *, int, int);
 };
 class Procedure_statementList : public Procedure_statement
 {
 public:
-
     Expression_list *expressionList;
-    Procedure_statementList(Expression_list * , Id *, int, int);
+    Procedure_statementList(Expression_list *, Id *, int, int);
 };
 class If : public Statement
 {
@@ -480,7 +479,7 @@ class ExpressionWithExpr : public Expression
 public:
     Expression *expression;
 
-    ExpressionWithExpr(Expression *, int, int, int);
+    ExpressionWithExpr(Expression *, int, int);
 };
 
 class UnaryExpr : public Expression
@@ -533,7 +532,7 @@ public:
 class Variable : public Node
 {
 public:
-    Id * id ;
+    Id *id;
 
     Variable(Id *, int, int);
 };
@@ -543,5 +542,5 @@ class VariableExpression : public Variable
 public:
     Expression *expression;
 
-    VariableExpression(Expression *, Id * , int, int);
+    VariableExpression(Expression *, Id *, int, int);
 };

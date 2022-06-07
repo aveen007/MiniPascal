@@ -5,7 +5,7 @@
 	using std::cout;
 	using std::endl;
 
-	include "ast.h";
+	#include "ast.h"
 
 	extern int yylex();
 	extern int yyerror(const char *);
@@ -25,7 +25,7 @@
 	Standard_type *tStandard_type;
 	Array_type *tArray_type;
 	Type *tType;
-	Subprogram_variables Parameter_list*tSubprogram_variables;
+	Subprogram_variables *tSubprogram_variables;
 	Subprogram_head *tSubprogram_head;
 	Arguments *tArguments;
 	Parameter_list *tParameter_list;
@@ -37,7 +37,8 @@
 	IntNum *tIntNum;
 	RealNum *tRealNum;
 	String *tString;
-	Char *tCher;
+	Char *tChar;
+	Bool *tBool;
 	Unary_operator *tUnary_operator;
 	Variable *tVariable ;
 }
@@ -200,11 +201,10 @@ subprogram_declaration:
 
 ;
 
-//From Here--------------------------------------------somar
 subprogram_variables:	subprogram_variables VAR identifier_list ':' type ';'
 			{
 				$$ = $1;
-				$$->Add($3 , $5);
+				$$->AddVar($3 , $5);
 			}
 			|
 			{
@@ -328,7 +328,7 @@ expression_list:
 		|expression_list ',' expression
 		{
 			$$ = $1 ;
-			$$->AddExpression($3 , lin , col) ;
+			$$->AddExpression($3 ) ;
 		}
 		;
 expression:
@@ -364,7 +364,7 @@ expression:
 		{
 			$$ = new BracketExpr($1 ,$3 ,lin, col);
 		}
-		|expression unary_operator expression %prec unary_operator /// What is Uoperator // By Ghaffar
+		|expression unary_operator expression %prec Uoperator /// What is Uoperator // By Ghaffar
 		{
 			$$ = new UnaryExpr($1 ,$2, $3 ,lin, col);
 		}

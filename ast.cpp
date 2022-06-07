@@ -61,14 +61,14 @@ Standard_type::Standard_type(int type, int l, int r) : Type(l, r)
     this->type = type;
 }
 
-Array_type::Array_type(IntNum * first, IntNum * last, Standard_type *StandardType, int l, int r) : Type(l, r)
+Array_type::Array_type(IntNum *first, IntNum *last, Standard_type *StandardType, int l, int r) : Type(l, r)
 {
     this->first = first;
     this->last = last;
     this->StandardType = StandardType;
     StandardType->father = this;
-    first->father = this ;
-    last->father = this ;
+    first->father = this;
+    last->father = this;
 }
 
 /// subprogram_declarations
@@ -211,7 +211,7 @@ Optional_statement::Optional_statement(Statement_list *statementList, int l, int
     statementList->father = this;
 }
 
-Empty_optional_statement::Empty_optional_statement(int l, int r) : Statement(l, r){};
+Empty_optional_statement::Empty_optional_statement(int l, int r) : Optional_statement(l, r){};
 
 Variable_Expression::Variable_Expression(Variable *variable, Expression *expression, int l, int r)
     : Statement(l, r)
@@ -228,11 +228,11 @@ Procedure_statement::Procedure_statement(Id *id, int l, int r)
     this->id = id;
     id->father = this;
 }
-Procedure_statementList::Procedure_statementList(Expression_list * expressionList, Id * id, int l, int r)
-: Procedure_statement(id , l , r)
+Procedure_statementList::Procedure_statementList(Expression_list *expressionList, Id *id, int l, int r)
+    : Procedure_statement(id, l, r)
 {
-    this->expressionList = expressionList ;
-    expressionList->father = this ;
+    this->expressionList = expressionList;
+    expressionList->father = this;
 }
 
 If::If(Expression *expression, Statement *thenStatement, int l, int r)
@@ -399,14 +399,14 @@ void Expression_list::AddExpression(Expression *expression)
 }
 
 /// Var
-Variable::Variable(Id * id, int l, int r)
+Variable::Variable(Id *id, int l, int r)
     : Node(l, r)
 {
     this->id = id;
-    id->father = this ;
+    id->father = this;
 }
 
-VariableExpression::VariableExpression(Expression *expression, Id * id , int l, int r)
+VariableExpression::VariableExpression(Expression *expression, Id *id, int l, int r)
     : Variable(id, l, r)
 {
     this->expression = expression;
