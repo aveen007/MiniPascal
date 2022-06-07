@@ -32,6 +32,11 @@
 	Statement_list *tStatement_list;
 	Statement *tStatement;
 	Expression *tExpression;
+	IntNum *tIntNum;
+	RealNum *tRealNum;
+	String *tString;
+	Char *tCher;
+	Unary_operator *tUnary_operator;
 }
 
 %type <tProgram> program 
@@ -50,6 +55,7 @@
 %type <tStatement_list> statement_list;
 %type <tStatement> statement;
 %type <tExpression> expression;
+%type <tUnary_operator> unary_operator;
 
 %token PROGRAM
 %token VAR
@@ -295,37 +301,110 @@ expression_list:
 expression:
 		ID
 		{
-			$$ = new Expression(1, lin, col);
+			$$ = new IdExpr($1 ,lin, col);
 		}
 		|INTNUM
 		{
-			$$ = new Expression(2, lin, col);
+			$$ = new IntNumExpr($1, lin, col);
 		}
 		|REALNUM
 		{
-			$$ = new Expression(3, lin, col);
+			$$ = new RealNumExpr($1, lin, col);
 		}
 		|TRUEE
 		{
-			$$ = new Expression(4, lin, col);
+			$$ = new BoolExpr(true, lin, col);
 		}
 		|FALSEE
 		{
-			$$ = new Expression(5, lin, col);
+			$$ = new BoolExpr(false, lin, col);
 		}
 		|ID '(' expression_list ')' 
 		{
-			$$  new ExpressionWithList($1 ,$3, lin, col);
+			$$  new ListWithExpr($1 ,$3, lin, col);
 		}
 		|'(' expression ')'
+		{
+			$$ = new ExpressionWithExpr($2 ,lin, col);
+		}
 		|ID '[' expression ']'
+		{
+			$$ = new BracketExpr($1 ,$3 ,lin, col);
+		}
 		|expression unary_operator expression %prec Uoperator /// What is Uoperator // By Ghaffar
+		{
+			$$ = new UnaryExpr($1 ,$2, $3 ,lin, col);
+		}
 		|NOT expression
+		{
+			$$ = new NotExpr($2 ,lin, col);
+		}
 		|STRING
+		{
+			$$ = new StringExpr($1, lin, col);
+		}
 		|CHAR
+		{
+			$$ = new CharExpr($1, lin, col);
+		}
 		;
 unary_operator:
-		'*'|'+'|'-'|'/'|DIV|'>'|LESSEREQ|'<'|GREATEREQ|'='|NEQ|NOT|OR|AND
+		'*'
+		{
+			$$ = new Unary_operator(1, lin, col);
+		}
+		|'+'
+		{
+			$$ = new Unary_operator(2, lin, col);
+		}
+		|'-'
+		{
+			$$ = new Unary_operator(3, lin, col);
+		}
+		|'/'
+		{
+			$$ = new Unary_operator(4, lin, col);
+		}
+		|DIV
+		{
+			$$ = new Unary_operator(5, lin, col);
+		}
+		|'>'
+		{
+			$$ = new Unary_operator(6, lin, col);
+		}
+		|LESSEREQ
+		{
+			$$ = new Unary_operator(7, lin, col);
+		}
+		|'<'
+		{
+			$$ = new Unary_operator(8, lin, col);
+		}
+		|GREATEREQ
+		{
+			$$ = new Unary_operator(9, lin, col);
+		}
+		|'='
+		{
+			$$ = new Unary_operator(10, lin, col);
+		}
+		|NEQ
+		{
+			$$ = new Unary_operator(11, lin, col);
+		}
+		|NOT
+		{
+			$$ = new Unary_operator(12, lin, col);
+		}
+		|OR
+		{
+			$$ = new Unary_operator(13, lin, col);
+		}
+		|AND
+		{
+			$$ = new Unary_operator(14, lin, col);
+		}
 		;
 
 

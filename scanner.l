@@ -145,17 +145,23 @@
 		col += yyleng;
 		return BOOLEANN;
 		}
-"\'"[^\t]"\'" {return CHAR;}
-"\""[^\n\t]*"\""|"\'"[^\n\t]*"\'" {return STRING;}
+"\'"[^\t]"\'" {
+		yylval.tChar = new Char(strdup(yytext), lin, col);
+		return CHAR;
+	}
+"\""[^\n\t]*"\""|"\'"[^\n\t]*"\'" {
+		yylval.tString = new String(strdup(yytext), lin, col);
+		return STRING;
+	}
 [a-zA-Z_][_a-z0-9A-Z]* {
 		col+=yyleng;
-
+		yylval.tId = new Id(strdup(yytext), lin, col);
 		return ID;
 		}
 
 0|[1-9][0-9]* {
 	col+=yyleng;
-
+	yylval.tIntNum = new IntNum(atoi(yytext), lin, col);
 	return INTNUM;
 	}
 
@@ -163,6 +169,7 @@
 "."[0-9]+([eE][-+]?(0|[1-9][0-9]*))?				|
 (0|[1-9][0-9]*)([eE][-+]?(0|[1-9][0-9]*)) {
 	col+=yyleng;
+	yylval.tRealNum = new RealNum(atof(yytext), lin, col);
 	return REALNUM;
 }
  
