@@ -3,7 +3,7 @@
 
 	#include <iostream>
 	#include "ast.h"
-	
+	#include "ast.cpp"
 
 	using std::cout;
 	using std::endl;
@@ -14,33 +14,34 @@
 	extern int lin ,col;
 
 %}
-%union{
-	Id *tId ;
-	Program *tProgram ;
-	Declarations *tDeclarations ;
-	Identifier_list *tIdentifier_list ;
-	Subprogram_declarations *tSubprogram_declarations ;
-	Subprogram_declaration *tSubprogram_declaration;
-	Compound_statement *tCompound_statement ;
-	Standard_type *tStandard_type;
-	Type *tType;
-	Subprogram_variables *tSubprogram_variables;
-	Subprogram_head *tSubprogram_head;
-	Arguments *tArguments;
-	Parameter_list *tParameter_list;
-	Optional_statement *tOptional_statement;
-	Statement_list *tStatement_list;
-	Statement *tStatement;
-	Expression *tExpression;
-	Expression_list *tExpression_list ;
-	IntNum *tIntNum;
-	RealNum *tRealNum;
-	String *tString;
-	Char *tChar;
-	Bool *tBool;
-	Unary_operator *tUnary_operator;
-	Variable *tVariable ;
-	Procedure_statement *tProcedure_statement ;
+%union
+{
+	class Id *tId ;
+	class Program *tProgram ;
+	class Declarations *tDeclarations ;
+	class Identifier_list *tIdentifier_list ;
+	class Subprogram_declarations *tSubprogram_declarations ;
+	class Subprogram_declaration *tSubprogram_declaration;
+	class Compound_statement *tCompound_statement ;
+	class Standard_type *tStandard_type;
+	class Type *tType;
+	class Subprogram_variables *tSubprogram_variables;
+	class Subprogram_head *tSubprogram_head;
+	class Arguments *tArguments;
+	class Parameter_list *tParameter_list;
+	class Optional_statement *tOptional_statement;
+	class Statement_list *tStatement_list;
+	class Statement *tStatement;
+	class Expression *tExpression;
+	class Expression_list *tExpression_list ;
+	class IntNum *tIntNum;
+	class RealNum *tRealNum;
+	class String *tString;
+	class Char *tChar;
+	class Bool *tBool;
+	class Unary_operator *tUnary_operator;
+	class Variable *tVariable ;
+	class Procedure_statement *tProcedure_statement ;
 }
 
 %type <tProgram> program 
@@ -127,7 +128,7 @@ program:
 	 {
 		 $$ = new Program($2 , $4 , $5 , $6 , lin , col) ;
 		 root = $$ ;
-		 cout<<"Somaaaaaaaaaar"<<endl;
+		 cout<<"Somaaaaaaaaaar Avooooooooooooooo DONNNNNNNNNE"<<endl;
 	 }
  ;
 identifier_list:
