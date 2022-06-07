@@ -14,6 +14,7 @@
 %}
 %union
 {
+	Procedure_statement *tProcedure_statement ;
 	Program *tProgram ;
 	Declarations *tDeclarations ;
 	Identifier_list *tIdentifier_list ;
@@ -32,20 +33,22 @@
 	Statement_list *tStatement_list;
 	Statement *tStatement;
 	Expression *tExpression;
+	Expression_list *tExpression_list ;
 	IntNum *tIntNum;
 	RealNum *tRealNum;
 	String *tString;
 	Char *tCher;
 	Unary_operator *tUnary_operator;
+	Variable *tVariable ;
 }
 
-%type <tProgram> program 
-%type <tDeclarations> declarations
-%type <tIdentifier_list> identifier_list
-%type <tSubprogram_declarations> subprogram_declarations
-%type <tSubprogram_declaration> subprogram_declaration
-%type <tCompound_statement> compound_statement
-%type <tStandard_type> standard_type
+%type <tProgram> program ;
+%type <tDeclarations> declarations;
+%type <tIdentifier_list> identifier_list;
+%type <tSubprogram_declarations> subprogram_declarations;
+%type <tSubprogram_declaration> subprogram_declaration;
+%type <tCompound_statement> compound_statement;
+%type <tStandard_type> standard_type;
 %type <tType> type;
 %type <tSubprogram_variables> subprogram_variables;
 %type <tSubprogram_head> subprogram_head;
@@ -56,6 +59,9 @@
 %type <tStatement> statement;
 %type <tExpression> expression;
 %type <tUnary_operator> unary_operator;
+%type <tVariable> variable;
+%type <tProcedure_statement> procedure_statement ;
+%type <tExpression_list> expression_list ;
 
 %token PROGRAM
 %token VAR
@@ -63,8 +69,8 @@
 
 %token REAL
 %token INTEGER
-%token STRING
-%token CHAR
+%token <tString> STRING
+%token <tChar> CHAR
 
 %token FUNCTION
 %token PROCEDURE
@@ -90,11 +96,11 @@
 
 /* %token ALPHA */
 %token <tId> ID
-%token INTNUM
-%token REALNUM
+%token <tIntNum> INTNUM
+%token <tRealNum> REALNUM
 %token NEQ
-%token TRUEE
-%token FALSEE
+%token <tBool> TRUEE
+%token <tBool> FALSEE
 %token BOOLEANN
 
 
@@ -151,6 +157,9 @@ declarations:
 	;
 type:
 		standard_type
+		{
+			$$ = $1 ;
+		}
 		| ARRAY '[' INTNUM TWODOTS INTNUM ']' OF standard_type
 		{
 			$$ = new Array_type($3 ,$5 ,$8 ,lin ,col);
@@ -216,7 +225,7 @@ subprogram_head:
 arguments:
 		'(' parameter_list ')'
 		{
-			$$ = new Arguments($3, lin ,col);
+			$$ = new Arguments($2, lin ,col);
 		}
 		;
 parameter_list:
@@ -262,13 +271,16 @@ statement_list:
 statement:
 		variable ':''=' expression
 		{
-			$$ = new Variable_Expression($1, $3 ,lin, col);
+			$$ = new Variable_Expression($1, $4 ,lin, col);
 		}
 		|procedure_statement
 		{
-			$$ = new Procedure_statement($1, $3 ,lin, col);
+			$$ = $1;
 		}
 		|compound_statement
+		{
+			$$ = $1 ;
+		}
 		|IF expression THEN statement %prec IFPREC
 		{
 			$$ = new If($2, $4 ,lin, col);
@@ -288,15 +300,36 @@ statement:
 		;
 variable:
 		ID
+		{
+			$$ = new Variable($1 , lin , col) ;
+		}
 		|ID '[' expression ']'
+		{
+			$$ = new VariableExpression($3 , $1 , lin , col) ;
+		}
 		;
 procedure_statement:
-		ID|
+		ID
+		{
+			$$ = new Procedure_statement($1 , lin , col) ;
+		}
+		|
 		ID '(' expression_list ')'
+		{
+			$$ = new Procedure_statementList($3 , $1 , lin , col) ; 
+		}
 
 expression_list:
 		expression
+		{
+			$$ = new Expression_list(lin , col); 
+			$$->AddExpression($1) ;
+		}
 		|expression_list ',' expression
+		{
+			$$ = $1 ;
+			$$->AddExpression($3 , lin , col) ;
+		}
 		;
 expression:
 		ID
@@ -313,15 +346,15 @@ expression:
 		}
 		|TRUEE
 		{
-			$$ = new BoolExpr(true, lin, col);
+			$$ = new BoolExpr($1, lin, col);
 		}
 		|FALSEE
 		{
-			$$ = new BoolExpr(false, lin, col);
+			$$ = new BoolExpr($1, lin, col);
 		}
 		|ID '(' expression_list ')' 
 		{
-			$$  new ListWithExpr($1 ,$3, lin, col);
+			$$ = new ListWithExpr($1 ,$3, lin, col);
 		}
 		|'(' expression ')'
 		{
@@ -331,7 +364,7 @@ expression:
 		{
 			$$ = new BracketExpr($1 ,$3 ,lin, col);
 		}
-		|expression unary_operator expression %prec Uoperator /// What is Uoperator // By Ghaffar
+		|expression unary_operator expression %prec unary_operator /// What is Uoperator // By Ghaffar
 		{
 			$$ = new UnaryExpr($1 ,$2, $3 ,lin, col);
 		}

@@ -61,12 +61,14 @@ Standard_type::Standard_type(int type, int l, int r) : Type(l, r)
     this->type = type;
 }
 
-Array_type::Array_type(int first, int last, Standard_type *StandardType, int l, int r) : Type(l, r)
+Array_type::Array_type(IntNum * first, IntNum * last, Standard_type *StandardType, int l, int r) : Type(l, r)
 {
     this->first = first;
     this->last = last;
     this->StandardType = StandardType;
     StandardType->father = this;
+    first->father = this ;
+    last->father = this ;
 }
 
 /// subprogram_declarations
@@ -220,11 +222,17 @@ Variable_Expression::Variable_Expression(Variable *variable, Expression *express
     expression->father = this;
 }
 
-Procedure_statement::Procedure_statement(Expression_list *expressionList, int l, int r)
+Procedure_statement::Procedure_statement(Id *id, int l, int r)
     : Statement(l, r)
 {
-    this->expressionList = expressionList;
-    expressionList->father = this;
+    this->id = id;
+    id->father = this;
+}
+Procedure_statementList::Procedure_statementList(Expression_list * expressionList, Id * id, int l, int r)
+: Procedure_statement(id , l , r)
+{
+    this->expressionList = expressionList ;
+    expressionList->father = this ;
 }
 
 If::If(Expression *expression, Statement *thenStatement, int l, int r)
@@ -391,14 +399,15 @@ void Expression_list::AddExpression(Expression *expression)
 }
 
 /// Var
-Variable::Variable(int index, int l, int r)
+Variable::Variable(Id * id, int l, int r)
     : Node(l, r)
 {
-    this->index = index;
+    this->id = id;
+    id->father = this ;
 }
 
-VariableExpression::VariableExpression(Expression *expression, int index, int l, int r)
-    : Variable(index, l, r)
+VariableExpression::VariableExpression(Expression *expression, Id * id , int l, int r)
+    : Variable(id, l, r)
 {
     this->expression = expression;
     expression->father = this;

@@ -11,6 +11,10 @@ using std::endl;
 
 class Declarations;
 
+class Statement ;
+
+class Expression_list ;
+
 class Identifier_list;
 
 class Id;
@@ -135,11 +139,11 @@ public:
 class Array_type : public Type
 {
 public:
-    int first;
-    int last;
+    IntNum * first;
+    IntNum * last;
     Standard_type *StandardType;
 
-    Array_type(int, int, Standard_type *, int, int);
+    Array_type(IntNum *, IntNum *, Standard_type *, int, int);
 };
 
 /// Program
@@ -336,11 +340,16 @@ public:
 class Procedure_statement : public Statement
 {
 public:
-    Expression_list *expressionList;
-
-    Procedure_statement(Expression_list *, int, int);
+    Id * id ;
+    Procedure_statement(Id *, int, int);
 };
+class Procedure_statementList : public Procedure_statement
+{
+public:
 
+    Expression_list *expressionList;
+    Procedure_statementList(Expression_list * , Id *, int, int);
+};
 class If : public Statement
 {
 public:
@@ -524,9 +533,9 @@ public:
 class Variable : public Node
 {
 public:
-    int index;
+    Id * id ;
 
-    Variable(int, int, int);
+    Variable(Id *, int, int);
 };
 
 class VariableExpression : public Variable
@@ -534,5 +543,5 @@ class VariableExpression : public Variable
 public:
     Expression *expression;
 
-    VariableExpression(Expression *, int, int, int);
+    VariableExpression(Expression *, Id * , int, int);
 };

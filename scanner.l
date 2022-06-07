@@ -135,10 +135,12 @@
 		}
 "true" {
 		col += yyleng;
+		yylval.tBool = new Bool(true, lin, col);
 		return TRUEE;
 		}
 "false" {
 		col += yyleng;
+		yylval.tBool = new Bool(false, lin, col);
 		return FALSEE;
 		}
 "boolean" {
