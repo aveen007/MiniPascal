@@ -2,14 +2,15 @@
 %{
 
 	#include <iostream>
+	#include "ast.cpp"
+
 	using std::cout;
 	using std::endl;
 
-	#include "ast.h"
-
 	extern int yylex();
 	extern int yyerror(const char *);
-	extern int lin,col;
+	Program *root ;
+	extern int lin ,col;
 
 %}
 %union
@@ -23,7 +24,6 @@
 	Subprogram_declaration *tSubprogram_declaration;
 	Compound_statement *tCompound_statement ;
 	Standard_type *tStandard_type;
-	Array_type *tArray_type;
 	Type *tType;
 	Subprogram_variables *tSubprogram_variables;
 	Subprogram_head *tSubprogram_head;
@@ -43,26 +43,26 @@
 	Variable *tVariable ;
 }
 
-%type <tProgram> program ;
-%type <tDeclarations> declarations;
-%type <tIdentifier_list> identifier_list;
-%type <tSubprogram_declarations> subprogram_declarations;
-%type <tSubprogram_declaration> subprogram_declaration;
-%type <tCompound_statement> compound_statement;
-%type <tStandard_type> standard_type;
-%type <tType> type;
-%type <tSubprogram_variables> subprogram_variables;
-%type <tSubprogram_head> subprogram_head;
-%type <tArguments> arguments;
-%type <tParameter_list> parameter_list;
-%type <tOptional_statement> optional_statement;
-%type <tStatement_list> statement_list;
-%type <tStatement> statement;
-%type <tExpression> expression;
-%type <tUnary_operator> unary_operator;
-%type <tVariable> variable;
-%type <tProcedure_statement> procedure_statement ;
-%type <tExpression_list> expression_list ;
+%type <tProgram> program 
+%type <tDeclarations> declarations
+%type <tIdentifier_list> identifier_list
+%type <tSubprogram_declarations> subprogram_declarations
+%type <tSubprogram_declaration> subprogram_declaration
+%type <tCompound_statement> compound_statement
+%type <tStandard_type> standard_type
+%type <tType> type
+%type <tSubprogram_variables> subprogram_variables
+%type <tSubprogram_head> subprogram_head
+%type <tArguments> arguments
+%type <tParameter_list> parameter_list
+%type <tOptional_statement> optional_statement
+%type <tStatement_list> statement_list
+%type <tStatement> statement
+%type <tExpression> expression
+%type <tUnary_operator> unary_operator
+%type <tVariable> variable
+%type <tProcedure_statement> procedure_statement 
+%type <tExpression_list> expression_list 
 
 %token PROGRAM
 %token VAR
@@ -126,6 +126,8 @@ program:
  	compound_statement '.'
 	 {
 		 $$ = new Program($2 , $4 , $5 , $6 , lin , col) ;
+		 root = $$ ;
+		 cout<<"Somaaaaaaaaaar"<<endl;
 	 }
  ;
 identifier_list:
@@ -249,11 +251,11 @@ compound_statement:
 optional_statement:
 		statement_list
 		{
-			$$ = new Optional_statement($1, lin, col);
+			$$ = new Optional_statementNonEmpty($1, lin, col);
 		}
 		|
 		{
-			$$ = new Empty_optional_statement(lin, col);
+			$$ = new Optional_statement( lin, col);
 		}
 ;
 statement_list:

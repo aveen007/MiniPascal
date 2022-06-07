@@ -313,14 +313,19 @@ public:
 
     Compound_statement(Optional_statement *, int, int);
 };
-
 class Optional_statement : public Statement
+{
+public:
+    Optional_statement(int, int);
+};
+class Optional_statementNonEmpty : public Optional_statement
 {
 public:
     Statement_list *statementList;
 
-    Optional_statement(Statement_list *, int, int);
+    Optional_statementNonEmpty(Statement_list *, int, int);
 };
+
 
 class Empty_optional_statement : public Optional_statement
 {

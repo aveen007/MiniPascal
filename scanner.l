@@ -1,6 +1,8 @@
 %{
 	#include <iostream>
 	#include "Parser.h"
+	#include "ast.h"
+	
 	using std::cout;
 	using std::endl;
 	int lin=1, col=1;

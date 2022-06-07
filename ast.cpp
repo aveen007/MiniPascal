@@ -204,15 +204,13 @@ Compound_statement::Compound_statement(Optional_statement *optionalStatement, in
     optionalStatement->father = this;
 }
 
-Optional_statement::Optional_statement(Statement_list *statementList, int l, int r)
-    : Statement(l, r)
+Optional_statementNonEmpty::Optional_statementNonEmpty(Statement_list *statementList, int l, int r)
+    : Optional_statement(l, r)
 {
     this->statementList = statementList;
     statementList->father = this;
 }
-
-Empty_optional_statement::Empty_optional_statement(int l, int r) : Optional_statement(l, r){};
-
+Optional_statement::Optional_statement( int l, int r): Statement(l, r){}
 Variable_Expression::Variable_Expression(Variable *variable, Expression *expression, int l, int r)
     : Statement(l, r)
 {
@@ -345,7 +343,7 @@ ListWithExpr::ListWithExpr(Id *id, Expression_list *expressionList, int l, int r
     id->father = this;
 }
 
-ExpressionWithExpr::ExpressionWithExpr(Expression *expression, int index, int l, int r)
+ExpressionWithExpr::ExpressionWithExpr(Expression *expression, int l, int r)
     : Expression(l, r)
 {
     this->expression = expression;
