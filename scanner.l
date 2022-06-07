@@ -1,8 +1,11 @@
 %{
-	#include <iostream>
-	#include "Parser.h"
 	#include "ast.h"
+	#include <iostream>
+	#include <stdio.h>
+	#include <string.h>
+	#include "Parser.h"
 	
+
 	using std::cout;
 	using std::endl;
 	int lin=1, col=1;
@@ -150,7 +153,7 @@
 		return BOOLEANN;
 		}
 "\'"[^\t]"\'" {
-		yylval.tChar = new Char(strdup(yytext), lin, col);
+		yylval.tChar = new Char(strdup(yytext)[1], lin, col);
 		return CHAR;
 	}
 "\""[^\n\t]*"\""|"\'"[^\n\t]*"\'" {
