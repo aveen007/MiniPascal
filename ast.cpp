@@ -210,7 +210,7 @@ Optional_statementNonEmpty::Optional_statementNonEmpty(Statement_list *statement
     this->statementList = statementList;
     statementList->father = this;
 }
-Optional_statement::Optional_statement( int l, int r): Statement(l, r){}
+Optional_statement::Optional_statement(int l, int r) : Statement(l, r) {}
 Variable_Expression::Variable_Expression(Variable *variable, Expression *expression, int l, int r)
     : Statement(l, r)
 {
@@ -410,3 +410,181 @@ VariableExpression::VariableExpression(Expression *expression, Id *id, int l, in
     this->expression = expression;
     expression->father = this;
 }
+/////////////////////////////////////////////accept Visitorv->Visit(this);}
+void Node::accept(Visitor *v) { v->Visit(this); }
+void Variable_Expression::accept(Visitor *v) { v->Visit(this); }
+void Procedure_statementList::accept(Visitor *v) { v->Visit(this); }
+void VariableExpression::accept(Visitor *v) { v->Visit(this); }
+void Function_head::accept(Visitor *v) { v->Visit(this); }
+void Procedure_head::accept(Visitor *v) { v->Visit(this); }
+void Optional_statementNonEmpty::accept(Visitor *v) { v->Visit(this); }
+void Program::accept(Visitor *v) { v->Visit(this); }
+void DeclarationVar::accept(Visitor *v) { v->Visit(this); }
+void Array_type::accept(Visitor *v) { v->Visit(this); }
+void Standard_type::accept(Visitor *v) { v->Visit(this); }
+void Subprogram_declaration::accept(Visitor *v) { v->Visit(this); }
+void Subprogram_declarations::accept(Visitor *v) { v->Visit(this); }
+void Declarations::accept(Visitor *v) { v->Visit(this); }
+void Declaration::accept(Visitor *v) { v->Visit(this); }
+void Statement::accept(Visitor *v) { v->Visit(this); }
+void Expression_list::accept(Visitor *v) { v->Visit(this); }
+void Identifier_list::accept(Visitor *v) { v->Visit(this); }
+void Id::accept(Visitor *v) { v->Visit(this); }
+void IntNum::accept(Visitor *v) { v->Visit(this); }
+void RealNum::accept(Visitor *v) { v->Visit(this); }
+void String::accept(Visitor *v) { v->Visit(this); }
+void Bool::accept(Visitor *v) { v->Visit(this); }
+void Char::accept(Visitor *v) { v->Visit(this); }
+void Expression::accept(Visitor *v) { v->Visit(this); }
+void IdExpr::accept(Visitor *v) { v->Visit(this); }
+void IntNumExpr::accept(Visitor *v) { v->Visit(this); }
+void BoolExpr::accept(Visitor *v) { v->Visit(this); }
+void RealNumExpr::accept(Visitor *v) { v->Visit(this); }
+void StringExpr::accept(Visitor *v) { v->Visit(this); }
+void CharExpr::accept(Visitor *v) { v->Visit(this); }
+void ListWithExpr::accept(Visitor *v) { v->Visit(this); }
+void UnaryExpr::accept(Visitor *v) { v->Visit(this); }
+void NotExpr::accept(Visitor *v) { v->Visit(this); }
+void BracketExpr::accept(Visitor *v) { v->Visit(this); }
+void ExpressionWithExpr::accept(Visitor *v) { v->Visit(this); }
+void Type::accept(Visitor *v) { v->Visit(this); }
+void Compound_statement::accept(Visitor *v) { v->Visit(this); }
+void Subprogram_head::accept(Visitor *v) { v->Visit(this); }
+void Subprogram_variables::accept(Visitor *v) { v->Visit(this); }
+void Arguments::accept(Visitor *v) { v->Visit(this); }
+void Parameter_list::accept(Visitor *v) { v->Visit(this); }
+void Statement_list::accept(Visitor *v) { v->Visit(this); }
+void Optional_statement::accept(Visitor *v) { v->Visit(this); }
+void Variable::accept(Visitor *v) { v->Visit(this); }
+void Procedure_statement::accept(Visitor *v) { v->Visit(this); }
+void If::accept(Visitor *v) { v->Visit(this); }
+void IfElse::accept(Visitor *v) { v->Visit(this); }
+void While::accept(Visitor *v) { v->Visit(this); }
+void For::accept(Visitor *v) { v->Visit(this); }
+void Unary_operator::accept(Visitor *v) { v->Visit(this); }
+/////////////////////////
+
+void Visitor::Visit(Node *n) { cout << "this"; }
+void Visitor::Visit(Statement *n) { cout << "this"; }
+void Visitor::Visit(Expression_list *n) { cout << "this"; }
+void Visitor::Visit(Identifier_list *n) { cout << "this"; }
+void Visitor::Visit(Id *n)
+{
+
+    cout << "this is an ID: " << n->name << endl;
+}
+void Visitor::Visit(IntNum *n) { cout << "this"; }
+void Visitor::Visit(RealNum *n)
+{
+    cout << "this";
+}
+void Visitor::Visit(String *n)
+{
+    cout << "this";
+}
+void Visitor::Visit(Bool *n)
+{
+    cout << "this";
+}
+void Visitor::Visit(Char *n)
+{
+    cout << "this";
+}
+void Visitor::Visit(Expression *n) { cout << "this"; }
+void Visitor::Visit(IdExpr *n) { cout << "this"; }
+void Visitor::Visit(IntNumExpr *n) { cout << "this"; }
+void Visitor::Visit(BoolExpr *n) { cout << "this"; }
+void Visitor::Visit(RealNumExpr *n) { cout << "this"; }
+void Visitor::Visit(StringExpr *n) { cout << "this"; }
+void Visitor::Visit(CharExpr *n) { cout << "this"; }
+void Visitor::Visit(ListWithExpr *n) { cout << "this"; }
+void Visitor::Visit(UnaryExpr *n) { cout << "this"; }
+void Visitor::Visit(NotExpr *n) { cout << "this"; }
+void Visitor::Visit(BracketExpr *n) { cout << "this"; };
+void Visitor::Visit(ExpressionWithExpr *n) { cout << "this"; };
+void Visitor::Visit(Subprogram_declarations *n) { cout << "this"; };
+void Visitor::Visit(Type *n) { cout << "this"; };
+void Visitor::Visit(Compound_statement *n)
+{
+    cout << "this";
+
+    //   cout << "this is a compound statement: " << n-><< endl;
+}
+
+void Visitor::Visit(Subprogram_head *n) { cout << "this"; };
+void Visitor::Visit(Subprogram_variables *n) { cout << "this"; };
+void Visitor::Visit(Arguments *n) { cout << "this"; };
+void Visitor::Visit(Parameter_list *n) { cout << "this"; };
+void Visitor::Visit(Statement_list *n) { cout << "this"; };
+void Visitor::Visit(Optional_statement *n) { cout << "this"; };
+void Visitor::Visit(Variable *n) { cout << "this"; };
+void Visitor::Visit(Procedure_statement *n) { cout << "this"; };
+void Visitor::Visit(If *n) { cout << "this"; };
+void Visitor::Visit(IfElse *n) { cout << "this"; };
+void Visitor::Visit(While *n) { cout << "this"; };
+void Visitor::Visit(For *n) { cout << "this"; };
+void Visitor::Visit(Unary_operator *n) { cout << "this"; };
+////////////////////////////////////////////// Print Visitor
+PrintVisitor::PrintVisitor() {}
+
+void PrintVisitor::Visit(Node *n) { cout << "this"; }
+void PrintVisitor::Visit(Declarations *n) { cout << "this"; }
+void PrintVisitor::Visit(Statement *n) { cout << "this"; }
+void PrintVisitor::Visit(Expression_list *n) { cout << "this"; }
+void PrintVisitor::Visit(Identifier_list *n) { cout << "this"; }
+void PrintVisitor::Visit(Id *n)
+{
+
+    cout << "this is an ID: " << n->name << endl;
+}
+void PrintVisitor::Visit(IntNum *n) { cout << "this"; }
+void PrintVisitor::Visit(RealNum *n)
+{
+    cout << "this";
+}
+void PrintVisitor::Visit(String *n)
+{
+    cout << "this";
+}
+void PrintVisitor::Visit(Bool *n)
+{
+    cout << "this";
+}
+void PrintVisitor::Visit(Char *n)
+{
+    cout << "this";
+}
+void PrintVisitor::Visit(Expression *n) { cout << "this"; }
+void PrintVisitor::Visit(IdExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(IntNumExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(BoolExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(RealNumExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(StringExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(CharExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(ListWithExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(UnaryExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(NotExpr *n) { cout << "this"; }
+void PrintVisitor::Visit(BracketExpr *n) { cout << "this"; };
+void PrintVisitor::Visit(ExpressionWithExpr *n) { cout << "this"; };
+void PrintVisitor::Visit(Subprogram_declarations *n) { cout << "this"; };
+void PrintVisitor::Visit(Type *n) { cout << "this"; };
+void PrintVisitor::Visit(Compound_statement *n)
+{
+    cout << "this";
+
+    //   cout << "this is a compound statement: " << n-><< endl;
+}
+
+void PrintVisitor::Visit(Subprogram_head *n) { cout << "this"; };
+void PrintVisitor::Visit(Subprogram_variables *n) { cout << "this"; };
+void PrintVisitor::Visit(Arguments *n) { cout << "this"; };
+void PrintVisitor::Visit(Parameter_list *n) { cout << "this"; };
+void PrintVisitor::Visit(Statement_list *n) { cout << "this"; };
+void PrintVisitor::Visit(Optional_statement *n) { cout << "this"; };
+void PrintVisitor::Visit(Variable *n) { cout << "this"; };
+void PrintVisitor::Visit(Procedure_statement *n) { cout << "this"; };
+void PrintVisitor::Visit(If *n) { cout << "this"; };
+void PrintVisitor::Visit(IfElse *n) { cout << "this"; };
+void PrintVisitor::Visit(While *n) { cout << "this"; };
+void PrintVisitor::Visit(For *n) { cout << "this"; };
+void PrintVisitor::Visit(Unary_operator *n) { cout << "this"; };
