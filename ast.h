@@ -4,9 +4,16 @@
 #include <string>
 #include <vector>
 
+#include "hash_fun.h"
+#include "hash_table.h"
+
 using namespace std;
 using std::cout;
 using std::endl;
+
+class Symbol;
+// typedef CHashTable<Symbol> HashTab;
+// typedef _Cxx_hashtable_define_trivial_hash<Symbol> HashTab;
 
 class Declarations;
 
@@ -91,6 +98,7 @@ class Unary_operator;
 class Visitor;
 
 class PrintVisitor;
+typedef CHashTable<Symbol> HashTab;
 
 class Node
 {
@@ -695,4 +703,42 @@ public:
     virtual void Visit(While *);
     virtual void Visit(For *);
     virtual void Visit(Unary_operator *);
+};
+//////////////////////////Symbol Table
+
+class Symbol
+{
+public:
+    string name;
+    int type;
+    int kind;
+    int location;
+    // Func *function;
+    Symbol(string, int, int);
+    // Symbol(string, int, int, Func *);
+};
+
+class Scope
+{
+public:
+    HashTab *hashTab;
+    Scope();
+};
+
+class SymbolTable
+{
+public:
+    HashTab *hashTab;
+    vector<Scope *> *scopes;
+    string kindes[15];
+    string types[15];
+    Scope *current;
+    // Errors *errors;
+    SymbolTable();
+    bool AddSymbol(Id *, int, int);
+    // bool AddFunc(Id *id, int kind, Decl_List *d, int type, Func *);
+    Symbol *LookUp(Id *);
+    Symbol *LookupConstructor(Id *);
+    void CloseScope();
+    void OpenScope();
 };

@@ -464,67 +464,67 @@ void For::accept(Visitor *v) { v->Visit(this); }
 void Unary_operator::accept(Visitor *v) { v->Visit(this); }
 /////////////////////////
 
-void Visitor::Visit(Node *n) { cout << "this"; }
-void Visitor::Visit(Statement *n) { cout << "this"; }
-void Visitor::Visit(Expression_list *n) { cout << "this"; }
-void Visitor::Visit(Identifier_list *n) { cout << "this"; }
-void Visitor::Visit(Id *n)
-{
+// void Visitor::Visit(Node *n) { cout << "this"; }
+// void Visitor::Visit(Statement *n) { cout << "this"; }
+// void Visitor::Visit(Expression_list *n) { cout << "this"; }
+// void Visitor::Visit(Identifier_list *n) { cout << "this"; }
+// void Visitor::Visit(Id *n)
+// {
 
-    cout << "this is an ID: " << n->name << endl;
-}
-void Visitor::Visit(IntNum *n) { cout << "this"; }
-void Visitor::Visit(RealNum *n)
-{
-    cout << "this";
-}
-void Visitor::Visit(String *n)
-{
-    cout << "this";
-}
-void Visitor::Visit(Bool *n)
-{
-    cout << "this";
-}
-void Visitor::Visit(Char *n)
-{
-    cout << "this";
-}
-void Visitor::Visit(Expression *n) { cout << "this"; }
-void Visitor::Visit(IdExpr *n) { cout << "this"; }
-void Visitor::Visit(IntNumExpr *n) { cout << "this"; }
-void Visitor::Visit(BoolExpr *n) { cout << "this"; }
-void Visitor::Visit(RealNumExpr *n) { cout << "this"; }
-void Visitor::Visit(StringExpr *n) { cout << "this"; }
-void Visitor::Visit(CharExpr *n) { cout << "this"; }
-void Visitor::Visit(ListWithExpr *n) { cout << "this"; }
-void Visitor::Visit(UnaryExpr *n) { cout << "this"; }
-void Visitor::Visit(NotExpr *n) { cout << "this"; }
-void Visitor::Visit(BracketExpr *n) { cout << "this"; };
-void Visitor::Visit(ExpressionWithExpr *n) { cout << "this"; };
-void Visitor::Visit(Subprogram_declarations *n) { cout << "this"; };
-void Visitor::Visit(Type *n) { cout << "this"; };
-void Visitor::Visit(Compound_statement *n)
-{
-    cout << "this";
+//     cout << "this is an ID: " << n->name << endl;
+// }
+// void Visitor::Visit(IntNum *n) { cout << "this"; }
+// void Visitor::Visit(RealNum *n)
+// {
+//     cout << "this";
+// }
+// void Visitor::Visit(String *n)
+// {
+//     cout << "this";
+// }
+// void Visitor::Visit(Bool *n)
+// {
+//     cout << "this";
+// }
+// void Visitor::Visit(Char *n)
+// {
+//     cout << "this";
+// }
+// void Visitor::Visit(Expression *n) { cout << "this"; }
+// void Visitor::Visit(IdExpr *n) { cout << "this"; }
+// void Visitor::Visit(IntNumExpr *n) { cout << "this"; }
+// void Visitor::Visit(BoolExpr *n) { cout << "this"; }
+// void Visitor::Visit(RealNumExpr *n) { cout << "this"; }
+// void Visitor::Visit(StringExpr *n) { cout << "this"; }
+// void Visitor::Visit(CharExpr *n) { cout << "this"; }
+// void Visitor::Visit(ListWithExpr *n) { cout << "this"; }
+// void Visitor::Visit(UnaryExpr *n) { cout << "this"; }
+// void Visitor::Visit(NotExpr *n) { cout << "this"; }
+// void Visitor::Visit(BracketExpr *n) { cout << "this"; };
+// void Visitor::Visit(ExpressionWithExpr *n) { cout << "this"; };
+// void Visitor::Visit(Subprogram_declarations *n) { cout << "this"; };
+// void Visitor::Visit(Type *n) { cout << "this"; };
+// void Visitor::Visit(Compound_statement *n)
+// {
+//     cout << "this";
 
-    //   cout << "this is a compound statement: " << n-><< endl;
-}
+//     //   cout << "this is a compound statement: " << n-><< endl;
+// }
 
-void Visitor::Visit(Subprogram_head *n) { cout << "this"; };
-void Visitor::Visit(Subprogram_variables *n) { cout << "this"; };
-void Visitor::Visit(Arguments *n) { cout << "this"; };
-void Visitor::Visit(Parameter_list *n) { cout << "this"; };
-void Visitor::Visit(Statement_list *n) { cout << "this"; };
-void Visitor::Visit(Optional_statement *n) { cout << "this"; };
-void Visitor::Visit(Variable *n) { cout << "this"; };
-void Visitor::Visit(Procedure_statement *n) { cout << "this"; };
-void Visitor::Visit(If *n) { cout << "this"; };
-void Visitor::Visit(IfElse *n) { cout << "this"; };
-void Visitor::Visit(While *n) { cout << "this"; };
-void Visitor::Visit(For *n) { cout << "this"; };
-void Visitor::Visit(Unary_operator *n) { cout << "this"; };
-////////////////////////////////////////////// Print Visitor
+// void Visitor::Visit(Subprogram_head *n) { cout << "this"; };
+// void Visitor::Visit(Subprogram_variables *n) { cout << "this"; };
+// void Visitor::Visit(Arguments *n) { cout << "this"; };
+// void Visitor::Visit(Parameter_list *n) { cout << "this"; };
+// void Visitor::Visit(Statement_list *n) { cout << "this"; };
+// void Visitor::Visit(Optional_statement *n) { cout << "this"; };
+// void Visitor::Visit(Variable *n) { cout << "this"; };
+// void Visitor::Visit(Procedure_statement *n) { cout << "this"; };
+// void Visitor::Visit(If *n) { cout << "this"; };
+// void Visitor::Visit(IfElse *n) { cout << "this"; };
+// void Visitor::Visit(While *n) { cout << "this"; };
+// void Visitor::Visit(For *n) { cout << "this"; };
+// void Visitor::Visit(Unary_operator *n) { cout << "this"; };
+// ////////////////////////////////////////////// Print Visitor
 PrintVisitor::PrintVisitor() {}
 
 void PrintVisitor::Visit(Node *n) { cout << "this"; }
@@ -588,3 +588,162 @@ void PrintVisitor::Visit(IfElse *n) { cout << "this"; };
 void PrintVisitor::Visit(While *n) { cout << "this"; };
 void PrintVisitor::Visit(For *n) { cout << "this"; };
 void PrintVisitor::Visit(Unary_operator *n) { cout << "this"; };
+//////////////////Symbol table
+
+/****************************************/
+Symbol::Symbol(string name, int kind, int type)
+{
+    this->name = name;
+    this->kind = kind;
+    this->type = type;
+}
+
+// Symbol::Symbol(string name, int kind, int type, function *f)
+// {
+//     this->name = name;
+//     this->kind = kind;
+//     this->type = type;
+//     this->function = f;
+// }
+
+Scope::Scope()
+{
+    this->hashTab = new HashTab();
+    // this->children = new vector<Scope *>;
+}
+
+SymbolTable::SymbolTable()
+{
+
+    this->scopes = new vector<Scope *>;
+    this->scopes->push_back(new Scope());
+    // this->errors = new Errors();
+    this->current = this->scopes->at(0);
+    kindes[1] = "F";
+    kindes[2] = "GV";
+    kindes[3] = "LV";
+    kindes[4] = "C";
+    types[1] = "int";
+    types[2] = "float";
+    types[3] = "boolean";
+    types[4] = "char";
+    types[5] = "string";
+    types[6] = "null";
+}
+
+bool SymbolTable::AddSymbol(Id *id, int kind, int type)
+{
+    Symbol *sym = new Symbol(id->name, kind, type);
+    string key = kindes[kind] + id->name;
+    Symbol *temp = this->current->hashTab->GetMember(key);
+    if (temp == NULL)
+    {
+        this->current->hashTab->AddKey(key, sym);
+        // id->symbol = sym;
+        return true;
+    }
+    else
+    {
+        cout << " redifined variable : " << id->name << " in line: " << id->line << endl;
+        // symbolTable->errors->AddError("redifined variable : " + id->name, id->line, 0);
+        // symanticerror = true;
+        return false;
+    }
+}
+
+// bool SymbolTable::AddFunc(Id *id, int kind, Decl_List *d, int type, Func *f)
+// {
+//     Symbol *sym = new Symbol(id->name, kind, type, f);
+//     string key = kindes[kind] + id->name;
+//     if (d)
+//     {
+//         for (int i = 0; i < (int)(d->params->size()); i++)
+//         {
+//             int e = d->params->at(i)->type->type;
+//             key += "@" + types[e];
+//         }
+//     }
+
+//     // cout << id->name << " in line: " << id->line<< "Key: " << key << endl;
+//     Symbol *temp = this->current->hashTab->GetMember(key);
+
+//     if (temp == NULL)
+//     {
+//         this->current->hashTab->AddKey(key, sym);
+//         // id->symbol = sym;
+//         return true;
+//     }
+//     else
+//     {
+//         cout << " redifined function : " << id->name << " in line: " << id->line << endl;
+//         // symbolTable->errors->AddError("redifined function : " + id->name, id->line, 0);
+
+//         // symanticerror = true;
+//         return false;
+//     }
+// }
+
+// Symbol *SymbolTable::LookUp(Id *id)
+// {
+//     string key;
+//     Symbol *sym;
+
+//     key = kindes[3] + id->name;
+//     sym = this->current->hashTab->GetMember(key);
+//     if (sym != NULL)
+//     {
+//         //  id->symbol = sym;
+//         return sym;
+//     }
+//     else
+//     {
+//         key = kindes[2] + id->name;
+//         sym = this->scopes->at(this->scopes->size() - 2)->hashTab->GetMember(key);
+//         if (sym != NULL)
+//         {
+//             //      id->symbol = sym;
+//             return sym;
+//         }
+//         else
+//         {
+//             cout << " undefined variable: " << id->name << " in line: " << id->line << endl;
+//             //  symbolTable->errors->AddError("undifined variable : " + id->name, id->line, 0);
+
+//             //  symanticerror = true;
+//             return NULL;
+//         }
+//     }
+// }
+
+// Symbol *SymbolTable::LookupConstructor(Id *id)
+// {
+//     string key;
+//     Symbol *sym;
+//     key = kindes[4] + id->name;
+//     sym = this->scopes->at(1)->hashTab->GetMember(key);
+//     if (sym != NULL)
+//     {
+//         // id->symbol = sym;
+//         return sym;
+//     }
+//     else
+//     {
+//         cout << " undefined class constrcutor in line: " << id->line << endl;
+//         // symbolTable->errors->AddError("undefined class constrcutor ", id->line, 0);
+
+//         //   symanticerror = true;
+//         return NULL;
+//     }
+// }
+
+// void SymbolTable::OpenScope()
+// {
+//     this->scopes->push_back(new Scope());
+//     this->current = this->scopes->at(this->scopes->size() - 1);
+// }
+
+// void SymbolTable::CloseScope()
+// {
+//     this->scopes->pop_back();
+//     this->current = this->scopes->at(this->scopes->size() - 1);
+// }

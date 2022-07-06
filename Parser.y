@@ -12,6 +12,8 @@
 	extern int yyerror(const char *);
 	Program *root ;
 	extern int lin ,col;
+	
+	 SymbolTable *symbolTable =new SymbolTable();
 
 %}
 %union
@@ -148,6 +150,7 @@ declarations:
 	{
 		$$ = $1 ;
 		$$->AddDeclaration( new DeclarationVar($3 , $5 , lin , col)) ;
+		symbolTable->AddSymbol($3->Ids[0][0],1,1);
 	}
 	|declarations USES identifier_list ';'
 	{

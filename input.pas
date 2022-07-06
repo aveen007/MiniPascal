@@ -1,5 +1,6 @@
 program HELLO;
 var counter,factorial: integer;
+var counter: integer;
 begin
 counter :=5;
 factorial :=15;
