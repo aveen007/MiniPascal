@@ -600,13 +600,13 @@ Symbol::Symbol(string name, int kind, int type)
     this->type = type;
 }
 
-// Symbol::Symbol(string name, int kind, int type, function *f)
-// {
-//     this->name = name;
-//     this->kind = kind;
-//     this->type = type;
-//     this->function = f;
-// }
+Symbol::Symbol(string name, int kind, int type, Subprogram_head *f)
+{
+    this->name = name;
+    this->kind = kind;
+    this->type = type;
+    this->subprogram_head = f;
+}
 
 Scope::Scope()
 {
@@ -653,41 +653,37 @@ bool SymbolTable::AddSymbol(Id *id, int kind, int type)
         return false;
     }
 }
+bool SymbolTable::AddFunc(Id *id, int kind, Arguments *d, int type, Subprogram_head *f)
+{
+    Symbol *sym = new Symbol(id->name, kind, type, f);
+    string key = kindes[kind] + id->name;
+    if (d)
+    {
+        for (int i = 0; i < (int)(d->parameterList->parameters->size()); i++)
+        {
+            int e = d->parameterList->parameters->at(i).second->type;
+            key += "@" + types[e];
+        }
+    }
 
-// bool SymbolTable::AddFunc(Id *id, int kind, Parameter_list *d, int type, Function_head *f)
-// {
-//     Symbol *sym = new Symbol(id->name, kind, type, f);
-//     string key = kindes[kind] + id->name;
-//     if (d)
-//     {
-//         for (int i = 0; i < (int)(d->parameters->size()); i++)
-//         {
-//             // if (is_base_of<Type, Array_type>(d->parameters->at(i).second))
-//             // {
-//             // }
-//             int e = d->parameters->at(i).second->type;
-//             key += "@" + types[e];
-//         }
-//     }
+    // cout << id->name << " in line: " << id->line<< "Key: " << key << endl;
+    Symbol *temp = this->current->hashTab->GetMember(key);
 
-// cout << id->name << " in line: " << id->line<< "Key: " << key << endl;
-// Symbol *temp = this->current->hashTab->GetMember(key);
+    if (temp == NULL)
+    {
+        this->current->hashTab->AddKey(key, sym);
+        id->symbol = sym;
+        return true;
+    }
+    else
+    {
+        cout << " redifined function : " << id->name << " in line: " << id->line << endl;
+        // symbolTable->errors->AddError("redifined function : " + id->name, id->line, 0);
 
-// if (temp == NULL)
-// {
-//     this->current->hashTab->AddKey(key, sym);
-//     // id->symbol = sym;
-//     return true;
-// }
-// else
-// {
-//     cout << " redifined function : " << id->name << " in line: " << id->line << endl;
-//     // symbolTable->errors->AddError("redifined function : " + id->name, id->line, 0);
-
-//     // symanticerror = true;
-//     return false;
-// }
-// }
+        // symanticerror = true;
+        return false;
+    }
+}
 
 Symbol *SymbolTable::LookUp(Id *id)
 {

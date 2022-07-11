@@ -715,9 +715,9 @@ public:
     int type;
     int kind;
     int location;
-    Function_head *function;
+    Subprogram_head *subprogram_head;
     Symbol(string, int, int);
-    Symbol(string, int, int, Function_head *);
+    Symbol(string, int, int, Subprogram_head *);
 };
 
 class Scope
@@ -738,7 +738,7 @@ public:
     // Errors *errors;
     SymbolTable();
     bool AddSymbol(Id *, int, int);
-    bool AddFunc(Id *id, int kind, Parameter_list *d, int type, Function_head *);
+    bool AddFunc(Id *id, int kind, Arguments *d, int type, Subprogram_head *);
     Symbol *LookUp(Id *);
     Symbol *LookupConstructor(Id *);
     void CloseScope();

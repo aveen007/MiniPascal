@@ -265,6 +265,8 @@ subprogram_head:
 		} arguments ':' standard_type ';'
 		{
 			$$ = new Function_head($3, $5, $7, lin, col);
+			symbolTable->AddFunc($3 , 1 , $5 , $7->type , $$ );
+
 
 		}
 		| PROCEDURE {
@@ -278,6 +280,7 @@ subprogram_head:
 		} arguments ';'
 		{
 			$$ = new Procedure_head($3, $5, lin, col);
+			symbolTable->AddFunc($3 , 5 , $5 , 6 , $$ );
 	
 		}
 ;
@@ -392,11 +395,15 @@ procedure_statement:
 		ID
 		{
 			$$ = new Procedure_statement($1 , lin , col) ;
+				symbolTable->LookupConstructor($1 );
+
 		}
 		|
 		ID '(' expression_list ')'
 		{
 			$$ = new Procedure_statementList($3 , $1 , lin , col) ; 
+				symbolTable->LookupConstructor($1 );
+
 		}
 
 expression_list:
