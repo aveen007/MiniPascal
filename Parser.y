@@ -12,6 +12,7 @@
 	extern int yyerror(const char *);
 	Program *root ;
 	extern int lin ,col;
+	int current_kind = 2;
 	
 	 SymbolTable *symbolTable =new SymbolTable();
 
@@ -123,14 +124,25 @@
 %%
 
 program:
-	PROGRAM ID ';'
- 	declarations
+	PROGRAM 
+	{
+				symbolTable->OpenScope();
+
+	} ID {
+				symbolTable->AddSymbol($3,1,1);
+
+	}';' declarations
  	subprogram_declarations
  	compound_statement '.'
 	 {
-		 $$ = new Program($2 , $4 , $5 , $6 , lin , col) ;
+		 $$ = new Program($3 , $6 , $7 , $8 , lin , col) ;
 		 root = $$ ;
+				// symbolTable->AddSymbol($2,1,1);
+// symbolTable->AddSymbol($2,4,6);
 		 cout<<"Somaaaaaaaaaar Avooooooooooooooo DONNNNNNNNNE"<<endl;
+			//	symbolTable->CloseScope();
+
+
 	 }
  ;
 identifier_list:
@@ -138,11 +150,17 @@ identifier_list:
 	 {
 		 $$ = new Identifier_list(lin , col);
 		 $$->AddId($1);
+		// cout<<sizeof($$->Ids);
+
+
 	 }
 	 |identifier_list ',' ID
 	 {
-		 $$=$1;
+		 $$=$1; 
+
+
 		 $$->AddId($3);
+		// cout<<sizeof($$->Ids[2]);
 	 }
 	;
 declarations:
@@ -150,12 +168,31 @@ declarations:
 	{
 		$$ = $1 ;
 		$$->AddDeclaration( new DeclarationVar($3 , $5 , lin , col)) ;
-		symbolTable->AddSymbol($3->Ids[0][0],1,1);
+
+			for(int i=0; i<$3->Ids->size();i++)
+			{
+
+	
+	
+				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5->type);
+			
+			}
+	
+
 	}
 	|declarations USES identifier_list ';'
 	{
 		$$ = $1 ;
 		$$->AddDeclaration( new Declaration($3 , lin , col)) ;
+			for(int i=0; i<$3->Ids->size();i++)
+			{
+
+	
+	
+				symbolTable->AddSymbol($3->Ids[0][i],current_kind,6);
+			
+			}				
+
 	}
 	|
 	{
@@ -218,13 +255,30 @@ subprogram_variables:	subprogram_variables VAR identifier_list ':' type ';'
 			}
 ;
 subprogram_head:
-		FUNCTION ID arguments ':' standard_type ';'
+		FUNCTION {
+	symbolTable->OpenScope();
+							current_kind = 3;
+							
+		} ID
 		{
-			$$ = new Function_head($2, $3, $5, lin, col);
+
+		} arguments ':' standard_type ';'
+		{
+			$$ = new Function_head($3, $5, $7, lin, col);
+
 		}
-		| PROCEDURE ID arguments ';'
+		| PROCEDURE {
+	symbolTable->OpenScope();
+							current_kind = 3;
+							
+		}
+		ID
 		{
-			$$ = new Procedure_head($2, $3, lin, col);
+
+		} arguments ';'
+		{
+			$$ = new Procedure_head($3, $5, lin, col);
+	
 		}
 ;
 
@@ -239,11 +293,25 @@ parameter_list:
 		{
 			$$ = new Parameter_list(lin, col);
 			$$->AddParameter($1, $3);
+					for(int i=0; i<$1->Ids->size();i++)
+			{
+
+	
+	
+				symbolTable->AddSymbol($1->Ids[0][i],current_kind,$3->type);
+			
+			}
 		}
 		| parameter_list ';' identifier_list ':' type
 		{
 			$$ = $1;
 			$$->AddParameter($3, $5);
+					for(int i=0; i<$3->Ids->size();i++)
+			{
+
+				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5->type);
+			
+			}
 		}
 ;
 compound_statement:
@@ -308,10 +376,16 @@ variable:
 		ID
 		{
 			$$ = new Variable($1 , lin , col) ;
+				 symbolTable->LookUp($1);
+
 		}
 		|ID '[' expression ']'
 		{
 			$$ = new VariableExpression($3 , $1 , lin , col) ;
+				 symbolTable->LookUp($1);
+
+				// symbolTable->AddSymbol($1,1,1);
+
 		}
 		;
 procedure_statement:
@@ -341,6 +415,8 @@ expression:
 		ID
 		{
 			$$ = new IdExpr($1 ,lin, col);
+			
+
 		}
 		|INTNUM
 		{

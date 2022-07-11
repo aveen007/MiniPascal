@@ -140,7 +140,9 @@ public:
 class Type : public Node
 {
 public:
-    Type(int, int);
+    Type(int, int, int);
+    int type; // 1 integer, 2 Real, 3 Boolean
+
     virtual void accept(Visitor *v);
 };
 
@@ -215,7 +217,7 @@ class Id : public Node
 {
 public:
     string name;
-
+    Symbol *symbol;
     Id(string, int, int);
     virtual void accept(Visitor *v);
 };
@@ -713,9 +715,9 @@ public:
     int type;
     int kind;
     int location;
-    // Func *function;
+    Function_head *function;
     Symbol(string, int, int);
-    // Symbol(string, int, int, Func *);
+    Symbol(string, int, int, Function_head *);
 };
 
 class Scope
@@ -736,7 +738,7 @@ public:
     // Errors *errors;
     SymbolTable();
     bool AddSymbol(Id *, int, int);
-    // bool AddFunc(Id *id, int kind, Decl_List *d, int type, Func *);
+    bool AddFunc(Id *id, int kind, Parameter_list *d, int type, Function_head *);
     Symbol *LookUp(Id *);
     Symbol *LookupConstructor(Id *);
     void CloseScope();

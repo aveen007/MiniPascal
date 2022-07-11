@@ -52,16 +52,17 @@ void Declarations::AddDeclaration(Declaration *declaration)
 }
 
 /// Type
-Type::Type(int l, int r) : Node(l, r)
-{
-}
-
-Standard_type::Standard_type(int type, int l, int r) : Type(l, r)
+Type::Type(int type, int l, int r) : Node(l, r)
 {
     this->type = type;
 }
 
-Array_type::Array_type(IntNum *first, IntNum *last, Standard_type *StandardType, int l, int r) : Type(l, r)
+Standard_type::Standard_type(int type, int l, int r) : Type(type, l, r)
+{
+    this->type = type;
+}
+
+Array_type::Array_type(IntNum *first, IntNum *last, Standard_type *StandardType, int l, int r) : Type(StandardType->type, l, r)
 {
     this->first = first;
     this->last = last;
@@ -100,6 +101,7 @@ void Subprogram_declarations::AddSubprogramDeclaration(Subprogram_declaration *s
 Id::Id(string name, int l, int r) : Node(l, r)
 {
     this->name = name;
+    this->symbol = NULL;
 }
 
 IntNum::IntNum(int value, int l, int r)
@@ -622,7 +624,8 @@ SymbolTable::SymbolTable()
     kindes[1] = "F";
     kindes[2] = "GV";
     kindes[3] = "LV";
-    kindes[4] = "C";
+    kindes[4] = "Prog";
+    kindes[5] = "Proc";
     types[1] = "int";
     types[2] = "float";
     types[3] = "boolean";
@@ -639,7 +642,7 @@ bool SymbolTable::AddSymbol(Id *id, int kind, int type)
     if (temp == NULL)
     {
         this->current->hashTab->AddKey(key, sym);
-        // id->symbol = sym;
+        id->symbol = sym;
         return true;
     }
     else
@@ -651,99 +654,102 @@ bool SymbolTable::AddSymbol(Id *id, int kind, int type)
     }
 }
 
-// bool SymbolTable::AddFunc(Id *id, int kind, Decl_List *d, int type, Func *f)
+// bool SymbolTable::AddFunc(Id *id, int kind, Parameter_list *d, int type, Function_head *f)
 // {
 //     Symbol *sym = new Symbol(id->name, kind, type, f);
 //     string key = kindes[kind] + id->name;
 //     if (d)
 //     {
-//         for (int i = 0; i < (int)(d->params->size()); i++)
+//         for (int i = 0; i < (int)(d->parameters->size()); i++)
 //         {
-//             int e = d->params->at(i)->type->type;
+//             // if (is_base_of<Type, Array_type>(d->parameters->at(i).second))
+//             // {
+//             // }
+//             int e = d->parameters->at(i).second->type;
 //             key += "@" + types[e];
 //         }
 //     }
 
-//     // cout << id->name << " in line: " << id->line<< "Key: " << key << endl;
-//     Symbol *temp = this->current->hashTab->GetMember(key);
+// cout << id->name << " in line: " << id->line<< "Key: " << key << endl;
+// Symbol *temp = this->current->hashTab->GetMember(key);
 
-//     if (temp == NULL)
-//     {
-//         this->current->hashTab->AddKey(key, sym);
-//         // id->symbol = sym;
-//         return true;
-//     }
-//     else
-//     {
-//         cout << " redifined function : " << id->name << " in line: " << id->line << endl;
-//         // symbolTable->errors->AddError("redifined function : " + id->name, id->line, 0);
-
-//         // symanticerror = true;
-//         return false;
-//     }
-// }
-
-// Symbol *SymbolTable::LookUp(Id *id)
+// if (temp == NULL)
 // {
-//     string key;
-//     Symbol *sym;
-
-//     key = kindes[3] + id->name;
-//     sym = this->current->hashTab->GetMember(key);
-//     if (sym != NULL)
-//     {
-//         //  id->symbol = sym;
-//         return sym;
-//     }
-//     else
-//     {
-//         key = kindes[2] + id->name;
-//         sym = this->scopes->at(this->scopes->size() - 2)->hashTab->GetMember(key);
-//         if (sym != NULL)
-//         {
-//             //      id->symbol = sym;
-//             return sym;
-//         }
-//         else
-//         {
-//             cout << " undefined variable: " << id->name << " in line: " << id->line << endl;
-//             //  symbolTable->errors->AddError("undifined variable : " + id->name, id->line, 0);
-
-//             //  symanticerror = true;
-//             return NULL;
-//         }
-//     }
+//     this->current->hashTab->AddKey(key, sym);
+//     // id->symbol = sym;
+//     return true;
 // }
-
-// Symbol *SymbolTable::LookupConstructor(Id *id)
+// else
 // {
-//     string key;
-//     Symbol *sym;
-//     key = kindes[4] + id->name;
-//     sym = this->scopes->at(1)->hashTab->GetMember(key);
-//     if (sym != NULL)
-//     {
-//         // id->symbol = sym;
-//         return sym;
-//     }
-//     else
-//     {
-//         cout << " undefined class constrcutor in line: " << id->line << endl;
-//         // symbolTable->errors->AddError("undefined class constrcutor ", id->line, 0);
+//     cout << " redifined function : " << id->name << " in line: " << id->line << endl;
+//     // symbolTable->errors->AddError("redifined function : " + id->name, id->line, 0);
 
-//         //   symanticerror = true;
-//         return NULL;
-//     }
+//     // symanticerror = true;
+//     return false;
+// }
 // }
 
-// void SymbolTable::OpenScope()
-// {
-//     this->scopes->push_back(new Scope());
-//     this->current = this->scopes->at(this->scopes->size() - 1);
-// }
+Symbol *SymbolTable::LookUp(Id *id)
+{
+    string key;
+    Symbol *sym;
 
-// void SymbolTable::CloseScope()
-// {
-//     this->scopes->pop_back();
-//     this->current = this->scopes->at(this->scopes->size() - 1);
-// }
+    key = kindes[2] + id->name;
+    sym = this->current->hashTab->GetMember(key);
+    if (sym != NULL)
+    {
+        id->symbol = sym;
+        return sym;
+    }
+    else
+    {
+        key = kindes[2] + id->name;
+        sym = this->scopes->at(this->scopes->size() - 2)->hashTab->GetMember(key);
+        if (sym != NULL)
+        {
+            id->symbol = sym;
+            return sym;
+        }
+        else
+        {
+            cout << " undefined variable: " << id->name << " in line: " << id->line << endl;
+            //  symbolTable->errors->AddError("undifined variable : " + id->name, id->line, 0);
+
+            //  symanticerror = true;
+            return NULL;
+        }
+    }
+}
+
+Symbol *SymbolTable::LookupConstructor(Id *id)
+{
+    string key;
+    Symbol *sym;
+    key = kindes[4] + id->name;
+    sym = this->scopes->at(1)->hashTab->GetMember(key);
+    if (sym != NULL)
+    {
+        id->symbol = sym;
+        return sym;
+    }
+    else
+    {
+        cout << " undefined class constrcutor in line: " << id->line << endl;
+        // symbolTable->errors->AddError("undefined class constrcutor ", id->line, 0);
+
+        //   symanticerror = true;
+        return NULL;
+    }
+}
+
+void SymbolTable::OpenScope()
+{
+    this->scopes->push_back(new Scope());
+    this->current = this->scopes->at(this->scopes->size() - 1);
+}
+
+void SymbolTable::CloseScope()
+{
+    this->scopes->pop_back();
+    this->current = this->scopes->at(this->scopes->size() - 1);
+}
