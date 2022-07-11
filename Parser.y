@@ -229,6 +229,8 @@ subprogram_declarations:
 		{
 			$$ = $1 ;
 			$$->AddSubprogramDeclaration($2) ;
+				symbolTable->CloseScope();
+			current_kind = 2;
 		}
 		|
 		{
@@ -321,6 +323,7 @@ compound_statement:
 		BEGINN optional_statement END
 		{
 			$$ = new Compound_statement($2, lin, col);
+		
 		}
 		;
 optional_statement:
