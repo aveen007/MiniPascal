@@ -468,6 +468,7 @@ class Expression : public Node
 {
 public:
     Expression(int, int);
+    int type;
     virtual void accept(Visitor *v);
 };
 
@@ -619,7 +620,11 @@ class Visitor
 {
 public:
     virtual void Visit(Node *n) = 0;
+    virtual void Visit(Program *n) = 0;
     virtual void Visit(Declarations *n) = 0;
+    virtual void Visit(Declaration *n) = 0;
+    virtual void Visit(Subprogram_declarations *n) = 0;
+    virtual void Visit(Subprogram_declaration *n) = 0;
     virtual void Visit(Statement *n) = 0;
     virtual void Visit(Identifier_list *n) = 0;
     virtual void Visit(Id *n) = 0;
@@ -640,7 +645,6 @@ public:
     virtual void Visit(NotExpr *n) = 0;
     virtual void Visit(BracketExpr *n) = 0;
     virtual void Visit(ExpressionWithExpr *n) = 0;
-    virtual void Visit(Subprogram_declarations *n) = 0;
     virtual void Visit(Type *n) = 0;
     virtual void Visit(Subprogram_head *n) = 0;
     virtual void Visit(Subprogram_variables *n) = 0;
@@ -667,7 +671,10 @@ public:
     string operators[16];
     PrintVisitor();
     virtual void Visit(Node *);
+    virtual void Visit(Program *n);
     virtual void Visit(Declarations *);
+    virtual void Visit(Declaration *);
+
     virtual void Visit(Statement *);
     virtual void Visit(Expression_list *);
     virtual void Visit(Identifier_list *);
@@ -690,6 +697,7 @@ public:
     virtual void Visit(BracketExpr *);
     virtual void Visit(ExpressionWithExpr *);
     virtual void Visit(Subprogram_declarations *);
+    virtual void Visit(Subprogram_declaration *);
     virtual void Visit(Type *);
     virtual void Visit(Subprogram_head *);
     virtual void Visit(Subprogram_variables *);
@@ -706,6 +714,60 @@ public:
     virtual void Visit(For *);
     virtual void Visit(Unary_operator *);
 };
+//////////////////////////Type checker
+
+class TypeChecker : public Visitor
+{
+
+public:
+    string types[8];
+    string operators[16];
+    TypeChecker();
+    vector<Subprogram_head *> *Subprogram_heads;
+    virtual void Visit(Node *);
+    virtual void Visit(Program *n);
+    virtual void Visit(Declarations *);
+    virtual void Visit(Declaration *);
+    virtual void Visit(Subprogram_declarations *);
+    virtual void Visit(Subprogram_declaration *);
+    virtual void Visit(Statement *);
+    virtual void Visit(Expression_list *);
+    virtual void Visit(Identifier_list *);
+    virtual void Visit(Id *);
+    virtual void Visit(IntNum *);
+    virtual void Visit(RealNum *);
+    virtual void Visit(String *);
+    virtual void Visit(Bool *);
+    virtual void Visit(Char *);
+    virtual void Visit(Expression *);
+    virtual void Visit(IdExpr *);
+    virtual void Visit(IntNumExpr *);
+    virtual void Visit(BoolExpr *);
+    virtual void Visit(RealNumExpr *);
+    virtual void Visit(StringExpr *);
+    virtual void Visit(CharExpr *);
+    virtual void Visit(ListWithExpr *);
+    virtual void Visit(UnaryExpr *);
+    virtual void Visit(NotExpr *);
+    virtual void Visit(BracketExpr *);
+    virtual void Visit(ExpressionWithExpr *);
+    virtual void Visit(Type *);
+    virtual void Visit(Subprogram_head *);
+    virtual void Visit(Subprogram_variables *);
+    virtual void Visit(Arguments *);
+    virtual void Visit(Parameter_list *);
+    virtual void Visit(Statement_list *);
+    virtual void Visit(Optional_statement *);
+    virtual void Visit(Compound_statement *);
+    virtual void Visit(Variable *);
+    virtual void Visit(Procedure_statement *);
+    virtual void Visit(If *);
+    virtual void Visit(IfElse *);
+    virtual void Visit(While *);
+    virtual void Visit(For *);
+    virtual void Visit(Unary_operator *);
+};
+
 //////////////////////////Symbol Table
 
 class Symbol
@@ -740,7 +802,7 @@ public:
     bool AddSymbol(Id *, int, int);
     bool AddFunc(Id *id, int kind, Arguments *d, int type, Subprogram_head *);
     Symbol *LookUp(Id *);
-    Symbol *LookupConstructor(Id *);
+    Symbol *LookupConstructor(Id *, Expression_list *);
     void CloseScope();
     void OpenScope();
 };

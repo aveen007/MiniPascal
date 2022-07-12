@@ -1,16 +1,24 @@
-program HELLO;
-var counter,factorial,avo: integer;
-// var counter: integer;
-begin
-counter :=5;
-factorial :=15;
-// factoria :=15;
-while factorial>5 do begin
-factorial:=factorial*counter;
-counter:=counter-1;
-end;
-
-writeln(factorial);
-writeln('hi');
-
-end.
+Program Lesson7_Program2;
+Uses Crt;
+Procedure DrawLine(X : Integer; Y : Integer);
+{the decleration of the variables in brackets are called
+parameters or arguments}
+Var Counter : Integer;
+{normally this is called a local variable}
+Begin
+// GotoXy(X,Y); {here I use the parameters}
+// textcolor(green);
+For Counter := 1 to 10 do
+Begin
+// write(chr(196));
+End;
+  Counter:=0;
+End;
+Begin
+  
+DrawLine(10,5);
+DrawLine(10,6);
+DrawLine(10,7);
+DrawLine(10,10);
+// Readkey;
+End.

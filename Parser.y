@@ -129,7 +129,7 @@ program:
 				symbolTable->OpenScope();
 
 	} ID {
-				symbolTable->AddSymbol($3,1,1);
+				symbolTable->AddSymbol($3,4,1);
 
 	}';' declarations
  	subprogram_declarations
@@ -229,8 +229,7 @@ subprogram_declarations:
 		{
 			$$ = $1 ;
 			$$->AddSubprogramDeclaration($2) ;
-				symbolTable->CloseScope();
-			current_kind = 2;
+			
 		}
 		|
 		{
@@ -242,6 +241,7 @@ subprogram_declaration:
 		subprogram_head subprogram_variables compound_statement
 		{
 			$$ = new Subprogram_declaration($1 , $2 , $3 , lin , col) ;
+			
 		}
 
 ;
@@ -250,6 +250,14 @@ subprogram_variables:	subprogram_variables VAR identifier_list ':' type ';'
 			{
 				$$ = $1;
 				$$->AddVar($3 , $5);
+						for(int i=0; i<$3->Ids->size();i++)
+			{
+
+	
+	
+				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5->type);
+			
+			}
 			}
 			|
 			{
@@ -323,7 +331,8 @@ compound_statement:
 		BEGINN optional_statement END
 		{
 			$$ = new Compound_statement($2, lin, col);
-		
+			symbolTable->CloseScope();
+			current_kind = 2;
 		}
 		;
 optional_statement:
@@ -373,9 +382,12 @@ statement:
 		{
 			$$ = new While($2, $4 ,lin, col);
 		}
-		|FOR variable ':''=' expression  TO INTNUM DO  BEGINN optional_statement END
+		|FOR
 		{
-			$$ = new For($2, $5, $10, lin, col);
+		//	symbolTable->OpenScope();
+		} variable ':''=' expression  TO INTNUM DO  BEGINN optional_statement END
+		{
+			$$ = new For($3, $6, $11, lin, col);
 		}
 		;
 variable:
@@ -398,14 +410,14 @@ procedure_statement:
 		ID
 		{
 			$$ = new Procedure_statement($1 , lin , col) ;
-				symbolTable->LookupConstructor($1 );
+			//	symbolTable->LookupConstructor($1 );
 
 		}
 		|
 		ID '(' expression_list ')'
 		{
 			$$ = new Procedure_statementList($3 , $1 , lin , col) ; 
-				symbolTable->LookupConstructor($1 );
+			//	symbolTable->LookupConstructor($1 );
 
 		}
 

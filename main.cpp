@@ -5,7 +5,7 @@ using std::endl;
 extern int yyparse();
 extern int yyerror(const char *);
 
-extern Id *root;
+extern Program *root;
 extern Visitor *visitor;
 
 int main()
@@ -13,7 +13,7 @@ int main()
     yyparse();
     cout << "parsing is done! \n";
     system("pause");
-    cout << "somar";
+    // cout << "somar";
     root;
     Visitor *printVisitor = new PrintVisitor;
     root->accept(printVisitor);
