@@ -7,6 +7,7 @@ extern int yyerror(const char *);
 
 extern Program *root;
 extern Visitor *visitor;
+extern TypeChecker *typeChecker;
 
 int main()
 {
@@ -16,7 +17,9 @@ int main()
     // cout << "somar";
     root;
     Visitor *printVisitor = new PrintVisitor;
-    root->accept(printVisitor);
+    TypeChecker *typeChecker = new TypeChecker;
+    // root->accept(printVisitor);
+    root->accept(typeChecker);
 
     return 0;
 }

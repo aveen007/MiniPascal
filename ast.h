@@ -354,7 +354,9 @@ public:
 class Optional_statement : public Statement
 {
 public:
-    Optional_statement(int, int);
+    Statement_list *statementList;
+
+    Optional_statement(Statement_list *, int, int);
     virtual void accept(Visitor *v);
 };
 class Optional_statementNonEmpty : public Optional_statement
@@ -387,7 +389,9 @@ class Procedure_statement : public Statement
 {
 public:
     Id *id;
-    Procedure_statement(Id *, int, int);
+    Expression_list *expressionList;
+
+    Procedure_statement(Expression_list *, Id *, int, int);
     virtual void accept(Visitor *v);
 };
 class Procedure_statementList : public Procedure_statement
@@ -705,6 +709,7 @@ public:
     virtual void Visit(Parameter_list *);
     virtual void Visit(Statement_list *);
     virtual void Visit(Optional_statement *);
+    virtual void Visit(Optional_statementNonEmpty *);
     virtual void Visit(Compound_statement *);
     virtual void Visit(Variable *);
     virtual void Visit(Procedure_statement *);
@@ -712,7 +717,9 @@ public:
     virtual void Visit(IfElse *);
     virtual void Visit(While *);
     virtual void Visit(For *);
+    virtual void Visit(Variable_Expression *);
     virtual void Visit(Unary_operator *);
+    virtual void Visit(Procedure_statementList *);
 };
 //////////////////////////Type checker
 
@@ -758,6 +765,8 @@ public:
     virtual void Visit(Parameter_list *);
     virtual void Visit(Statement_list *);
     virtual void Visit(Optional_statement *);
+    virtual void Visit(Optional_statementNonEmpty *);
+
     virtual void Visit(Compound_statement *);
     virtual void Visit(Variable *);
     virtual void Visit(Procedure_statement *);
@@ -766,6 +775,8 @@ public:
     virtual void Visit(While *);
     virtual void Visit(For *);
     virtual void Visit(Unary_operator *);
+    virtual void Visit(Procedure_statementList *);
+    virtual void Visit(Variable_Expression *);
 };
 
 //////////////////////////Symbol Table

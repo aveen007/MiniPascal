@@ -140,7 +140,7 @@ program:
 				// symbolTable->AddSymbol($2,1,1);
 // symbolTable->AddSymbol($2,4,6);
 		 cout<<"Somaaaaaaaaaar Avooooooooooooooo DONNNNNNNNNE"<<endl;
-			//	symbolTable->CloseScope();
+				// symbolTable->CloseScope();
 
 
 	 }
@@ -266,8 +266,7 @@ subprogram_variables:	subprogram_variables VAR identifier_list ':' type ';'
 ;
 subprogram_head:
 		FUNCTION {
-	symbolTable->OpenScope();
-							current_kind = 3;
+	
 							
 		} ID
 		{
@@ -277,21 +276,24 @@ subprogram_head:
 			$$ = new Function_head($3, $5, $7, lin, col);
 			symbolTable->AddFunc($3 , 1 , $5 , $7->type , $$ );
 
-
+symbolTable->OpenScope();
+							current_kind = 3;
 		}
 		| PROCEDURE {
-	symbolTable->OpenScope();
-							current_kind = 3;
-							
+
+						
 		}
 		ID
 		{
 
 		} arguments ';'
 		{
+		
 			$$ = new Procedure_head($3, $5, lin, col);
 			symbolTable->AddFunc($3 , 5 , $5 , 6 , $$ );
-	
+												
+	symbolTable->OpenScope();		
+						current_kind = 3;
 		}
 ;
 
@@ -338,11 +340,12 @@ compound_statement:
 optional_statement:
 		statement_list
 		{
-			$$ = new Optional_statementNonEmpty($1, lin, col);
+			$$ = new Optional_statement($1, lin, col);
+			//cout<<$1->;
 		}
 		|
 		{
-			$$ = new Optional_statement( lin, col);
+			$$ = new Optional_statement(NULL, lin, col);
 		}
 ;
 statement_list:
@@ -350,10 +353,12 @@ statement_list:
 		{
 			$$ = new Statement_list(lin, col);
 			$$->AddStatement($1);
+			// cout<<"kjl";
 		}
 		|statement_list statement ';'
 		{
 			$$ = $1;
+			//cout<<"jkl";
 			$$->AddStatement($2);
 		}
 ;
@@ -365,6 +370,7 @@ statement:
 		|procedure_statement
 		{
 			$$ = $1;
+		//	cout<<"dasjlkjsal"<<endl;
 		}
 		|compound_statement
 		{
@@ -409,14 +415,19 @@ variable:
 procedure_statement:
 		ID
 		{
-			$$ = new Procedure_statement($1 , lin , col) ;
+			$$ = new Procedure_statement(NULL,$1 , lin , col) ;
 			//	symbolTable->LookupConstructor($1 );
+			// cout<<"dasjlkjsal"<<endl;
+
 
 		}
 		|
 		ID '(' expression_list ')'
 		{
 			$$ = new Procedure_statementList($3 , $1 , lin , col) ; 
+		//	cout<<"akfldjsdl";
+		//	cout<<"dasjlkjsal"<<endl;
+
 			//	symbolTable->LookupConstructor($1 );
 
 		}
