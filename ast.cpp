@@ -1524,7 +1524,10 @@ void TypeChecker::Visit(Procedure_statement *n)
     else
     {
         cout << "Procedure_statementList  " << n->id->name << endl;
-
+        // for (int i = 0; i < symbolTable->scopes->size(); i++)
+        // {
+        //     cout << symbolTable->scopes->at(i)->hashTab->size() << endl;
+        // }
         string key = "Proc" + n->id->name;
         if (n->expressionList)
         {
@@ -1541,16 +1544,14 @@ void TypeChecker::Visit(Procedure_statement *n)
             //      << key << endl;
         }
         // Symbol *temp = symbolTable->current->hashTab->GetMember(key);
-        // for(int i=0;i<symbolTable->current->hashTab->size();i++){
-        //     cout<<symbolTable->current->hashTab->pop_back()<<endl;
-        // }
+
         Symbol *temp = symbolTable->current->hashTab->GetMember(key);
         // cout << endl
         //      << symbolTable->scopes->size() << endl;
         if (temp == NULL)
         {
             // cout << "jhjhjjhjhjhj";
-            temp = symbolTable->scopes->at(0)->hashTab->GetMember(key);
+            temp = symbolTable->scopes->at(1)->hashTab->GetMember(key);
             if (temp == NULL)
             {
                 string key = "F" + n->id->name;
@@ -1568,7 +1569,7 @@ void TypeChecker::Visit(Procedure_statement *n)
                     Symbol *temp = symbolTable->current->hashTab->GetMember(key);
                     if (temp == NULL)
                     {
-                        temp = symbolTable->scopes->at(0)->hashTab->GetMember(key);
+                        temp = symbolTable->scopes->at(1)->hashTab->GetMember(key);
                         if (temp == NULL)
                         {
                             cout << "no such Procedure/function exists : " << n->id->name << " " << n->id->line << endl;

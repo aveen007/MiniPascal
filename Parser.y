@@ -333,7 +333,10 @@ compound_statement:
 		BEGINN optional_statement END
 		{
 			$$ = new Compound_statement($2, lin, col);
-			symbolTable->CloseScope();
+			if (symbolTable->scopes->size()!=1){
+			//	symbolTable->CloseScope();
+			}
+			
 			current_kind = 2;
 		}
 		;
@@ -390,7 +393,7 @@ statement:
 		}
 		|FOR
 		{
-		//	symbolTable->OpenScope();
+	
 		} variable ':''=' expression  TO INTNUM DO  BEGINN optional_statement END
 		{
 			$$ = new For($3, $6, $11, lin, col);
