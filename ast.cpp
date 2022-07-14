@@ -942,7 +942,7 @@ bool check_mismatch(int l, string op, int r)
         }
         else
         {
-            if (op == "*" || op == "/" || op == "%")
+            if (op == "*" || op == "/" || op == "div")
             {
                 if (l == r && l != 5 && l != 4 && l != 3)
                     mis = true;
@@ -967,7 +967,7 @@ bool check_mismatch(int l, string op, int r)
             }
             else
             {
-                if (op == "&&" || op == "||")
+                if (op == "and" || op == "or" || op == "not")
                 {
                     if (l == 3 && r == 3)
                     {
@@ -978,7 +978,7 @@ bool check_mismatch(int l, string op, int r)
                 }
                 else
                 {
-                    if (op == "!=" || op == "==")
+                    if (op == "<>" || op == "=")
                     {
                         if (l == r)
                             mis = true;
@@ -987,7 +987,7 @@ bool check_mismatch(int l, string op, int r)
                     }
                     else
                     {
-                        if (op == ">" || op == "<")
+                        if (op == ">" || op == "<" || op == "<=" || op == ">=")
                         {
                             if (l == 1 || l == 2)
                             {
@@ -1012,6 +1012,7 @@ bool check_mismatch(int l, string op, int r)
 
 int get_type(int l, string op, int r)
 {
+    // cout << "lklklklkllklklklklklklklklk" << op;
     if (op == "+")
     {
         if (l == r)
@@ -1111,7 +1112,7 @@ int get_type(int l, string op, int r)
         }
         else
         {
-            if (op == "*" || op == "/" || op == "%")
+            if (op == "*" || op == "/" || op == "div")
             {
                 if (l == 1)
                 {
@@ -1130,7 +1131,7 @@ int get_type(int l, string op, int r)
             }
             else
             {
-                if (op == "==" || op == "!=" || op == ">" || op == "<" || op == "&&" || op == "||")
+                if (op == "=" || op == "<>" || op == ">" || op == "<" || op == "and" || op == "or" || op == "not" || op == "<=" || op == ">=")
                 {
                     return 3;
                 }
@@ -1144,22 +1145,25 @@ int get_type(int l, string op, int r)
 TypeChecker::TypeChecker()
 {
     types[1] = "int";
-    types[2] = "float";
+    types[2] = "real";
     types[3] = "boolean";
     types[4] = "char";
     types[5] = "string";
     types[6] = "null";
-    operators[1] = "+";
-    operators[2] = "-";
-    operators[3] = "*";
+    operators[1] = "*";
+    operators[2] = "+";
+    operators[3] = "-";
     operators[4] = "/";
-    operators[5] = "%";
+    operators[5] = "div";
     operators[6] = ">";
-    operators[7] = "<";
-    operators[8] = "==";
-    operators[9] = "&&";
-    operators[10] = "||";
-    operators[11] = "!=";
+    operators[7] = "<=";
+    operators[8] = ">";
+    operators[9] = ">=";
+    operators[10] = "=";
+    operators[11] = "<>";
+    operators[12] = "not";
+    operators[13] = "or";
+    operators[14] = "and";
 }
 
 void TypeChecker::Visit(Node *n) {}
@@ -1280,8 +1284,6 @@ void TypeChecker::Visit(Expression *n)
 void TypeChecker::Visit(IdExpr *n)
 {
     n->type = n->id->symbol->type;
-
-    //  n->id->accept(this);
 }
 void TypeChecker::Visit(IntNumExpr *n)
 {
@@ -1401,8 +1403,11 @@ void TypeChecker::Visit(ListWithExpr *n)
 }
 void TypeChecker::Visit(UnaryExpr *n)
 {
-    n->leftExpression->accept(this);
     int op = n->unaryOperator->index;
+    // cout << endl
+    //      << "******" << endl
+    //      << operators[op] << endl;
+    n->leftExpression->accept(this);
     n->rightExpression->accept(this);
     bool t = check_mismatch(n->leftExpression->type, operators[op], n->rightExpression->type);
     if (t)
@@ -1418,6 +1423,7 @@ void TypeChecker::Visit(UnaryExpr *n)
         // symanticerror = true;
         n->type = 6;
     }
+    // cout << "ended";
 }
 void TypeChecker::Visit(NotExpr *n) { cout << ""; }
 void TypeChecker::Visit(BracketExpr *n) { cout << ""; };
@@ -1473,27 +1479,21 @@ void TypeChecker::Visit(Parameter_list *n)
 };
 void TypeChecker::Visit(Statement_list *n)
 {
-    // try
-    // {
-    for (int i = 0; i < (int)(n->statement_list->size()); i++)
+    try
     {
-        // if (n->statement_list->at(i) == NULL)
-        // {
-        //     cout << "lsak;dka;" << endl;
-        // }
-        // else
-        // {
-        //    cout << "++++++++" << n->statement_list->size() << "++";
-        n->statement_list->at(i)->accept(this);
-        if (i != (int)(n->statement_list->size() - 1))
-            cout << ",";
-        // }
+        for (int i = 0; i < (int)(n->statement_list->size()); i++)
+        {
+
+            n->statement_list->at(i)->accept(this);
+            if (i != (int)(n->statement_list->size() - 1))
+                cout << ",";
+            // }
+        }
     }
-    // }
-    // catch (std::exception e)
-    // {
-    //     cout << e.what();
-    // }
+    catch (std::exception e)
+    {
+        cout << "";
+    }
 };
 void TypeChecker::Visit(Optional_statement *n)
 {
@@ -1546,12 +1546,25 @@ void TypeChecker::Visit(For *n)
     n->variable->accept(this);
     n->expression->accept(this);
     n->optionalStatement->accept(this);
+    int l = n->variable->id->symbol->type;
+    int r = n->expression->type;
+    // cout << l << "hkhk" << r << endl;
+    bool t = typechecking_assign(l, r);
+    if (t)
+    {
+        // cout << "jkljljljl";
+        cout << "mismatching assignment of var :" << n->variable->id->name << " in line: " << n->line << endl;
+        // symbolTable->errors->AddError("mismatching assignment of var :" + n->name->name, n->line, n->column);
+        // symanticerror = true;
+    }
 };
 void TypeChecker::Visit(Unary_operator *n){
 
 };
 void TypeChecker::Visit(Variable_Expression *n)
 {
+    n->variable->accept(this);
+    n->expression->accept(this);
     int l = n->variable->id->symbol->type;
     int r = n->expression->type;
     // cout << l << "hkhk" << r << endl;
@@ -1611,6 +1624,10 @@ void TypeChecker::Visit(Procedure_statementList *n)
             }
         }
     }
+    else
+    {
+        // n->type = n->id->symbol->type;
+    }
 };
 //////////////////////////////////
 
@@ -1662,8 +1679,8 @@ bool SymbolTable::AddSymbol(Id *id, int kind, int type)
 {
     Symbol *sym = new Symbol(id->name, kind, type);
     string key = kindes[kind] + id->name;
-    cout << endl
-         << key << endl;
+    // cout << endl
+    //      << key << endl;
     // getIndex(this->scopes, this->current);
     Symbol *temp = this->current->hashTab->GetMember(key);
     if (temp == NULL)
@@ -1806,7 +1823,7 @@ void SymbolTable::OpenScope()
 {
     this->scopes->push_back(new Scope());
     this->current = this->scopes->at(this->scopes->size() - 1);
-    cout << ":" << endl;
+    // cout << ":" << endl;
 }
 
 void SymbolTable::CloseScope()
@@ -1814,7 +1831,7 @@ void SymbolTable::CloseScope()
     this->scopes->pop_back();
     this->current = this->scopes->at(this->scopes->size() - 1);
 
-    cout << "cc" << endl;
+    // cout << "cc" << endl;
 }
 ///////////////////////////let's
 // void getIndex(vector<Scope *> v, Scope K)

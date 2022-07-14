@@ -370,7 +370,7 @@ statement:
 		variable ':''=' expression
 		{
 			$$ = new Variable_Expression($1, $4 ,lin, col);
-			cout<<endl<<"================"<<endl;
+			//cout<<endl<<"================"<<endl;
 		}
 		|procedure_statement
 		{
@@ -453,6 +453,7 @@ expression:
 		ID
 		{
 			$$ = new IdExpr($1 ,lin, col);
+				 symbolTable->LookUp($1);
 			
 
 		}
@@ -487,6 +488,7 @@ expression:
 		|expression unary_operator expression %prec Uoperator /// What is Uoperator // By Ghaffar
 		{
 			$$ = new UnaryExpr($1 ,$2, $3 ,lin, col);
+			// cout<<"###########"<<endl;
 		}
 		|NOT expression
 		{
@@ -505,6 +507,7 @@ unary_operator:
 		'*'
 		{
 			$$ = new Unary_operator(1, lin, col);
+			// cout<<"__________________"<<endl;
 		}
 		|'+'
 		{
