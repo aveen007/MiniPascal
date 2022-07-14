@@ -659,12 +659,14 @@ public:
     virtual void Visit(Compound_statement *n) = 0;
     virtual void Visit(Variable *n) = 0;
     virtual void Visit(Procedure_statement *n) = 0;
+    virtual void Visit(Procedure_statementList *n) = 0;
     virtual void Visit(If *n) = 0;
     virtual void Visit(IfElse *n) = 0;
     virtual void Visit(While *n) = 0;
     virtual void Visit(For *n) = 0;
     virtual void Visit(Expression_list *n) = 0;
     virtual void Visit(Unary_operator *n) = 0;
+    virtual void Visit(Variable_Expression *n) = 0;
 };
 
 class PrintVisitor : public Visitor

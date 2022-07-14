@@ -12,15 +12,17 @@ For Counter := 1 to 10 do
 Begin
 // write(chr(196));
 End;
+    Counter := "klkl";
+    Counter := 1;
 End;
 // Procedure DrawLine(X : Integer; Y : Integer);
 // Begin
 // // write(chr(196));
 // End;
 Begin
-DrawLine(10,5);
-DrawLine(10,6);
-DrawLine(10,7);
+DrawLine(false,5);
+DrawLine(false,6);
+DrawLine(1,7);
 DrawLine(10,10);
 // Readkey;
 End.

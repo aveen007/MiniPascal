@@ -1520,74 +1520,6 @@ void TypeChecker::Visit(Procedure_statement *n)
     {
         cout << "procedure: " << n->id->name << endl;
     }
-
-    else
-    {
-        cout << "Procedure_statementList  " << n->id->name << endl;
-        // for (int i = 0; i < symbolTable->scopes->size(); i++)
-        // {
-        //     cout << symbolTable->scopes->at(i)->hashTab->size() << endl;
-        // }
-        string key = "Proc" + n->id->name;
-        if (n->expressionList)
-        {
-            cout << " { ";
-            for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
-            {
-                int e = n->expressionList->expressionList->at(i)->type;
-                cout << " type : " << types[e] << ";";
-                key += "@" + types[e];
-            }
-            cout << " } " << endl;
-
-            // cout << endl
-            //      << key << endl;
-        }
-        // Symbol *temp = symbolTable->current->hashTab->GetMember(key);
-
-        Symbol *temp = symbolTable->current->hashTab->GetMember(key);
-        // cout << endl
-        //      << symbolTable->scopes->size() << endl;
-        if (temp == NULL)
-        {
-            // cout << "jhjhjjhjhjhj";
-            temp = symbolTable->scopes->at(1)->hashTab->GetMember(key);
-            if (temp == NULL)
-            {
-                string key = "F" + n->id->name;
-                if (n->expressionList)
-                {
-                    //  cout << " { ";
-                    for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
-                    {
-                        int e = n->expressionList->expressionList->at(i)->type;
-                        //         cout << " type : " << types[e] << ";";
-                        key += "@" + types[e];
-                    }
-                    //      cout << " } " << endl;
-
-                    Symbol *temp = symbolTable->current->hashTab->GetMember(key);
-                    if (temp == NULL)
-                    {
-                        temp = symbolTable->scopes->at(1)->hashTab->GetMember(key);
-                        if (temp == NULL)
-                        {
-                            cout << "no such Procedure/function exists : " << n->id->name << " " << n->id->line << endl;
-                            // symbolTable->errors->AddError("no such function exists : " + n->name->name, n->name->line, 0);
-                            // symanticerror = true;
-                            //++++++++++++++++++++++++++++++++
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            // cout << "dlma;skjl;sd" << endl;
-            n->id->symbol->type = temp->type;
-            //  n-> = temp->function;
-        }
-    }
 };
 void TypeChecker::Visit(If *n)
 {
@@ -1622,6 +1554,7 @@ void TypeChecker::Visit(Variable_Expression *n)
 {
     int l = n->variable->id->symbol->type;
     int r = n->expression->type;
+    // cout << l << "hkhk" << r << endl;
     bool t = typechecking_assign(l, r);
     if (t)
     {
@@ -1637,36 +1570,46 @@ void TypeChecker::Visit(Procedure_statementList *n)
     string key = "Proc" + n->id->name;
     if (n->expressionList)
     {
+        cout << " { ";
         for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
         {
             int e = n->expressionList->expressionList->at(i)->type;
+            cout << " type : " << types[e] << ";";
             key += "@" + types[e];
         }
+        cout << " } " << endl;
     }
+
     Symbol *temp = symbolTable->current->hashTab->GetMember(key);
+
     if (temp == NULL)
     {
 
-        string key = "F" + n->id->name;
-        if (n->expressionList)
+        temp = symbolTable->scopes->at(1)->hashTab->GetMember(key);
+        if (temp == NULL)
         {
-            for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
+            string key = "F" + n->id->name;
+            if (n->expressionList)
             {
-                int e = n->expressionList->expressionList->at(i)->type;
-                key += "@" + types[e];
+
+                for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
+                {
+                    int e = n->expressionList->expressionList->at(i)->type;
+
+                    key += "@" + types[e];
+                }
+                Symbol *temp = symbolTable->current->hashTab->GetMember(key);
+                if (temp == NULL)
+                {
+                    temp = symbolTable->scopes->at(1)->hashTab->GetMember(key);
+                    if (temp == NULL)
+                    {
+                        cout << "no such Procedure/function exists : " << n->id->name << " " << n->id->line << endl;
+                        //++++++++++++++++++++++++++++++++
+                    }
+                }
             }
         }
-        else
-        {
-            cout << "no such Procedure/function exists : " << n->id->name << " " << n->id->line;
-            // symbolTable->errors->AddError("no such function exists : " + n->name->name, n->name->line, 0);
-            // symanticerror = true;
-        }
-    }
-    else
-    {
-        n->id->symbol->type = temp->type;
-        //  n-> = temp->function;
     }
 };
 //////////////////////////////////
@@ -1799,7 +1742,7 @@ Symbol *SymbolTable::LookUp(Id *id)
             key = kindes[2] + id->name;
             // cout << this->scopes->size();
 
-            sym = this->scopes->at(0)->hashTab->GetMember(key);
+            sym = this->scopes->at(1)->hashTab->GetMember(key);
             if (sym != NULL)
             {
                 id->symbol = sym;

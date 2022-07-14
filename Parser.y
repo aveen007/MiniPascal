@@ -333,8 +333,9 @@ compound_statement:
 		BEGINN optional_statement END
 		{
 			$$ = new Compound_statement($2, lin, col);
-			if (symbolTable->scopes->size()!=1){
-			//	symbolTable->CloseScope();
+			if (symbolTable->scopes->size()>2){
+				cout<<symbolTable->scopes->size();
+				symbolTable->CloseScope();
 			}
 			
 			current_kind = 2;
@@ -369,6 +370,7 @@ statement:
 		variable ':''=' expression
 		{
 			$$ = new Variable_Expression($1, $4 ,lin, col);
+			cout<<endl<<"================"<<endl;
 		}
 		|procedure_statement
 		{
