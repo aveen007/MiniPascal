@@ -57,14 +57,21 @@ void Declarations::AddDeclaration(Declaration *declaration)
 Type::Type(int type, int l, int r) : Node(l, r)
 {
     this->type = type;
+    this->first = NULL;
+    this->second = NULL;
 }
-
+Type::Type(int type, int l, int r, int first, int second) : Node(l, r)
+{
+    this->type = type;
+    this->first = first;
+    this->second = second;
+}
 Standard_type::Standard_type(int type, int l, int r) : Type(type, l, r)
 {
     this->type = type;
 }
 
-Array_type::Array_type(IntNum *first, IntNum *last, Standard_type *StandardType, int l, int r) : Type(StandardType->type, l, r)
+Array_type::Array_type(IntNum *first, IntNum *last, Standard_type *StandardType, int l, int r) : Type(StandardType->type, l, r, first->value, last->value)
 {
     this->first = first;
     this->last = last;
@@ -482,68 +489,7 @@ void IfElse::accept(Visitor *v) { v->Visit(this); }
 void While::accept(Visitor *v) { v->Visit(this); }
 void For::accept(Visitor *v) { v->Visit(this); }
 void Unary_operator::accept(Visitor *v) { v->Visit(this); }
-/////////////////////////
 
-// void Visitor::Visit(Node *n) { cout << "this"; }
-// void Visitor::Visit(Statement *n) { cout << "this"; }
-// void Visitor::Visit(Expression_list *n) { cout << "this"; }
-// void Visitor::Visit(Identifier_list *n) { cout << "this"; }
-// void Visitor::Visit(Id *n)
-// {
-
-//     cout << "this is an ID: " << n->name << endl;
-// }
-// void Visitor::Visit(IntNum *n) { cout << "this"; }
-// void Visitor::Visit(RealNum *n)
-// {
-//     cout << "this";
-// }
-// void Visitor::Visit(String *n)
-// {
-//     cout << "this";
-// }
-// void Visitor::Visit(Bool *n)
-// {
-//     cout << "this";
-// }
-// void Visitor::Visit(Char *n)
-// {
-//     cout << "this";
-// }
-// void Visitor::Visit(Expression *n) { cout << "this"; }
-// void Visitor::Visit(IdExpr *n) { cout << "this"; }
-// void Visitor::Visit(IntNumExpr *n) { cout << "this"; }
-// void Visitor::Visit(BoolExpr *n) { cout << "this"; }
-// void Visitor::Visit(RealNumExpr *n) { cout << "this"; }
-// void Visitor::Visit(StringExpr *n) { cout << "this"; }
-// void Visitor::Visit(CharExpr *n) { cout << "this"; }
-// void Visitor::Visit(ListWithExpr *n) { cout << "this"; }
-// void Visitor::Visit(UnaryExpr *n) { cout << "this"; }
-// void Visitor::Visit(NotExpr *n) { cout << "this"; }
-// void Visitor::Visit(BracketExpr *n) { cout << "this"; };
-// void Visitor::Visit(ExpressionWithExpr *n) { cout << "this"; };
-// void Visitor::Visit(Subprogram_declarations *n) { cout << "this"; };
-// void Visitor::Visit(Type *n) { cout << "this"; };
-// void Visitor::Visit(Compound_statement *n)
-// {
-//     cout << "this";
-
-//     //   cout << "this is a compound statement: " << n-><< endl;
-// }
-
-// void Visitor::Visit(Subprogram_head *n) { cout << "this"; };
-// void Visitor::Visit(Subprogram_variables *n) { cout << "this"; };
-// void Visitor::Visit(Arguments *n) { cout << "this"; };
-// void Visitor::Visit(Parameter_list *n) { cout << "this"; };
-// void Visitor::Visit(Statement_list *n) { cout << "this"; };
-// void Visitor::Visit(Optional_statement *n) { cout << "this"; };
-// void Visitor::Visit(Variable *n) { cout << "this"; };
-// void Visitor::Visit(Procedure_statement *n) { cout << "this"; };
-// void Visitor::Visit(If *n) { cout << "this"; };
-// void Visitor::Visit(IfElse *n) { cout << "this"; };
-// void Visitor::Visit(While *n) { cout << "this"; };
-// void Visitor::Visit(For *n) { cout << "this"; };
-// void Visitor::Visit(Unary_operator *n) { cout << "this"; };
 // ////////////////////////////////////////////// Print Visitor
 PrintVisitor::PrintVisitor() {}
 
@@ -814,7 +760,9 @@ void PrintVisitor::Visit(Unary_operator *n){
 void PrintVisitor::Visit(Variable_Expression *n){
 
 };
+void PrintVisitor::Visit(Array_type *n){
 
+};
 /************************Typechecker****/
 
 bool typechecking_assign(int l, int r)
@@ -1426,7 +1374,11 @@ void TypeChecker::Visit(UnaryExpr *n)
     // cout << "ended";
 }
 void TypeChecker::Visit(NotExpr *n) { cout << ""; }
-void TypeChecker::Visit(BracketExpr *n) { cout << ""; };
+void TypeChecker::Visit(BracketExpr *n)
+{
+    n->expression->accept(this);
+    n->type = n->id->symbol->type;
+};
 void TypeChecker::Visit(ExpressionWithExpr *n) { cout << ""; };
 void TypeChecker::Visit(Type *n) { cout << ""; };
 void TypeChecker::Visit(Compound_statement *n)
@@ -1567,7 +1519,7 @@ void TypeChecker::Visit(Variable_Expression *n)
     n->expression->accept(this);
     int l = n->variable->id->symbol->type;
     int r = n->expression->type;
-    // cout << l << "hkhk" << r << endl;
+    cout << l << "hkhk" << r << endl;
     bool t = typechecking_assign(l, r);
     if (t)
     {
@@ -1629,6 +1581,9 @@ void TypeChecker::Visit(Procedure_statementList *n)
         // n->type = n->id->symbol->type;
     }
 };
+void TypeChecker::Visit(Array_type *n){
+
+};
 //////////////////////////////////
 
 //////////////////Symbol table
@@ -1648,7 +1603,14 @@ Symbol::Symbol(string name, int kind, int type, Subprogram_head *f)
     this->type = type;
     this->subprogram_head = f;
 }
-
+Symbol::Symbol(string name, int kind, int type, int first, int second)
+{
+    this->name = name;
+    this->kind = kind;
+    this->type = type;
+    this->first = first;
+    this->second = second;
+}
 Scope::Scope()
 {
     this->hashTab = new HashTab();
@@ -1675,26 +1637,56 @@ SymbolTable::SymbolTable()
     types[6] = "null";
 }
 
-bool SymbolTable::AddSymbol(Id *id, int kind, int type)
+bool SymbolTable::AddSymbol(Id *id, int kind, Type *type)
 {
-    Symbol *sym = new Symbol(id->name, kind, type);
-    string key = kindes[kind] + id->name;
-    // cout << endl
-    //      << key << endl;
-    // getIndex(this->scopes, this->current);
-    Symbol *temp = this->current->hashTab->GetMember(key);
-    if (temp == NULL)
+    if (type->first == NULL)
     {
-        this->current->hashTab->AddKey(key, sym);
-        id->symbol = sym;
-        return true;
+        Symbol *sym = new Symbol(id->name, kind, type->type);
+        string key = kindes[kind] + id->name;
+        cout << endl
+             << key << type->type << endl;
+        // getIndex(this->scopes, this->current);
+        Symbol *temp = this->current->hashTab->GetMember(key);
+        if (temp == NULL)
+        {
+            this->current->hashTab->AddKey(key, sym);
+            id->symbol = sym;
+            return true;
+        }
+        else
+        {
+            cout << " redifined variable : " << id->name << " in line: " << id->line << endl;
+            // symbolTable->errors->AddError("redifined variable : " + id->name, id->line, 0);
+            // symanticerror = true;
+
+            return false;
+        }
     }
     else
     {
-        cout << " redifined variable : " << id->name << " in line: " << id->line << endl;
-        // symbolTable->errors->AddError("redifined variable : " + id->name, id->line, 0);
-        // symanticerror = true;
-        return false;
+        Symbol *sym = new Symbol(id->name, kind, type->type, type->first, type->second);
+        string key = kindes[kind] + id->name;
+
+        // key += "@" + to_string(type->second) + "@" + to_string(type->second);
+        cout << key << type->type << endl;
+
+        cout << id->name << " in line: " << id->line << "Key: " << key << endl;
+        Symbol *temp = this->current->hashTab->GetMember(key);
+
+        if (temp == NULL)
+        {
+            this->current->hashTab->AddKey(key, sym);
+            id->symbol = sym;
+            return true;
+        }
+        else
+        {
+            cout << " redifined array : " << id->name << " in line: " << id->line << endl;
+            // symbolTable->errors->AddError("redifined function : " + id->name, id->line, 0);
+
+            // symanticerror = true;
+            return false;
+        }
     }
     // return NULL;
 }
@@ -1777,6 +1769,59 @@ Symbol *SymbolTable::LookUp(Id *id)
     }
 }
 
+Symbol *SymbolTable::LookUpArray(Id *id, int index)
+{
+    string key;
+    Symbol *sym;
+
+    key = kindes[3] + id->name;
+    // cout << key;
+    sym = this->current->hashTab->GetMember(key);
+    if (sym != NULL)
+    {
+        id->symbol = sym;
+        return sym;
+    }
+    else
+    {
+        key = kindes[2] + id->name;
+        // cout << key;
+        sym = this->current->hashTab->GetMember(key);
+        if (sym != NULL)
+        {
+            id->symbol = sym;
+            return sym;
+        }
+        else
+        {
+            key = kindes[2] + id->name;
+            // cout << this->scopes->size();
+
+            sym = this->scopes->at(1)->hashTab->GetMember(key);
+            if (sym != NULL)
+            {
+                if (index <= sym->second && index >= sym->first)
+                {
+                    id->symbol = sym;
+                    return sym;
+                }
+                else
+                {
+                    cout << "Array index out of bounds " << id->name << " in line: " << id->line << endl;
+                }
+            }
+            else
+            {
+                cout << " undefined variable: " << id->name << " in line: " << id->line << endl;
+                //  symbolTable->errors->AddError("undifined variable : " + id->name, id->line, 0);
+
+                //  symanticerror = true;
+                return NULL;
+            }
+        }
+    }
+}
+
 // Symbol *SymbolTable::LookupConstructor(Id *id, Expression_list *d)
 // {
 //     string key;
@@ -1834,23 +1879,3 @@ void SymbolTable::CloseScope()
     // cout << "cc" << endl;
 }
 ///////////////////////////let's
-// void getIndex(vector<Scope *> v, Scope K)
-// {
-//     auto it = find(v.begin(), v.end(), K);
-
-//     // If element was found
-//     if (it != v.end())
-//     {
-
-//         // calculating the index
-//         // of K
-//         int index = it - v.begin();
-//         cout << index << endl;
-//     }
-//     else
-//     {
-//         // If the element is not
-//         // present in the vector
-//         cout << "-1" << endl;
-//     }
-// }

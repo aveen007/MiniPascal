@@ -141,8 +141,10 @@ class Type : public Node
 {
 public:
     Type(int, int, int);
+    Type(int, int, int, int, int);
     int type; // 1 integer, 2 Real, 3 Boolean
-
+    int first;
+    int second;
     virtual void accept(Visitor *v);
 };
 
@@ -667,6 +669,7 @@ public:
     virtual void Visit(Expression_list *n) = 0;
     virtual void Visit(Unary_operator *n) = 0;
     virtual void Visit(Variable_Expression *n) = 0;
+    virtual void Visit(Array_type *n) = 0;
 };
 
 class PrintVisitor : public Visitor
@@ -680,6 +683,7 @@ public:
     virtual void Visit(Program *n);
     virtual void Visit(Declarations *);
     virtual void Visit(Declaration *);
+    virtual void Visit(Array_type *);
 
     virtual void Visit(Statement *);
     virtual void Visit(Expression_list *);
@@ -779,6 +783,7 @@ public:
     virtual void Visit(Unary_operator *);
     virtual void Visit(Procedure_statementList *);
     virtual void Visit(Variable_Expression *);
+    virtual void Visit(Array_type *);
 };
 
 //////////////////////////Symbol Table
@@ -789,10 +794,13 @@ public:
     string name;
     int type;
     int kind;
+    int first;
+    int second;
     int location;
     Subprogram_head *subprogram_head;
     Symbol(string, int, int);
     Symbol(string, int, int, Subprogram_head *);
+    Symbol(string, int, int, int, int);
 };
 
 class Scope
@@ -812,9 +820,11 @@ public:
     Scope *current;
     // Errors *errors;
     SymbolTable();
-    bool AddSymbol(Id *, int, int);
+    bool AddSymbol(Id *, int, Type *type);
     bool AddFunc(Id *id, int kind, Arguments *d, int type, Subprogram_head *);
+    // bool AddArray(Id *id, int kind, int first, int second, int type);
     Symbol *LookUp(Id *);
+    Symbol *LookUpArray(Id *, int);
     Symbol *LookupConstructor(Id *, Expression_list *);
     void CloseScope();
     void OpenScope();

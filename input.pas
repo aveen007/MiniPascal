@@ -1,14 +1,8 @@
-program HELLO;
-var counter,factorial: integer;
-begin
-counter :=5;
-factorial :=15;
-while factorial>5 do begin
-factorial:=factorial*counter;
-counter:=counter-1;
-end;
-
-writeln(factorial);
-writeln('hi');
-
-end.
+Program ArrayExample;
+Var myArray : Array [ 1 .. 5 ] of Integer;
+// Var myArray : Array [ 1 .. 5 ] of Integer;
+Var myVar :  Integer;
+Begin
+myArray[2] := 25;
+myVar := myArray[22];
+End.

@@ -129,7 +129,9 @@ program:
 				symbolTable->OpenScope();
 
 	} ID {
-				symbolTable->AddSymbol($3,4,1);
+			
+	//	Standard_type *temp=new Standard_type(1,lin,col);
+				symbolTable->AddSymbol($3,4,new Standard_type(1,lin,col));
 
 	}';' declarations
  	subprogram_declarations
@@ -174,7 +176,7 @@ declarations:
 
 	
 	
-				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5->type);
+				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5);
 			
 			}
 	
@@ -184,12 +186,13 @@ declarations:
 	{
 		$$ = $1 ;
 		$$->AddDeclaration( new Declaration($3 , lin , col)) ;
+	//	Standard_type *temp;
 			for(int i=0; i<$3->Ids->size();i++)
 			{
-
+// Standard_type temp=new Standard_type(6,lin,col);
+			//	symbolTable->AddSymbol($3,4,temp);
 	
-	
-				symbolTable->AddSymbol($3->Ids[0][i],current_kind,6);
+				symbolTable->AddSymbol($3->Ids[0][i],current_kind,new Standard_type(6,lin,col));
 			
 			}				
 
@@ -207,6 +210,8 @@ type:
 		| ARRAY '[' INTNUM TWODOTS INTNUM ']' OF standard_type
 		{
 			$$ = new Array_type($3 ,$5 ,$8 ,lin ,col);
+						
+
 		}
 ;	
 standard_type:
@@ -255,7 +260,7 @@ subprogram_variables:	subprogram_variables VAR identifier_list ':' type ';'
 
 	
 	
-				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5->type);
+				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5);
 			
 			}
 			}
@@ -313,7 +318,7 @@ parameter_list:
 
 	
 	
-				symbolTable->AddSymbol($1->Ids[0][i],current_kind,$3->type);
+				symbolTable->AddSymbol($1->Ids[0][i],current_kind,$3);
 			
 			}
 		}
@@ -324,7 +329,7 @@ parameter_list:
 					for(int i=0; i<$3->Ids->size();i++)
 			{
 
-				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5->type);
+				symbolTable->AddSymbol($3->Ids[0][i],current_kind,$5);
 			
 			}
 		}
@@ -476,6 +481,8 @@ expression:
 		|ID '(' expression_list ')' 
 		{
 			$$ = new ListWithExpr($1 ,$3, lin, col);
+			symbolTable->LookUp($1);
+
 		}
 		|'(' expression ')'
 		{
@@ -484,6 +491,7 @@ expression:
 		|ID '[' expression ']'
 		{
 			$$ = new BracketExpr($1 ,$3 ,lin, col);
+			symbolTable->LookUp($1);
 		}
 		|expression unary_operator expression %prec Uoperator /// What is Uoperator // By Ghaffar
 		{
