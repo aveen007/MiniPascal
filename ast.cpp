@@ -1519,7 +1519,7 @@ void TypeChecker::Visit(Variable_Expression *n)
     n->expression->accept(this);
     int l = n->variable->id->symbol->type;
     int r = n->expression->type;
-    cout << l << "hkhk" << r << endl;
+    // cout << l << "hkhk" << r << endl;
     bool t = typechecking_assign(l, r);
     if (t)
     {
@@ -1643,8 +1643,8 @@ bool SymbolTable::AddSymbol(Id *id, int kind, Type *type)
     {
         Symbol *sym = new Symbol(id->name, kind, type->type);
         string key = kindes[kind] + id->name;
-        cout << endl
-             << key << type->type << endl;
+        // cout << endl
+        //      << key << type->type << endl;
         // getIndex(this->scopes, this->current);
         Symbol *temp = this->current->hashTab->GetMember(key);
         if (temp == NULL)
@@ -1668,9 +1668,9 @@ bool SymbolTable::AddSymbol(Id *id, int kind, Type *type)
         string key = kindes[kind] + id->name;
 
         // key += "@" + to_string(type->second) + "@" + to_string(type->second);
-        cout << key << type->type << endl;
+        // cout << key << type->type << endl;
 
-        cout << id->name << " in line: " << id->line << "Key: " << key << endl;
+        // cout << id->name << " in line: " << id->line << "Key: " << key << endl;
         Symbol *temp = this->current->hashTab->GetMember(key);
 
         if (temp == NULL)
