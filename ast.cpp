@@ -60,12 +60,12 @@ Type::Type(int type, int l, int r) : Node(l, r)
     this->first = NULL;
     this->second = NULL;
 }
-Type::Type(int type, int l, int r, int first, int second) : Node(l, r)
+/*Type::Type(int type, int l, int r, int first, int second) : Node(l, r)
 {
     this->type = type;
     this->first = first;
     this->second = second;
-}
+}*/
 Standard_type::Standard_type(int type, int l, int r) : Type(type, l, r)
 {
     this->type = type;
@@ -208,6 +208,26 @@ void Parameter_list::AddParameter(Identifier_list *identifierList, Type *type)
 /// Statement
 Statement::Statement(int l, int r) : Node(l, r){};
 
+Assignment_statement::Assignment_statement(int l, int r): Statement(l , r) {};
+
+AssignmentIdStatement::AssignmentIdStatement(Id * id, Expression * expression, int l , int r)
+:Assignment_statement(l , r)
+{
+    this->id = id ;
+    this->expression = expression ;
+    id->father = this ;
+    expression->father = this ;
+}
+AssignmentArrayStatement::AssignmentArrayStatement(Id * id,Expression* index , Expression * expression, int l , int r)
+        :Assignment_statement(l , r)
+{
+    this->id = id ;
+    this->index = index ;
+    this->expression = expression ;
+    id->father = this ;
+    index->father = this ;
+    expression->father = this ;
+}
 Compound_statement::Compound_statement(Optional_statement *optionalStatement, int l, int r)
     : Statement(l, r)
 {
@@ -228,20 +248,19 @@ Optional_statement::Optional_statement(Statement_list *statementList, int l, int
     this->statementList = statementList;
 }
 Variable_Expression::Variable_Expression(Variable *variable, Expression *expression, int l, int r)
-    : Statement(l, r)
+        : Statement(l, r)
 {
     this->variable = variable;
     this->expression = expression;
     variable->father = this;
     expression->father = this;
 }
-
 Procedure_statement::Procedure_statement(Expression_list *expressionList, Id *id, int l, int r)
     : Statement(l, r)
 {
     this->expressionList = expressionList;
-
     this->id = id;
+    this->CG_visited = false ;
     id->father = this;
 }
 Procedure_statementList::Procedure_statementList(Expression_list *expressionList, Id *id, int l, int r)
@@ -279,15 +298,16 @@ While::While(Expression *expression, Statement *doStatement, int l, int r)
     expression->father = this;
     doStatement->father = this;
 }
-
-For::For(Variable *variable, Expression *expression, Optional_statement *optionalStatement, int l, int r)
-    : Statement(l, r)
+For::For(Variable *variable, Expression *down , Expression * up, Optional_statement *optionalStatement, int l, int r)
+        : Statement(l, r)
 {
     this->variable = variable;
-    this->expression = expression;
+    this->down = down;
+    this->up = up ;
     this->optionalStatement = optionalStatement;
     variable->father = this;
-    expression->father = this;
+    up->father = this ;
+    down->father = this;
     optionalStatement->father = this;
 }
 
@@ -364,6 +384,7 @@ CharExpr::CharExpr(Char *aChar, int l, int r)
 ListWithExpr::ListWithExpr(Id *id, Expression_list *expressionList, int l, int r)
     : Expression(l, r)
 {
+
     this->id = id;
     this->expressionList = expressionList;
     expressionList->father = this;
@@ -439,7 +460,6 @@ VariableExpression::VariableExpression(Expression *expression, Id *id, int l, in
 }
 /////////////////////////////////////////////accept Visitorv->Visit(this);}
 void Node::accept(Visitor *v) { v->Visit(this); }
-void Variable_Expression::accept(Visitor *v) { v->Visit(this); }
 void Procedure_statementList::accept(Visitor *v) { v->Visit(this); }
 void VariableExpression::accept(Visitor *v) { v->Visit(this); }
 void Function_head::accept(Visitor *v) { v->Visit(this); }
@@ -1879,3 +1899,672 @@ void SymbolTable::CloseScope()
     // cout << "cc" << endl;
 }
 ///////////////////////////let's
+
+////////////////////////////////////////////// Code Visitor
+void Print(string s )
+{
+    vout<<s<<endl;
+}
+CodeVisitor::CodeVisitor() {
+    fp = 0;
+    gp = 1024;
+    types[1] = "int";
+    types[2] = "real";
+    types[3] = "boolean";
+    types[4] = "char";
+    types[5] = "string";
+    types[6] = "null";
+    operators[1] = "*";
+    operators[2] = "+";
+    operators[3] = "-";
+    operators[4] = "/";
+    operators[5] = "div";
+    operators[6] = ">";
+    operators[7] = "<=";
+    operators[8] = "<";
+    operators[9] = ">=";
+    operators[10] = "=";
+    operators[11] = "<>";
+    operators[12] = "not";
+    operators[13] = "or";
+    operators[14] = "and";
+    this->functions = new vector<Symbol *>;
+}
+void CodeVisitor::Visit(Node *n) {
+
+}
+void CodeVisitor::Visit(Program *n)
+{
+    Print("Start\n") ;
+    n->declarations->accept(this);
+    n->subprogramDeclarations->accept(this);
+    n->compoundStatement->accept(this);
+    Print("Stop\n") ;
+}
+void CodeVisitor::Visit(Declarations *n)
+{
+    // cout << "This is Declarations-" << endl;
+    try
+    {
+        for (int i = 0; i < (int)(n->declarations->size()); i++)
+        {
+            n->declarations->at(i)->accept(this);
+        }
+    }
+    catch (std::exception e)
+    {
+        cout << "Habidator" <<endl;
+    }
+}
+void CodeVisitor::Visit(DeclarationVar *n)
+{
+    n->identifierList->accept(this);
+}
+void CodeVisitor::Visit(Declaration *n) {
+    for(int i=0;i<n->identifierList->Ids->size() ; i++)
+    {
+
+        if(n->identifierList->Ids->at(i)->symbol->type < 5)
+        {
+            Print("pushi 0");
+            if (n->identifierList->Ids->at(i)->symbol->type == 2)
+                Print("itof");
+            n->identifierList->Ids->at(i)->symbol->location = fp;
+            Print("storel " + std::to_string(fp));
+            Print("pushl " + std::to_string(fp));
+            fp++;
+        }
+
+    }
+
+}
+void CodeVisitor::Visit(Subprogram_declarations *n)
+{
+    try
+    {
+        for (int i = 0; i < (int)(n->subprogram_declarations->size()); i++)
+        {
+            n->subprogram_declarations->at(i)->accept(this);
+            if (i != (int)(n->subprogram_declarations->size() - 1))
+                cout << ",";
+        }
+    }
+    catch (std::exception e)
+    {
+        cout << "";
+    }
+}
+void CodeVisitor::Visit(Subprogram_declaration *n)
+{
+    n->subprogramHead->accept(this);
+    n->subprogramVariables->accept(this);
+    n->compoundStatement->accept(this);
+}
+/*void CodeVisitor::Visit(Statement *n)
+{
+    cout << "bla";
+}*/
+void CodeVisitor::Visit(Expression_list *n)
+{
+    // cout << "This is Declarations-" << endl;
+    try
+    {
+        for (int i = 0; i < (int)(n->expressionList->size()); i++)
+        {
+            n->expressionList->at(i)->accept(this);
+            if (i != (int)(n->expressionList->size() - 1))
+                cout << ",";
+        }
+    }
+    catch (std::exception e)
+    {
+        cout << "";
+    }
+}
+void CodeVisitor::Visit(Identifier_list *n)
+{
+    try
+    {
+        for (int i = 0; i < (int)(n->Ids->size()); i++)
+        {
+            n->Ids->at(i)->accept(this);
+        }
+    }
+    catch (std::exception e)
+    {
+        cout << "Habidator" <<endl;
+    }
+}
+void CodeVisitor::Visit(Id *n)
+{
+
+    cout << "this is an ID: " << n->name << endl;
+}
+void CodeVisitor::Visit(IntNum *n)
+{
+    Print("Pushi " + std::to_string(n->value));
+}
+void CodeVisitor::Visit(RealNum *n)
+{
+    Print("Pushf " + std::to_string(n->value));
+}
+void CodeVisitor::Visit(String *n)
+{
+    string s = "";
+    for (int i = 1; i < n->value.length() - 1; i++)
+    {
+        s += n->value[i];
+    }
+    Print("Pushs \"" + s + "\"");
+}
+void CodeVisitor::Visit(Bool *n) {
+    if (n->value) {
+        Print("Pushi 1");
+    } else {
+        Print("Pushi 0");
+    }
+}
+void CodeVisitor::Visit(Char *n)
+{
+    Print("Pushs " + std::to_string(n->value));
+}
+void CodeVisitor::Visit(Expression *n)
+{
+
+}
+void CodeVisitor::Visit(IdExpr *n)
+{
+    n->type = n->id->symbol->type;
+}
+///////////
+void CodeVisitor::Visit(IntNumExpr *n)
+{
+    n->intNum->accept(this) ;
+}
+void CodeVisitor::Visit(BoolExpr *n)
+{
+    n->aBool->accept(this) ;
+}
+void CodeVisitor::Visit(RealNumExpr *n)
+{
+    n->realNum->accept(this) ;
+}
+void CodeVisitor::Visit(StringExpr *n)
+{
+    n->aString->accept(this) ;
+}
+void CodeVisitor::Visit(CharExpr *n)
+{
+    n->aChar->accept(this) ;
+}
+void CodeVisitor::Visit(ListWithExpr *n)
+{
+    if (n->expressionList) {
+        for (int i = 0; i < n->expressionList->expressionList->size(); i++)
+        {
+            n->expressionList->expressionList->at(i)->accept(this);
+            if (n->expressionList->expressionList->at(i)->type == 1 &&
+            n->id->symbol->subprogram_head->arguments->parameterList->parameters->at(i).second->type == 2)
+                Print("itof");
+        }
+    }
+    string label = "";
+    label += n->id->name;
+    if (n->expressionList)
+    {
+        for (int i = 0; i < n->expressionList->expressionList->size(); i++)
+        {
+            label += "__" + types[n->expressionList->expressionList->at(i)->type];
+        }
+    }
+    Print("pusha " + label);
+    Print("call");
+
+    Symbol * functionSymbol = n->id->symbol;
+    if (functionSymbol)
+    {
+        functions->push_back(functionSymbol);
+        if (n->expressionList->expressionList != NULL && n->expressionList->expressionList && n->expressionList->expressionList->size() > 0)
+            Print("pop " + std::to_string(n->expressionList->expressionList->size()));
+        if (functionSymbol->type != 4)
+            Print("pushg " + std::to_string(gp));
+    }
+    else
+    {
+        // Add errors
+    }
+}
+void CodeVisitor::Visit(UnaryExpr *n) {
+    if (n->leftExpression != NULL) n->leftExpression->accept(this);
+    if (n->rightExpression != NULL) n->rightExpression->accept(this);
+    int op = n->unaryOperator->index;
+    if (op < 5) /// Mul Add Sub Div
+    {
+        string operation = "";
+        if (op == 1) operation = "mul";
+        if (op == 2) operation = "add";
+        if (op == 3) operation = "sub";
+        if (op == 4) operation = "div";
+
+        if (n->rightExpression->type == 1 && n->rightExpression->type == 1)
+            Print(operation);
+        else if (n->leftExpression->type == 1) {
+            Print("storeg " + std::to_string(gp));
+            Print("itof");
+            Print("pushg " + std::to_string(gp));
+            Print("f" + operation);
+        } else if (n->rightExpression->type == 1) {
+            Print("itof");
+            Print("f" + operation);
+        } else if (n->leftExpression->type == 2 && n->rightExpression->type == 2)
+            Print("f" + operation);
+    }
+    if(op == 5) /// Mod
+    {
+        if (n->rightExpression->type == 1 && n->rightExpression->type == 1)
+            Print("mod");
+    }
+    if(op == 14) /// And
+    {
+        Print("add");
+        Print("pushi 2");
+        Print("equal");
+    }
+    if(op == 13) /// Or
+    {
+        Print("add");
+        Print("pushi 0");
+        Print("equal");
+        Print("not");
+    }
+    if(op >=6  && op <= 11)
+    {
+        string operation = "";
+        if (op == 6) operation = "sup";
+        if (op == 7) operation = "infeq";
+        if (op == 8) operation = "inf";
+        if (op == 9) operation = "supeq";
+        if (op == 10) operation = "equal";
+        if (op == 11) operation = "equal";
+        if (n->leftExpression->type == 1 && n->rightExpression->type == 1)
+            Print(operation);
+        else
+        if (n->leftExpression->type == 1)
+        {
+            Print("storeg " + std::to_string(cp));
+            Print("itof");
+            Print("pushg " + std::to_string(cp));
+            Print(operation);
+        }
+        else
+        if (n->rightExpression->type == 1)
+        {
+            Print("itof");
+            Print(operation);
+        }
+        else
+        if (n->leftExpression->type == 2 && n->rightExpression->type == 2)
+            Print(operation);
+        if(op == 12)
+            Print("not");
+    }
+
+}
+void CodeVisitor::Visit(NotExpr *n) {
+    n->expression->accept(this) ;
+    Print("not") ;
+}
+void CodeVisitor::Visit(BracketExpr *n) {
+    if (n->id != NULL)
+        n->id->accept(this);
+    int Location = n->id->symbol->location;
+    if (n->id->symbol->kind == 3) {
+        Print("Pushl " + std::to_string(Location));
+    }
+    if (n->id->symbol->kind == 2) {
+        Print("Pushg " + std::to_string(Location));
+    }
+    if(n->expression != NULL)
+        n->expression->accept(this);
+    Print("loadn") ;
+}
+void CodeVisitor::Visit(ExpressionWithExpr *n) {
+    n->expression->accept(this) ;
+}
+/////////////////////////
+/*void CodeVisitor::Visit(Type *n) {
+    n->
+};*/
+void CodeVisitor::Visit(Standard_type *n)
+{
+
+}
+void CodeVisitor::Visit(Array_type *n) {
+    int size = n->last->value - n->first->value + 1 ;
+    Print("alloc " + std::to_string(size));
+    Print("storel " + std::to_string(fp));
+    int type = n->type;
+    for (int i = 0; i < size ; i++)
+    {
+        if (type == 1)
+        {
+            Print("pushl " + std::to_string(fp));
+            Print("pushi " + std::to_string(i));
+            Print("pushi 0");
+            Print("storen");
+        }
+        else
+        if (type == 3)
+        {
+            Print("pushl " + std::to_string(fp));
+            Print("pushi " + std::to_string(i));
+            Print("pushi 0");
+            Print("storen");
+        }
+        else
+        if (type == 2)
+        {
+            Print("pushl " + std::to_string(fp));
+            Print("pushi " + std::to_string(i));
+            Print("pushf 0.0");
+            Print("storen");
+        }
+        else
+        if (type == 5)
+        {
+            Print("pushl " + std::to_string(fp));
+            Print("pushi " + std::to_string(i));
+            Print("pushs \"\"");
+            Print("storen");
+        }
+    }
+    Print("pushl " + std::to_string(fp));
+    //fp++;
+    fp += size ;
+}
+void CodeVisitor::Visit(Compound_statement *n)
+{
+    if(n->optionalStatement != NULL)
+        n->optionalStatement->accept(this);
+}
+
+void CodeVisitor::Visit(Subprogram_head *n)
+{
+    cout << "Subprogram " << n->id->name << endl;
+    cout << "Arguments " << endl;
+    n->arguments->accept(this);
+}
+
+void CodeVisitor::Visit(Subprogram_variables *n)
+{
+    try
+    {
+        for (int i = 0; i < (int)(n->subprogramVariables->size()); i++)
+        {
+            n->subprogramVariables->at(i).first->accept(this);
+            if (i != (int)(n->subprogramVariables->size() - 1))
+                cout << ",";
+        }
+    }
+    catch (std::exception e)
+    {
+        cout << "";
+    }
+};
+void CodeVisitor::Visit(Arguments *n)
+{
+    if(n->parameterList != NULL)
+    n->parameterList->accept(this);
+}
+void CodeVisitor::Visit(Parameter_list *n)
+{
+    if(n->parameters != NULL) {
+        for (int i = 0; i < (int) (n->parameters->size()); i++) {
+            n->parameters->at(i).first->accept(this);
+        }
+    }
+}
+void CodeVisitor::Visit(Statement_list *n)
+{
+    if(n->statement_list != NULL)
+    {
+        for (int i = 0; i < (int)(n->statement_list->size()); i++)
+        {
+            n->statement_list->at(i)->accept(this);
+        }
+    }
+}
+void CodeVisitor::Visit(Optional_statement *n)
+{
+    if (n->statementList != NULL)
+    {
+        n->statementList->accept(this);
+    }
+}
+void CodeVisitor::Visit(Optional_statementNonEmpty *n)
+{
+    n->statementList->accept(this);
+}
+void CodeVisitor::Visit(Variable *n)
+{
+    n->id->accept(this);
+}
+void CodeVisitor::Visit(Procedure_statement *n)
+{
+    if (n->CG_visited == false)
+    {
+        fp = 0;
+        n->CG_visited = true;
+        string label = "";
+        label += n->id->name;
+        if (n->id->symbol->subprogram_head->arguments->parameterList->parameters != NULL)
+        {
+            for (int i = 0; i < n->id->symbol->subprogram_head->arguments->parameterList->parameters->size(); i++)
+            {
+                label += "__" + types[n->id->symbol->subprogram_head->arguments->parameterList->parameters->at(i).second->type];
+            }
+        }
+        Print(label + ":");
+        if (n->id->symbol->subprogram_head->arguments->parameterList!=NULL)
+            n->id->symbol->subprogram_head->arguments->parameterList->accept(this);
+        if (n->expressionList != NULL)n->expressionList->accept(this);
+        Print("return");
+    }
+}
+void CodeVisitor::Visit(If *n)
+{
+    ifLabel++;
+    int label = ifLabel;
+    Print("IF_BEGIN" + std::to_string((label)) + ":");
+    if (n->expression != NULL) n->expression->accept(this);
+    Print("jz IF_END" + std::to_string((label)));
+    if (n->thenStatement != NULL) n->thenStatement->accept(this);
+    Print("IF_END" + std::to_string((label)) + ":");
+}
+void CodeVisitor::Visit(IfElse *n)
+{
+    ifElseLabel++;
+    int label = ifElseLabel;
+    Print("IF_BEGIN" + std::to_string((label)) + ":");
+    if (n->expression != NULL) n->expression->accept(this);
+    Print("jz ELSE_BEGIN" + std::to_string((label)));
+    if (n->thenStatement != NULL) n->thenStatement->accept(this);
+    Print("IF_END" + std::to_string((label)) + ":");
+    Print("jump ELSE_END" + std::to_string((label)));
+    Print("ELSE_BEGIN" + std::to_string((label)) + ":");
+    if (n->elseStatement != NULL)n->elseStatement->accept(this);
+    Print("ELSE_END" + std::to_string((label)) + ":");
+}
+void CodeVisitor::Visit(While *n)
+{
+    whileLabel++;
+    int label = whileLabel;
+    Print("WHILE_BEGIN" + std::to_string(whileLabel) + ":");
+    if (n->expression != NULL)
+    {
+        n->expression->accept(this);
+    }
+    Print("jz WHILE_END" + std::to_string(whileLabel));
+    if (n->doStatement != NULL)
+    {
+        n->doStatement->accept(this);
+    }
+    Print("jump WHILE_BEGIN" + std::to_string(whileLabel));
+    Print("WHILE_END" + std::to_string(whileLabel) + ":");
+};
+void CodeVisitor::Visit(For *n)
+{
+    forLabel++;
+    int label = forLabel;
+    if (n->variable->id != NULL)
+    {
+        //// assign for statement
+        n->variable->id->symbol->location = gp;
+        n->down->accept(this);
+        if (n->variable->id->symbol->kind == 1)
+        {
+            n->variable->id->symbol->location = gp;
+            Print("storel " + std::to_string(gp));
+            Print("pushl " + std::to_string(gp));
+            gp--;
+        }
+        else if (n->variable->id->symbol->kind == 2)
+        {
+            if (n->down->type == 1 && n->variable->id->symbol->type == 2) {
+                Print("itof");
+            }
+            n->variable->id->symbol->location = fp;
+            Print("storel " + std::to_string(fp));
+            Print("pushl " + std::to_string(fp));
+            fp++;
+        }
+        Print("storeg " + std::to_string(gp));
+    }
+    Print("FOR_BEGIN" + std::to_string(label) + ":");
+    ///// condition
+    if (n->variable != NULL) n->variable->accept(this);
+    if (n->up != NULL) n->up->accept(this);
+    Print("infeq");
+    Print("jz FOR_END" + std::to_string(label));
+
+    if (n->optionalStatement != NULL) n->optionalStatement->accept(this);
+    n->variable->accept(this) ;
+    Print("pushi 1") ;
+    Print("add");
+    Print("jump FOR_BEGIN" + std::to_string(label));
+    Print("FOR_END" + std::to_string(label) + ":");
+};
+void CodeVisitor::Visit(Unary_operator *n){
+
+};
+void CodeVisitor::Visit(Variable_Expression *n)
+{
+    
+    if (n->ident != NULL) n->ident->accept(this);
+    //w("storeg " + std::to_string(g));
+    if (n->ident->symbol->kind == 1)
+    {
+        w("pushg " + std::to_string(n->ident->symbol->location));
+    }
+    else
+    {
+        w("pushl " + std::to_string(n->ident->symbol->location));
+    }
+    if (n->indexexpr != NULL) n->indexexpr->accept(this);
+    //w("pushg " + std::to_string(g));
+    if (n->equalExpr != NULL) n->equalExpr->accept(this);
+    w("storen");
+
+    n->expression->accept(this);
+    if (n->variable->id->symbol->kind == 1)
+    {
+        n->variable->id->symbol->location = gp;
+        Print("storel " + std::to_string(gp));
+        Print("pushl " + std::to_string(gp));
+        gp--;
+    }
+    else if (n->variable->id->symbol->kind == 2)
+    {
+        if (n->expression->type == 1 && n->variable->id->symbol->type == 2) {
+            Print("itof");
+        }
+        n->variable->id->symbol->location = fp;
+        Print("storel " + std::to_string(fp));
+        Print("pushl " + std::to_string(fp));
+        fp++;
+    }
+};
+void CodeVisitor::Visit(Procedure_statementList *n)
+{
+
+};/*
+generateReadWriteFunction();
+
+void CodeGeneration::generateReadWriteFunction()
+{
+    w("\n\n\n");
+    w("\n\n\n");
+    ////writeline integer
+    w("write__int:");
+    w("pushl -1");
+    w("storel 0");
+    w("pushl 0");
+    w("pushl 0");
+    w("writei");
+    w("return\n\n\n");
+
+    ////writeline real
+    w("write__double:");
+    w("pushl -1");
+    w("storel 0");
+    w("pushl 0");
+    w("pushl 0");
+    w("writef");
+    w("return\n\n\n");
+
+    ////writeline real
+    w("write__string:");
+    w("pushl -1");
+    w("storel 0");
+    w("pushl 0");
+    w("pushl 0");
+    w("writes");
+    w("return\n\n\n");
+
+
+
+    ////writeline boolean
+    w("write__boolean:");
+    w("pushl -1");
+    w("storel 0");
+    w("pushl 0");
+    w("pushl 0");
+    w("writei");
+    w("return\n\n\n");
+
+    ////read integer
+    w("readInt:");
+    w("read");
+    w("atoi");
+    w("storeg " + std::to_string(g) + "");
+    w("return\n\n\n");
+
+    ////read real
+    w("readReal:");
+    w("read");
+    w("atof");
+    w("storeg " + std::to_string(g) + "");
+    w("return\n\n\n");
+
+    ////read string
+    w("readString:");
+    w("read");
+    w("storeg " + std::to_string(g) + "");
+    w("return\n\n\n");
+
+    /////readkey
+    w("readKey:");
+    w("read");
+    w("pop 1");
+    w("return");
+}*/

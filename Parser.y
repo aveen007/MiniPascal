@@ -401,9 +401,9 @@ statement:
 		|FOR
 		{
 	
-		} variable ':''=' expression  TO INTNUM DO  BEGINN optional_statement END
+		} variable ':''=' expression  TO expression DO  BEGINN optional_statement END
 		{
-			$$ = new For($3, $6, $11, lin, col);
+			$$ = new For($3, $6, $8 , $11, lin, col);
 		}
 		;
 variable:
@@ -496,7 +496,6 @@ expression:
 		|expression unary_operator expression %prec Uoperator /// What is Uoperator // By Ghaffar
 		{
 			$$ = new UnaryExpr($1 ,$2, $3 ,lin, col);
-			// cout<<"###########"<<endl;
 		}
 		|NOT expression
 		{

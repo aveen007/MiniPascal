@@ -3,13 +3,24 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <fstream>
 #include "hash_fun.h"
 #include "hash_table.h"
 
 using namespace std;
 using std::cout;
 using std::endl;
+using std::ofstream ;
+using std::ios ;
+
+extern int whileLabel ;
+extern int ifLabel ;
+extern int ifElseLabel ;
+extern int ifLabel;
+extern int forLabel ;
+
+static ofstream vout ("code.txt" , ios::out) ;
+
 
 class Symbol;
 // typedef CHashTable<Symbol> HashTab;
@@ -18,7 +29,8 @@ class Symbol;
 class Declarations;
 
 class Statement;
-
+class AssignmentIdStatement ;
+class AssignmentArrayStatement ;
 class Expression_list;
 
 class Identifier_list;
@@ -344,7 +356,27 @@ public:
     Statement(int, int);
     virtual void accept(Visitor *v);
 };
+class Assignment_statement : public Statement
+{
+public:
+    Assignment_statement(int , int) ;
+};
+class AssignmentIdStatement : public Assignment_statement
+{
+public:
+    Id * id ;
+    Expression * expression ;
+    AssignmentIdStatement(Id* , Expression* , int , int);
+};
 
+class AssignmentArrayStatement : public Assignment_statement
+{
+public:
+    Id * id ;
+    Expression * index ;
+    Expression * expression ;
+    AssignmentArrayStatement(Id* , Expression* , Expression* , int , int);
+};
 class Compound_statement : public Statement
 {
 public:
@@ -376,7 +408,6 @@ public:
     Empty_optional_statement(int, int);
     virtual void accept(Visitor *v);
 };
-
 class Variable_Expression : public Statement
 {
 public:
@@ -392,7 +423,7 @@ class Procedure_statement : public Statement
 public:
     Id *id;
     Expression_list *expressionList;
-
+    bool CG_visited;
     Procedure_statement(Expression_list *, Id *, int, int);
     virtual void accept(Visitor *v);
 };
@@ -438,10 +469,11 @@ class For : public Statement
 {
 public:
     Variable *variable;
-    Expression *expression;
+    Expression * down;
+    Expression * up ;
     Optional_statement *optionalStatement;
 
-    For(Variable *, Expression *, Optional_statement *, int, int);
+    For(Variable *, Expression *, Expression* , Optional_statement *, int, int);
     virtual void accept(Visitor *v);
 };
 
@@ -658,6 +690,7 @@ public:
     virtual void Visit(Parameter_list *n) = 0;
     virtual void Visit(Statement_list *n) = 0;
     virtual void Visit(Optional_statement *n) = 0;
+    virtual void Visit(Optional_statementNonEmpty *) = 0;
     virtual void Visit(Compound_statement *n) = 0;
     virtual void Visit(Variable *n) = 0;
     virtual void Visit(Procedure_statement *n) = 0;
@@ -772,7 +805,6 @@ public:
     virtual void Visit(Statement_list *);
     virtual void Visit(Optional_statement *);
     virtual void Visit(Optional_statementNonEmpty *);
-
     virtual void Visit(Compound_statement *);
     virtual void Visit(Variable *);
     virtual void Visit(Procedure_statement *);
@@ -828,4 +860,66 @@ public:
     Symbol *LookupConstructor(Id *, Expression_list *);
     void CloseScope();
     void OpenScope();
+};
+//////////////////////////Code checker
+
+class CodeVisitor : public Visitor
+{
+
+public:
+    int fp = 0;
+    int gp = 1023;
+    int cp = 512+1024-1 ;
+    string types[8];
+    string operators[16];
+    vector<Symbol *> *functions;
+    CodeVisitor();
+    virtual void Visit(Node *);
+    virtual void Visit(Program *n);
+    virtual void Visit(Declarations *);
+    virtual void Visit(Declaration *);
+    virtual void Visit(DeclarationVar *);
+    virtual void Visit(Subprogram_declarations *);
+    virtual void Visit(Subprogram_declaration *);
+    virtual void Visit(Statement *);
+    virtual void Visit(Expression_list *);
+    virtual void Visit(Identifier_list *);
+    virtual void Visit(Id *);
+    virtual void Visit(IntNum *);
+    virtual void Visit(RealNum *);
+    virtual void Visit(String *);
+    virtual void Visit(Bool *);
+    virtual void Visit(Char *);
+    virtual void Visit(Expression *);
+    virtual void Visit(IdExpr *);
+    virtual void Visit(IntNumExpr *);
+    virtual void Visit(BoolExpr *);
+    virtual void Visit(RealNumExpr *);
+    virtual void Visit(StringExpr *);
+    virtual void Visit(CharExpr *);
+    virtual void Visit(ListWithExpr *);
+    virtual void Visit(UnaryExpr *);
+    virtual void Visit(NotExpr *);
+    virtual void Visit(BracketExpr *);
+    virtual void Visit(ExpressionWithExpr *);
+    //virtual void Visit(Type *);
+    virtual void Visit(Standard_type *) ;
+    virtual void Visit(Array_type *) ;
+    virtual void Visit(Subprogram_head *);
+    virtual void Visit(Subprogram_variables *);
+    virtual void Visit(Arguments *);
+    virtual void Visit(Parameter_list *);
+    virtual void Visit(Statement_list *);
+    virtual void Visit(Optional_statement *);
+    virtual void Visit(Optional_statementNonEmpty *);
+    virtual void Visit(Compound_statement *);
+    virtual void Visit(Variable *);
+    virtual void Visit(Procedure_statement *);
+    virtual void Visit(If *);
+    virtual void Visit(IfElse *);
+    virtual void Visit(While *);
+    virtual void Visit(For *);
+    virtual void Visit(Unary_operator *);
+    virtual void Visit(Procedure_statementList *);
+    virtual void Visit(Variable_Expression *);
 };
