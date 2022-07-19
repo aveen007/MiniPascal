@@ -687,6 +687,7 @@ public:
     virtual void Visit(Parameter_list *n) = 0;
     virtual void Visit(Statement_list *n) = 0;
     virtual void Visit(Optional_statement *n) = 0;
+    virtual void Visit(VariableExpression *n)=0;
     virtual void Visit(Optional_statementNonEmpty *) = 0;
     virtual void Visit(Compound_statement *n) = 0;
     virtual void Visit(Variable *n) = 0;
@@ -753,6 +754,7 @@ public:
     virtual void Visit(IfElse *);
     virtual void Visit(While *);
     virtual void Visit(For *);
+    virtual void Visit(VariableExpression *n);
     virtual void Visit(Variable_Expression *);
     virtual void Visit(Unary_operator *);
     virtual void Visit(Procedure_statementList *);
@@ -798,6 +800,7 @@ public:
     virtual void Visit(Type *);
     virtual void Visit(Subprogram_head *);
     virtual void Visit(Subprogram_variables *);
+    virtual void Visit(VariableExpression *n);
     virtual void Visit(Arguments *);
     virtual void Visit(Parameter_list *);
     virtual void Visit(Statement_list *);
@@ -877,6 +880,7 @@ public:
      virtual void Visit(Declarations *);
      virtual void Visit(Declaration *);
      virtual void Visit(DeclarationVar *n) ;
+     virtual void Visit(VariableExpression *n);
      virtual void Visit(Subprogram_declarations *);
      virtual void Visit(Subprogram_declaration *);
      virtual void Visit(Statement *);

@@ -211,7 +211,6 @@ type:
 		{
 			$$ = new Array_type($3 ,$5 ,$8 ,lin ,col);
 						
-
 		}
 ;	
 standard_type:

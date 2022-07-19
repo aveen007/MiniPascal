@@ -532,8 +532,6 @@ void PrintVisitor::Visit(Declarations *n)
         for (int i = 0; i < (int)(n->declarations->size()); i++)
         {
             n->declarations->at(i)->accept(this);
-            if (i != (int)(n->declarations->size() - 1))
-                cout << ",";
         }
     }
     catch (std::exception e)
@@ -677,6 +675,7 @@ void PrintVisitor::Visit(BracketExpr *n)
 {
     n->expression->accept(this);
     n->type = n->id->symbol->type;
+    cout<<"Value is here "<<endl;
 };
 void PrintVisitor::Visit(ExpressionWithExpr *n) { cout << ""; };
 void PrintVisitor::Visit(Type *n) { cout << ""; };
@@ -728,6 +727,8 @@ void PrintVisitor::Visit(Parameter_list *n)
         cout << "";
     }
 };
+void PrintVisitor::Visit(VariableExpression *n)
+{}
 void PrintVisitor::Visit(Statement_list *n)
 {
     try
@@ -1169,6 +1170,8 @@ TypeChecker::TypeChecker()
 }
 
 void TypeChecker::Visit(Node *n) {}
+void CodeVisitor::Visit(VariableExpression *n)
+{}
 void TypeChecker::Visit(Program *n)
 {
 
@@ -1997,10 +2000,71 @@ void CodeVisitor::Visit(Declarations *n)
 }
 void CodeVisitor::Visit(DeclarationVar *n)
 {
-    n->identifierList->accept(this);
+    if(n->type->first != NULL) {
+        int Size = n->type->second - n->type->first + 1 ;
+        for(int i=0;i<n->identifierList->Ids->size();i++)
+        {
+
+            Print("alloc " + std::to_string(Size));
+            Print("storel " + std::to_string(fp));
+            int type = n->type->type;
+            for (int j = 0; j < Size; j++)
+            {
+                if (type == 1)
+                {
+                    Print("pushl " + std::to_string(fp));
+                    Print("pushi " + std::to_string(j));
+                    Print("pushi 0");
+                    Print("storen");
+                }
+                else
+                if (type == 3)
+                {
+                    Print("pushl " + std::to_string(fp));
+                    Print("pushi " + std::to_string(j));
+                    Print("pushi 0");
+                    Print("storen");
+                }
+                else
+                if (type == 2)
+                {
+                    Print("pushl " + std::to_string(fp));
+                    Print("pushi " + std::to_string(j));
+                    Print("pushf 0.0");
+                    Print("storen");
+                }
+                else
+                if (type == 5)
+                {
+                    Print("pushl " + std::to_string(fp));
+                    Print("pushi " + std::to_string(j));
+                    Print("pushs \"\"");
+                    Print("storen");
+                }
+            }
+            Print("pushl " + std::to_string(fp));
+            fp++;
+        }
+    }
+    else{
+
+        for(int i=0;i<n->identifierList->Ids->size();i++)
+        {
+            Print("pushi 0") ;
+            Id * currId = n->identifierList->Ids->at(i) ;
+            currId->symbol->location = gp ;
+            if(currId->symbol->type == 2 )
+                Print("itof") ;
+            Print("storeg " + std::to_string(gp));
+            Print("pushg " + std::to_string(gp));
+            gp--;
+        }
+
+    }
 }
 void CodeVisitor::Visit(Declaration *n)
 {
+
     for (int i = 0; i < n->identifierList->Ids->size(); i++)
     {
 
@@ -2273,6 +2337,7 @@ void CodeVisitor::Visit(BracketExpr *n)
     if (n->id != NULL)
         n->id->accept(this);
     int Location = n->id->symbol->location;
+    cout<<"Location "<<Location<<endl;
     if (n->id->symbol->kind == 3)
     {
         Print("Pushl " + std::to_string(Location));
@@ -2291,7 +2356,7 @@ void CodeVisitor::Visit(ExpressionWithExpr *n)
 }
 /////////////////////////
 void CodeVisitor::Visit(Type *n) {
-
+    cout<<"dont go"<<endl;
 };
 //void CodeVisitor::Visit(Standard_type *n)
 //{
@@ -2342,7 +2407,7 @@ void CodeVisitor::Visit(Compound_statement *n)
     if (n->optionalStatement != NULL)
         n->optionalStatement->accept(this);
 }
-
+void CodeVisitor::Visit(Variable *n) {}
 void CodeVisitor::Visit(Subprogram_head *n)
 {
     cout << "Subprogram " << n->id->name << endl;
@@ -2402,10 +2467,23 @@ void CodeVisitor::Visit(Optional_statementNonEmpty *n)
 {
     n->statementList->accept(this);
 }
-void CodeVisitor::Visit(Variable *n)
+void TypeChecker::Visit(VariableExpression *n)
 {
-    n->id->accept(this);
+    if (n->id != NULL) n->id->accept(this);
+    //w("storeg " + std::to_string(g));
+    if (n->id->symbol->kind == 1)
+    {
+        Print("pushg " + std::to_string(n->id->symbol->location));
+    }
+    else
+    {
+        Print("pushl " + std::to_string(n->id->symbol->location) );
+    }
+    if (n->expression != NULL) n->expression->accept(this);
+    //w("pushg " + std::to_string(g));
+    Print("loadn");
 }
+
 void CodeVisitor::Visit(Procedure_statement *n)
 {
     if (n->CG_visited == false)
@@ -2433,47 +2511,47 @@ void CodeVisitor::Visit(If *n)
 {
     ifLabel++;
     int label = ifLabel;
-    Print("IF_BEGIN" + std::to_string((label)) + ":");
+    Print("IF_BEGIN " + std::to_string((label)) + ":");
     if (n->expression != NULL)
         n->expression->accept(this);
-    Print("jz IF_END" + std::to_string((label)));
+    Print("jz IF_END " + std::to_string((label)));
     if (n->thenStatement != NULL)
         n->thenStatement->accept(this);
-    Print("IF_END" + std::to_string((label)) + ":");
+    Print("IF_END " + std::to_string((label)) + ":");
 }
 void CodeVisitor::Visit(IfElse *n)
 {
     ifElseLabel++;
     int label = ifElseLabel;
-    Print("IF_BEGIN" + std::to_string((label)) + ":");
+    Print("IF_BEGIN " + std::to_string((label)) + ":");
     if (n->expression != NULL)
         n->expression->accept(this);
-    Print("jz ELSE_BEGIN" + std::to_string((label)));
+    Print("jz ELSE_BEGIN " + std::to_string((label)));
     if (n->thenStatement != NULL)
         n->thenStatement->accept(this);
-    Print("IF_END" + std::to_string((label)) + ":");
-    Print("jump ELSE_END" + std::to_string((label)));
-    Print("ELSE_BEGIN" + std::to_string((label)) + ":");
+    Print("IF_END " + std::to_string((label)) + ":");
+    Print("jump ELSE_END " + std::to_string((label)));
+    Print("ELSE_BEGIN " + std::to_string((label)) + ":");
     if (n->elseStatement != NULL)
         n->elseStatement->accept(this);
-    Print("ELSE_END" + std::to_string((label)) + ":");
+    Print("ELSE_END " + std::to_string((label)) + ":");
 }
 void CodeVisitor::Visit(While *n)
 {
     whileLabel++;
     int label = whileLabel;
-    Print("WHILE_BEGIN" + std::to_string(whileLabel) + ":");
+    Print("WHILE_BEGIN " + std::to_string(whileLabel) + ":");
     if (n->expression != NULL)
     {
         n->expression->accept(this);
     }
-    Print("jz WHILE_END" + std::to_string(whileLabel));
+    Print("jz WHILE_END " + std::to_string(whileLabel));
     if (n->doStatement != NULL)
     {
         n->doStatement->accept(this);
     }
-    Print("jump WHILE_BEGIN" + std::to_string(whileLabel));
-    Print("WHILE_END" + std::to_string(whileLabel) + ":");
+    Print("jump WHILE_BEGIN " + std::to_string(whileLabel));
+    Print("WHILE_END " + std::to_string(whileLabel) + ":");
 };
 void CodeVisitor::Visit(For *n)
 {
@@ -2504,22 +2582,22 @@ void CodeVisitor::Visit(For *n)
         }
         Print("storeg " + std::to_string(gp));
     }
-    Print("FOR_BEGIN" + std::to_string(label) + ":");
+    Print("FOR_BEGIN " + std::to_string(label) + ":");
     ///// condition
     if (n->variable != NULL)
         n->variable->accept(this);
     if (n->up != NULL)
         n->up->accept(this);
     Print("infeq");
-    Print("jz FOR_END" + std::to_string(label));
+    Print("jz FOR_END " + std::to_string(label));
 
     if (n->optionalStatement != NULL)
         n->optionalStatement->accept(this);
     n->variable->accept(this);
     Print("pushi 1");
     Print("add");
-    Print("jump FOR_BEGIN" + std::to_string(label));
-    Print("FOR_END" + std::to_string(label) + ":");
+    Print("jump FOR_BEGIN " + std::to_string(label));
+    Print("FOR_END " + std::to_string(label) + ":");
 };
 void CodeVisitor::Visit(Unary_operator *n){
 
@@ -2530,10 +2608,10 @@ void CodeVisitor::Visit(Variable_Expression *n)
     if(n->variable->id->symbol->first == NULL) {
         n->expression->accept(this);
         if (n->variable->id->symbol->kind == 1) {
-            n->variable->id->symbol->location = gp;
-            Print("storel " + std::to_string(gp));
-            Print("pushl " + std::to_string(gp));
-            gp--;
+            n->variable->id->symbol->location = fp;
+            Print("storel " + std::to_string(fp));
+            Print("pushl " + std::to_string(fp));
+            fp++;
         } else if (n->variable->id->symbol->kind == 2) {
             if (n->expression->type == 1 && n->variable->id->symbol->type == 2) {
                 Print("itof");
@@ -2544,47 +2622,10 @@ void CodeVisitor::Visit(Variable_Expression *n)
             fp++;
         }
     }else{
-        int Size = n->variable->id->symbol->second -
-                n->variable->id->symbol->second + 1 ;
-        Print("alloc " + std::to_string(Size));
-        Print("storel " + std::to_string(fp));
         int type = n->variable->id->symbol->type;
-        for (int j = 0; j < Size; j++)
-        {
-            if (type == 1)
-            {
-                Print("pushl " + std::to_string(fp));
-                Print("pushi " + std::to_string(j));
-                Print("pushi 0");
-                Print("storen");
-            }
-            else
-            if (type == 3)
-            {
-                Print("pushl " + std::to_string(fp));
-                Print("pushi " + std::to_string(j));
-                Print("pushi 0");
-                Print("storen");
-            }
-            else
-            if (type == 2)
-            {
-                Print("pushl " + std::to_string(fp));
-                Print("pushi " + std::to_string(j));
-                Print("pushf 0.0");
-                Print("storen");
-            }
-            else
-            if (type == 5)
-            {
-                Print("pushl " + std::to_string(fp));
-                Print("pushi " + std::to_string(j));
-                Print("pushs \"\"");
-                Print("storen");
-            }
-        }
-        Print("pushl " + std::to_string(fp));
-        fp++;
+        n->variable->accept(this);
+        n->expression->accept(this) ;
+        Print("loadn");
     }
 };
 void CodeVisitor::Visit(Procedure_statementList *n){
