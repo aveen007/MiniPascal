@@ -2518,112 +2518,167 @@ void CodeVisitor::Visit(Unary_operator *n){
 void CodeVisitor::Visit(Variable_Expression *n)
 {
 
-    if (n->ident != NULL)
-        n->ident->accept(this);
-    // w("storeg " + std::to_string(g));
-    if (n->ident->symbol->kind == 1)
-    {
-        w("pushg " + std::to_string(n->ident->symbol->location));
-    }
-    else
-    {
-        w("pushl " + std::to_string(n->ident->symbol->location));
-    }
-    if (n->indexexpr != NULL)
-        n->indexexpr->accept(this);
-    // w("pushg " + std::to_string(g));
-    if (n->equalExpr != NULL)
-        n->equalExpr->accept(this);
-    w("storen");
-
-    n->expression->accept(this);
-    if (n->variable->id->symbol->kind == 1)
-    {
-        n->variable->id->symbol->location = gp;
-        Print("storel " + std::to_string(gp));
-        Print("pushl " + std::to_string(gp));
-        gp--;
-    }
-    else if (n->variable->id->symbol->kind == 2)
-    {
-        if (n->expression->type == 1 && n->variable->id->symbol->type == 2)
-        {
-            Print("itof");
+    if(n->variable->id->symbol->first == NULL) {
+        n->expression->accept(this);
+        if (n->variable->id->symbol->kind == 1) {
+            n->variable->id->symbol->location = gp;
+            Print("storel " + std::to_string(gp));
+            Print("pushl " + std::to_string(gp));
+            gp--;
+        } else if (n->variable->id->symbol->kind == 2) {
+            if (n->expression->type == 1 && n->variable->id->symbol->type == 2) {
+                Print("itof");
+            }
+            n->variable->id->symbol->location = fp;
+            Print("storel " + std::to_string(fp));
+            Print("pushl " + std::to_string(fp));
+            fp++;
         }
-        n->variable->id->symbol->location = fp;
+    }else{
+        int Size = n->variable->id->symbol->second -
+                n->variable->id->symbol->second + 1 ;
+        Print("alloc " + std::to_string(Size));
         Print("storel " + std::to_string(fp));
+        int type = n->variable->id->symbol->type;
+        for (int j = 0; j < Size; j++)
+        {
+            if (type == 1)
+            {
+                Print("pushl " + std::to_string(fp));
+                Print("pushi " + std::to_string(j));
+                Print("pushi 0");
+                Print("storen");
+            }
+            else
+            if (type == 3)
+            {
+                Print("pushl " + std::to_string(fp));
+                Print("pushi " + std::to_string(j));
+                Print("pushi 0");
+                Print("storen");
+            }
+            else
+            if (type == 2)
+            {
+                Print("pushl " + std::to_string(fp));
+                Print("pushi " + std::to_string(j));
+                Print("pushf 0.0");
+                Print("storen");
+            }
+            else
+            if (type == 5)
+            {
+                Print("pushl " + std::to_string(fp));
+                Print("pushi " + std::to_string(j));
+                Print("pushs \"\"");
+                Print("storen");
+            }
+        }
         Print("pushl " + std::to_string(fp));
         fp++;
     }
 };
 void CodeVisitor::Visit(Procedure_statementList *n){
+    if (n->expressionList) {
+        for (int i = 0; i < n->expressionList->expressionList->size(); i++)
+        {
+            n->expressionList->expressionList->at(i)->accept(this);
+            if (n->expressionList->expressionList->at(i)->type == 1 && n->id->symbol->subprogram_head->arguments->parameterList->parameters->at(i).second->type == 2)
+                Print("itof");
+        }
+    }
+    string label = "";
+    label += n->id->name;
+    if (n->id->symbol->subprogram_head->arguments->parameterList->parameters)
+    {
+        for (int i = 0; i < n->id->symbol->subprogram_head->arguments->parameterList->parameters->size(); i++)
+        {
+            label += "__" + types[n->id->symbol->subprogram_head->arguments->parameterList->parameters->at(i).second->type];
+        }
+    }
+    Print("pusha " + label);
+    Print("call");
 
-}; /*
- generateReadWriteFunction();
+    Symbol * functionSymbol = n->id->symbol;
+    if (functionSymbol)
+    {
+        functions->push_back(functionSymbol);
+        if (n->expressionList != NULL && n->expressionList->expressionList && n->expressionList->expressionList->size() > 0)
+            Print("pop " + std::to_string(n->expressionList->expressionList->size()));
+        if (functionSymbol->type != 4)
+            Print("pushg " + std::to_string(gp));
+    }
+    else
+    {
+        // Add errors
+    }
+};
 
- void CodeGeneration::generateReadWriteFunction()
+
+
+ void CodeVisitor::generateReadWriteFunction()
  {
-     w("\n\n\n");
-     w("\n\n\n");
+     Print("\n\n\n");
+     Print("\n\n\n");
      ////writeline integer
-     w("write__int:");
-     w("pushl -1");
-     w("storel 0");
-     w("pushl 0");
-     w("pushl 0");
-     w("writei");
-     w("return\n\n\n");
+     Print("write__int:");
+     Print("pushl -1");
+     Print("storel 0");
+     Print("pushl 0");
+     Print("pushl 0");
+     Print("writei");
+     Print("return\n\n\n");
 
      ////writeline real
-     w("write__double:");
-     w("pushl -1");
-     w("storel 0");
-     w("pushl 0");
-     w("pushl 0");
-     w("writef");
-     w("return\n\n\n");
+     Print("write__double:");
+     Print("pushl -1");
+     Print("storel 0");
+     Print("pushl 0");
+     Print("pushl 0");
+     Print("writef");
+     Print("return\n\n\n");
 
      ////writeline real
-     w("write__string:");
-     w("pushl -1");
-     w("storel 0");
-     w("pushl 0");
-     w("pushl 0");
-     w("writes");
-     w("return\n\n\n");
+     Print("write__string:");
+     Print("pushl -1");
+     Print("storel 0");
+     Print("pushl 0");
+     Print("pushl 0");
+     Print("writes");
+     Print("return\n\n\n");
 
      ////writeline boolean
-     w("write__boolean:");
-     w("pushl -1");
-     w("storel 0");
-     w("pushl 0");
-     w("pushl 0");
-     w("writei");
-     w("return\n\n\n");
+     Print("write__boolean:");
+     Print("pushl -1");
+     Print("storel 0");
+     Print("pushl 0");
+     Print("pushl 0");
+     Print("writei");
+     Print("return\n\n\n");
 
      ////read integer
-     w("readInt:");
-     w("read");
-     w("atoi");
-     w("storeg " + std::to_string(g) + "");
-     w("return\n\n\n");
+     Print("readInt:");
+     Print("read");
+     Print("atoi");
+     Print("storeg " + std::to_string(gp) + "");
+     Print("return\n\n\n");
 
      ////read real
-     w("readReal:");
-     w("read");
-     w("atof");
-     w("storeg " + std::to_string(g) + "");
-     w("return\n\n\n");
+     Print("readReal:");
+     Print("read");
+     Print("atof");
+     Print("storeg " + std::to_string(gp) + "");
+     Print("return\n\n\n");
 
      ////read string
-     w("readString:");
-     w("read");
-     w("storeg " + std::to_string(g) + "");
-     w("return\n\n\n");
+     Print("readString:");
+     Print("read");
+     Print("storeg " + std::to_string(gp) + "");
+     Print("return\n\n\n");
 
-     /////readkey
-     w("readKey:");
-     w("read");
-     w("pop 1");
-     w("return");
- }*/
+     /////read key
+     Print("readKey:");
+     Print("read");
+     Print("pop 1");
+     Print("return");
+ }
