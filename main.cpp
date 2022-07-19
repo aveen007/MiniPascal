@@ -18,7 +18,7 @@ int main()
     root;
     Visitor *printVisitor = new PrintVisitor;
     TypeChecker *typeChecker = new TypeChecker;
-    // root->accept(printVisitor);
+    //  root->accept(printVisitor);
     root->accept(typeChecker);
 
     return 0;

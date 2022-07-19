@@ -481,7 +481,7 @@ expression:
 		|ID '(' expression_list ')' 
 		{
 			$$ = new ListWithExpr($1 ,$3, lin, col);
-			symbolTable->LookUp($1);
+			// symbolTable->LookUp($1);
 
 		}
 		|'(' expression ')'

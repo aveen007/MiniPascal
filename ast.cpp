@@ -60,12 +60,12 @@ Type::Type(int type, int l, int r) : Node(l, r)
     this->first = NULL;
     this->second = NULL;
 }
-/*Type::Type(int type, int l, int r, int first, int second) : Node(l, r)
+Type::Type(int type, int l, int r, int first, int second) : Node(l, r)
 {
     this->type = type;
     this->first = first;
     this->second = second;
-}*/
+}
 Standard_type::Standard_type(int type, int l, int r) : Type(type, l, r)
 {
     this->type = type;
@@ -208,25 +208,25 @@ void Parameter_list::AddParameter(Identifier_list *identifierList, Type *type)
 /// Statement
 Statement::Statement(int l, int r) : Node(l, r){};
 
-Assignment_statement::Assignment_statement(int l, int r): Statement(l , r) {};
+Assignment_statement::Assignment_statement(int l, int r) : Statement(l, r){};
 
-AssignmentIdStatement::AssignmentIdStatement(Id * id, Expression * expression, int l , int r)
-:Assignment_statement(l , r)
+AssignmentIdStatement::AssignmentIdStatement(Id *id, Expression *expression, int l, int r)
+    : Assignment_statement(l, r)
 {
-    this->id = id ;
-    this->expression = expression ;
-    id->father = this ;
-    expression->father = this ;
+    this->id = id;
+    this->expression = expression;
+    id->father = this;
+    expression->father = this;
 }
-AssignmentArrayStatement::AssignmentArrayStatement(Id * id,Expression* index , Expression * expression, int l , int r)
-        :Assignment_statement(l , r)
+AssignmentArrayStatement::AssignmentArrayStatement(Id *id, Expression *index, Expression *expression, int l, int r)
+    : Assignment_statement(l, r)
 {
-    this->id = id ;
-    this->index = index ;
-    this->expression = expression ;
-    id->father = this ;
-    index->father = this ;
-    expression->father = this ;
+    this->id = id;
+    this->index = index;
+    this->expression = expression;
+    id->father = this;
+    index->father = this;
+    expression->father = this;
 }
 Compound_statement::Compound_statement(Optional_statement *optionalStatement, int l, int r)
     : Statement(l, r)
@@ -248,7 +248,7 @@ Optional_statement::Optional_statement(Statement_list *statementList, int l, int
     this->statementList = statementList;
 }
 Variable_Expression::Variable_Expression(Variable *variable, Expression *expression, int l, int r)
-        : Statement(l, r)
+    : Statement(l, r)
 {
     this->variable = variable;
     this->expression = expression;
@@ -260,7 +260,7 @@ Procedure_statement::Procedure_statement(Expression_list *expressionList, Id *id
 {
     this->expressionList = expressionList;
     this->id = id;
-    this->CG_visited = false ;
+    this->CG_visited = false;
     id->father = this;
 }
 Procedure_statementList::Procedure_statementList(Expression_list *expressionList, Id *id, int l, int r)
@@ -298,15 +298,15 @@ While::While(Expression *expression, Statement *doStatement, int l, int r)
     expression->father = this;
     doStatement->father = this;
 }
-For::For(Variable *variable, Expression *down , Expression * up, Optional_statement *optionalStatement, int l, int r)
-        : Statement(l, r)
+For::For(Variable *variable, Expression *down, Expression *up, Optional_statement *optionalStatement, int l, int r)
+    : Statement(l, r)
 {
     this->variable = variable;
     this->down = down;
-    this->up = up ;
+    this->up = up;
     this->optionalStatement = optionalStatement;
     variable->father = this;
-    up->father = this ;
+    up->father = this;
     down->father = this;
     optionalStatement->father = this;
 }
@@ -509,10 +509,10 @@ void IfElse::accept(Visitor *v) { v->Visit(this); }
 void While::accept(Visitor *v) { v->Visit(this); }
 void For::accept(Visitor *v) { v->Visit(this); }
 void Unary_operator::accept(Visitor *v) { v->Visit(this); }
+void Variable_Expression::accept(Visitor *v) { v->Visit(this); }
 
 // ////////////////////////////////////////////// Print Visitor
 PrintVisitor::PrintVisitor() {}
-
 void PrintVisitor::Visit(Node *n) {}
 void PrintVisitor::Visit(Program *n)
 {
@@ -566,7 +566,7 @@ void PrintVisitor::Visit(Subprogram_declaration *n)
 }
 void PrintVisitor::Visit(Statement *n)
 {
-    cout << endl;
+    cout << "bla";
 }
 void PrintVisitor::Visit(Expression_list *n)
 {
@@ -627,14 +627,16 @@ void PrintVisitor::Visit(Char *n)
 }
 void PrintVisitor::Visit(Expression *n)
 {
+    cout << n->type;
 }
 void PrintVisitor::Visit(IdExpr *n)
 {
-    n->id->accept(this);
+    n->type = n->id->symbol->type;
 }
 void PrintVisitor::Visit(IntNumExpr *n)
 {
     cout << "type: " << types[n->type] << " ,value: " << n->intNum->value << endl;
+    // n->->accept(this);
 }
 void PrintVisitor::Visit(BoolExpr *n)
 {
@@ -654,12 +656,21 @@ void PrintVisitor::Visit(CharExpr *n)
 }
 void PrintVisitor::Visit(ListWithExpr *n)
 {
-    n->id->accept(this);
+    cout << "List With expression " << n->id->name << endl;
     n->expressionList->accept(this);
 }
-void PrintVisitor::Visit(UnaryExpr *n) { cout << ""; }
+void PrintVisitor::Visit(UnaryExpr *n)
+{
+
+    n->leftExpression->accept(this);
+    n->rightExpression->accept(this);
+}
 void PrintVisitor::Visit(NotExpr *n) { cout << ""; }
-void PrintVisitor::Visit(BracketExpr *n) { cout << ""; };
+void PrintVisitor::Visit(BracketExpr *n)
+{
+    n->expression->accept(this);
+    n->type = n->id->symbol->type;
+};
 void PrintVisitor::Visit(ExpressionWithExpr *n) { cout << ""; };
 void PrintVisitor::Visit(Type *n) { cout << ""; };
 void PrintVisitor::Visit(Compound_statement *n)
@@ -716,9 +727,11 @@ void PrintVisitor::Visit(Statement_list *n)
     {
         for (int i = 0; i < (int)(n->statement_list->size()); i++)
         {
+
             n->statement_list->at(i)->accept(this);
             if (i != (int)(n->statement_list->size() - 1))
                 cout << ",";
+            // }
         }
     }
     catch (std::exception e)
@@ -728,8 +741,13 @@ void PrintVisitor::Visit(Statement_list *n)
 };
 void PrintVisitor::Visit(Optional_statement *n)
 {
+    // cout << "**************************************" << endl;
+    if (n->statementList != NULL)
+    {
+        // cout << "^^^^^^^^^^^^^^^";
 
-    n->statementList->accept(this);
+        n->statementList->accept(this);
+    }
 };
 void PrintVisitor::Visit(Optional_statementNonEmpty *n)
 {
@@ -742,11 +760,10 @@ void PrintVisitor::Visit(Variable *n)
 };
 void PrintVisitor::Visit(Procedure_statement *n)
 {
-    cout << "procedure: " << n->id->name << endl;
-};
-void PrintVisitor::Visit(Procedure_statementList *n)
-{
-    cout << "procedure: " << n->id->name << endl;
+    if (n->expressionList == NULL)
+    {
+        cout << "procedure: " << n->id->name << endl;
+    }
 };
 void PrintVisitor::Visit(If *n)
 {
@@ -769,20 +786,30 @@ void PrintVisitor::Visit(While *n)
 };
 void PrintVisitor::Visit(For *n)
 {
-    cout << "While statement " << endl;
+    cout << "For statement " << endl;
     n->variable->accept(this);
-    n->expression->accept(this);
+    n->down->accept(this);
+    n->up->accept(this);
     n->optionalStatement->accept(this);
 };
 void PrintVisitor::Visit(Unary_operator *n){
 
 };
-void PrintVisitor::Visit(Variable_Expression *n){
-
+void PrintVisitor::Visit(Variable_Expression *n)
+{
+    n->variable->accept(this);
+    n->expression->accept(this);
+};
+void PrintVisitor::Visit(Procedure_statementList *n)
+{
+    cout << "statementList  " << n->id->name << endl;
+    n->expressionList->accept(this);
 };
 void PrintVisitor::Visit(Array_type *n){
 
 };
+//////////////////////////////////
+
 /************************Typechecker****/
 
 bool typechecking_assign(int l, int r)
@@ -1137,14 +1164,14 @@ TypeChecker::TypeChecker()
 void TypeChecker::Visit(Node *n) {}
 void TypeChecker::Visit(Program *n)
 {
-    cout << " This is a program " << n->id->name << endl;
+
     n->declarations->accept(this);
     n->subprogramDeclarations->accept(this);
     n->compoundStatement->accept(this);
 }
 void TypeChecker::Visit(Declarations *n)
 {
-    // cout << "This is Declarations-" << endl;
+
     try
     {
         for (int i = 0; i < (int)(n->declarations->size()); i++)
@@ -1187,11 +1214,10 @@ void TypeChecker::Visit(Subprogram_declaration *n)
 }
 void TypeChecker::Visit(Statement *n)
 {
-    cout << "bla";
 }
 void TypeChecker::Visit(Expression_list *n)
 {
-    // cout << "This is Declarations-" << endl;
+
     try
     {
         for (int i = 0; i < (int)(n->expressionList->size()); i++)
@@ -1224,27 +1250,21 @@ void TypeChecker::Visit(Identifier_list *n)
 }
 void TypeChecker::Visit(Id *n)
 {
-
-    cout << "this is an ID: " << n->name << endl;
 }
 void TypeChecker::Visit(IntNum *n)
 {
 }
 void TypeChecker::Visit(RealNum *n)
 {
-    cout << "";
 }
 void TypeChecker::Visit(String *n)
 {
-    cout << "";
 }
 void TypeChecker::Visit(Bool *n)
 {
-    cout << "";
 }
 void TypeChecker::Visit(Char *n)
 {
-    cout << "";
 }
 void TypeChecker::Visit(Expression *n)
 {
@@ -1255,8 +1275,7 @@ void TypeChecker::Visit(IdExpr *n)
 }
 void TypeChecker::Visit(IntNumExpr *n)
 {
-    cout << "type: " << types[n->type] << " ,value: " << n->intNum->value << endl;
-    // n->->accept(this);
+
     int l = n->type;
     if (l != 1)
     {
@@ -1271,7 +1290,7 @@ void TypeChecker::Visit(IntNumExpr *n)
 }
 void TypeChecker::Visit(BoolExpr *n)
 {
-    cout << "type: " << types[n->type] << " ,value: " << n->aBool->value << endl;
+
     int l = n->type;
     if (l != 3)
     {
@@ -1286,7 +1305,7 @@ void TypeChecker::Visit(BoolExpr *n)
 }
 void TypeChecker::Visit(RealNumExpr *n)
 {
-    cout << "type: " << types[n->type] << " ,value: " << n->realNum->value << endl;
+
     int l = n->type;
     if (l != 2)
     {
@@ -1301,7 +1320,7 @@ void TypeChecker::Visit(RealNumExpr *n)
 }
 void TypeChecker::Visit(StringExpr *n)
 {
-    cout << "type: " << types[n->type] << " ,value: " << n->aString->value << endl;
+
     int l = n->type;
     if (l != 5)
     {
@@ -1316,7 +1335,7 @@ void TypeChecker::Visit(StringExpr *n)
 }
 void TypeChecker::Visit(CharExpr *n)
 {
-    cout << "type: " << types[n->type] << " ,value: " << n->aChar->value << endl;
+
     int l = n->type;
     if (l != 4)
     {
@@ -1331,238 +1350,17 @@ void TypeChecker::Visit(CharExpr *n)
 }
 void TypeChecker::Visit(ListWithExpr *n)
 {
-    cout << "List With expression " << n->id->name << endl;
-
-    n->expressionList->accept(this);
 
     string key = "Proc" + n->id->name;
     if (n->expressionList)
     {
+
         for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
         {
             int e = n->expressionList->expressionList->at(i)->type;
+
             key += "@" + types[e];
         }
-    }
-    Symbol *temp = symbolTable->current->hashTab->GetMember(key);
-    if (temp == NULL)
-    {
-        string key = "F" + n->id->name;
-        if (n->expressionList)
-        {
-            for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
-            {
-                int e = n->expressionList->expressionList->at(i)->type;
-                key += "@" + types[e];
-            }
-        }
-        else
-        {
-            cout << "no such Procedure/function exists : " << n->id->name << " " << n->id->line;
-            // symbolTable->errors->AddError("no such function exists : " + n->name->name, n->name->line, 0);
-            // symanticerror = true;
-        }
-    }
-    else
-    {
-        n->id->symbol->type = temp->type;
-        //  n-> = temp->function;
-    }
-}
-void TypeChecker::Visit(UnaryExpr *n)
-{
-    int op = n->unaryOperator->index;
-    // cout << endl
-    //      << "******" << endl
-    //      << operators[op] << endl;
-    n->leftExpression->accept(this);
-    n->rightExpression->accept(this);
-    bool t = check_mismatch(n->leftExpression->type, operators[op], n->rightExpression->type);
-    if (t)
-    {
-        int x = get_type(n->leftExpression->type, operators[op], n->rightExpression->type);
-        n->type = x;
-    }
-    else
-    {
-        cout << "mismatching type on expr " << operators[op] << " expr :"
-             << " in line: " << n->line << endl;
-        // symbolTable->errors->AddError("mismatching type on expr " + operators[op] + " expr ", n->line, n->column);
-        // symanticerror = true;
-        n->type = 6;
-    }
-    // cout << "ended";
-}
-void TypeChecker::Visit(NotExpr *n) { cout << ""; }
-void TypeChecker::Visit(BracketExpr *n)
-{
-    n->expression->accept(this);
-    n->type = n->id->symbol->type;
-};
-void TypeChecker::Visit(ExpressionWithExpr *n) { cout << ""; };
-void TypeChecker::Visit(Type *n) { cout << ""; };
-void TypeChecker::Visit(Compound_statement *n)
-{
-    n->optionalStatement->accept(this);
-    //   cout << "this is a compound statement: " << n-><< endl;
-}
-
-void TypeChecker::Visit(Subprogram_head *n)
-{
-    cout << " Subprogram " << n->id->name << endl;
-    cout << "Arguments " << endl;
-    n->arguments->accept(this);
-};
-void TypeChecker::Visit(Subprogram_variables *n)
-{
-    try
-    {
-        for (int i = 0; i < (int)(n->subprogramVariables->size()); i++)
-        {
-            n->subprogramVariables->at(i).first->accept(this);
-            if (i != (int)(n->subprogramVariables->size() - 1))
-                cout << ",";
-        }
-    }
-    catch (std::exception e)
-    {
-        cout << "";
-    }
-};
-void TypeChecker::Visit(Arguments *n)
-{
-    n->parameterList->accept(this);
-};
-void TypeChecker::Visit(Parameter_list *n)
-{
-    try
-    {
-        for (int i = 0; i < (int)(n->parameters->size()); i++)
-        {
-            n->parameters->at(i).first->accept(this);
-            if (i != (int)(n->parameters->size() - 1))
-                cout << ",";
-        }
-    }
-    catch (std::exception e)
-    {
-        cout << "";
-    }
-};
-void TypeChecker::Visit(Statement_list *n)
-{
-    try
-    {
-        for (int i = 0; i < (int)(n->statement_list->size()); i++)
-        {
-
-            n->statement_list->at(i)->accept(this);
-            if (i != (int)(n->statement_list->size() - 1))
-                cout << ",";
-            // }
-        }
-    }
-    catch (std::exception e)
-    {
-        cout << "";
-    }
-};
-void TypeChecker::Visit(Optional_statement *n)
-{
-    // cout << "**************************************" << endl;
-    if (n->statementList != NULL)
-    {
-        // cout << "^^^^^^^^^^^^^^^";
-
-        n->statementList->accept(this);
-    }
-};
-void TypeChecker::Visit(Optional_statementNonEmpty *n)
-{
-
-    n->statementList->accept(this);
-};
-void TypeChecker::Visit(Variable *n)
-{
-    n->id->accept(this);
-};
-void TypeChecker::Visit(Procedure_statement *n)
-{
-    if (n->expressionList == NULL)
-    {
-        cout << "procedure: " << n->id->name << endl;
-    }
-};
-void TypeChecker::Visit(If *n)
-{
-    cout << "If statement " << endl;
-    n->expression->accept(this);
-    n->thenStatement->accept(this);
-};
-void TypeChecker::Visit(IfElse *n)
-{
-    cout << "If Else statement " << endl;
-    n->expression->accept(this);
-    n->thenStatement->accept(this);
-    n->elseStatement->accept(this);
-};
-void TypeChecker::Visit(While *n)
-{
-    cout << "While statement " << endl;
-    n->expression->accept(this);
-    n->doStatement->accept(this);
-};
-void TypeChecker::Visit(For *n)
-{
-    cout << "While statement " << endl;
-    n->variable->accept(this);
-    n->expression->accept(this);
-    n->optionalStatement->accept(this);
-    int l = n->variable->id->symbol->type;
-    int r = n->expression->type;
-    // cout << l << "hkhk" << r << endl;
-    bool t = typechecking_assign(l, r);
-    if (t)
-    {
-        // cout << "jkljljljl";
-        cout << "mismatching assignment of var :" << n->variable->id->name << " in line: " << n->line << endl;
-        // symbolTable->errors->AddError("mismatching assignment of var :" + n->name->name, n->line, n->column);
-        // symanticerror = true;
-    }
-};
-void TypeChecker::Visit(Unary_operator *n){
-
-};
-void TypeChecker::Visit(Variable_Expression *n)
-{
-    n->variable->accept(this);
-    n->expression->accept(this);
-    int l = n->variable->id->symbol->type;
-    int r = n->expression->type;
-    // cout << l << "hkhk" << r << endl;
-    bool t = typechecking_assign(l, r);
-    if (t)
-    {
-        cout << "mismatching assignment of var :" << n->variable->id->name << " in line: " << n->line << endl;
-        // symbolTable->errors->AddError("mismatching assignment of var :" + n->name->name, n->line, n->column);
-        // symanticerror = true;
-    }
-};
-void TypeChecker::Visit(Procedure_statementList *n)
-{
-    cout << "Procedure_statementList  " << n->id->name << endl;
-
-    string key = "Proc" + n->id->name;
-    if (n->expressionList)
-    {
-        cout << " { ";
-        for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
-        {
-            int e = n->expressionList->expressionList->at(i)->type;
-            cout << " type : " << types[e] << ";";
-            key += "@" + types[e];
-        }
-        cout << " } " << endl;
     }
 
     Symbol *temp = symbolTable->current->hashTab->GetMember(key);
@@ -1592,13 +1390,242 @@ void TypeChecker::Visit(Procedure_statementList *n)
                         cout << "no such Procedure/function exists : " << n->id->name << " " << n->id->line << endl;
                         //++++++++++++++++++++++++++++++++
                     }
+                    else
+                    {
+                        n->type = temp->type;
+                    }
+                }
+                else
+                {
+                    n->type = temp->type;
+                }
+            }
+        }
+        else
+        {
+            n->type = temp->type;
+        }
+    }
+    else
+    {
+        n->type = temp->type;
+    }
+    cout << endl
+         << n->type << endl;
+}
+void TypeChecker::Visit(UnaryExpr *n)
+{
+    int op = n->unaryOperator->index;
+
+    n->leftExpression->accept(this);
+    n->rightExpression->accept(this);
+    bool t = check_mismatch(n->leftExpression->type, operators[op], n->rightExpression->type);
+    if (t)
+    {
+        int x = get_type(n->leftExpression->type, operators[op], n->rightExpression->type);
+        n->type = x;
+    }
+    else
+    {
+        cout << "mismatching type on expr " << operators[op] << " expr :"
+             << " in line: " << n->line << endl;
+        // symbolTable->errors->AddError("mismatching type on expr " + operators[op] + " expr ", n->line, n->column);
+        // symanticerror = true;
+        n->type = 6;
+    }
+}
+void TypeChecker::Visit(NotExpr *n) {}
+void TypeChecker::Visit(BracketExpr *n)
+{
+    n->expression->accept(this);
+    n->type = n->id->symbol->type;
+};
+void TypeChecker::Visit(ExpressionWithExpr *n){};
+void TypeChecker::Visit(Type *n){};
+void TypeChecker::Visit(Compound_statement *n)
+{
+    n->optionalStatement->accept(this);
+}
+
+void TypeChecker::Visit(Subprogram_head *n)
+{
+
+    n->arguments->accept(this);
+};
+void TypeChecker::Visit(Subprogram_variables *n)
+{
+    try
+    {
+        for (int i = 0; i < (int)(n->subprogramVariables->size()); i++)
+        {
+            n->subprogramVariables->at(i).first->accept(this);
+        }
+    }
+    catch (std::exception e)
+    {
+        cout << "";
+    }
+};
+void TypeChecker::Visit(Arguments *n)
+{
+    n->parameterList->accept(this);
+};
+void TypeChecker::Visit(Parameter_list *n)
+{
+    try
+    {
+        for (int i = 0; i < (int)(n->parameters->size()); i++)
+        {
+            n->parameters->at(i).first->accept(this);
+        }
+    }
+    catch (std::exception e)
+    {
+        cout << "";
+    }
+};
+void TypeChecker::Visit(Statement_list *n)
+{
+    try
+    {
+        for (int i = 0; i < (int)(n->statement_list->size()); i++)
+        {
+
+            n->statement_list->at(i)->accept(this);
+        }
+    }
+    catch (std::exception e)
+    {
+        cout << "";
+    }
+};
+void TypeChecker::Visit(Optional_statement *n)
+{
+    // cout << "**************************************" << endl;
+    if (n->statementList != NULL)
+    {
+        // cout << "^^^^^^^^^^^^^^^";
+
+        n->statementList->accept(this);
+    }
+};
+void TypeChecker::Visit(Optional_statementNonEmpty *n)
+{
+
+    n->statementList->accept(this);
+};
+void TypeChecker::Visit(Variable *n)
+{
+    n->id->accept(this);
+};
+void TypeChecker::Visit(Procedure_statement *n){
+
+};
+void TypeChecker::Visit(If *n)
+{
+
+    n->expression->accept(this);
+    n->thenStatement->accept(this);
+};
+void TypeChecker::Visit(IfElse *n)
+{
+
+    n->expression->accept(this);
+    n->thenStatement->accept(this);
+    n->elseStatement->accept(this);
+};
+void TypeChecker::Visit(While *n)
+{
+
+    n->expression->accept(this);
+    n->doStatement->accept(this);
+};
+void TypeChecker::Visit(For *n)
+{
+
+    n->variable->accept(this);
+    n->down->accept(this);
+    n->up->accept(this);
+    n->optionalStatement->accept(this);
+    int l = n->variable->id->symbol->type;
+    int r = n->down->type;
+
+    bool t = typechecking_assign(l, r);
+    if (t)
+    {
+
+        cout << "mismatching assignment of var :" << n->variable->id->name << " in line: " << n->line << endl;
+    }
+};
+void TypeChecker::Visit(Unary_operator *n){
+
+};
+void TypeChecker::Visit(Variable_Expression *n)
+{
+    n->variable->accept(this);
+    n->expression->accept(this);
+    int l = n->variable->id->symbol->type;
+    int r = n->expression->type;
+
+    bool t = typechecking_assign(l, r);
+    if (t)
+    {
+        cout << "mismatching assignment of var :" << n->variable->id->name << " in line: " << n->line << endl;
+    }
+};
+void TypeChecker::Visit(Procedure_statementList *n)
+{
+
+    string key = "Proc" + n->id->name;
+    if (n->expressionList)
+    {
+
+        for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
+        {
+            int e = n->expressionList->expressionList->at(i)->type;
+
+            key += "@" + types[e];
+        }
+    }
+
+    Symbol *temp = symbolTable->current->hashTab->GetMember(key);
+
+    if (temp == NULL)
+    {
+
+        temp = symbolTable->scopes->at(1)->hashTab->GetMember(key);
+        if (temp == NULL)
+        {
+            string key = "F" + n->id->name;
+            if (n->expressionList)
+            {
+
+                for (int i = 0; i < (int)(n->expressionList->expressionList->size()); i++)
+                {
+                    int e = n->expressionList->expressionList->at(i)->type;
+
+                    key += "@" + types[e];
+                }
+                Symbol *temp = symbolTable->current->hashTab->GetMember(key);
+                if (temp == NULL)
+                {
+                    temp = symbolTable->scopes->at(1)->hashTab->GetMember(key);
+                    if (temp == NULL)
+                    {
+                        cout << "no such Procedure/function exists : " << n->id->name << " " << n->id->line << endl;
+                        //++++++++++++++++++++++++++++++++
+                    }
+                    else
+                    {
+                        //  n->type = n->id->symbol->type;
+                    }
                 }
             }
         }
     }
     else
     {
-        // n->type = n->id->symbol->type;
+        //  n->type = n->id->symbol->type;
     }
 };
 void TypeChecker::Visit(Array_type *n){
@@ -1901,11 +1928,12 @@ void SymbolTable::CloseScope()
 ///////////////////////////let's
 
 ////////////////////////////////////////////// Code Visitor
-void Print(string s )
+void Print(string s)
 {
-    vout<<s<<endl;
+    vout << s << endl;
 }
-CodeVisitor::CodeVisitor() {
+CodeVisitor::CodeVisitor()
+{
     fp = 0;
     gp = 1024;
     types[1] = "int";
@@ -1930,16 +1958,16 @@ CodeVisitor::CodeVisitor() {
     operators[14] = "and";
     this->functions = new vector<Symbol *>;
 }
-void CodeVisitor::Visit(Node *n) {
-
+void CodeVisitor::Visit(Node *n)
+{
 }
 void CodeVisitor::Visit(Program *n)
 {
-    Print("Start\n") ;
+    Print("Start\n");
     n->declarations->accept(this);
     n->subprogramDeclarations->accept(this);
     n->compoundStatement->accept(this);
-    Print("Stop\n") ;
+    Print("Stop\n");
 }
 void CodeVisitor::Visit(Declarations *n)
 {
@@ -1953,18 +1981,19 @@ void CodeVisitor::Visit(Declarations *n)
     }
     catch (std::exception e)
     {
-        cout << "Habidator" <<endl;
+        cout << "Habidator" << endl;
     }
 }
 void CodeVisitor::Visit(DeclarationVar *n)
 {
     n->identifierList->accept(this);
 }
-void CodeVisitor::Visit(Declaration *n) {
-    for(int i=0;i<n->identifierList->Ids->size() ; i++)
+void CodeVisitor::Visit(Declaration *n)
+{
+    for (int i = 0; i < n->identifierList->Ids->size(); i++)
     {
 
-        if(n->identifierList->Ids->at(i)->symbol->type < 5)
+        if (n->identifierList->Ids->at(i)->symbol->type < 5)
         {
             Print("pushi 0");
             if (n->identifierList->Ids->at(i)->symbol->type == 2)
@@ -1974,9 +2003,7 @@ void CodeVisitor::Visit(Declaration *n) {
             Print("pushl " + std::to_string(fp));
             fp++;
         }
-
     }
-
 }
 void CodeVisitor::Visit(Subprogram_declarations *n)
 {
@@ -2032,7 +2059,7 @@ void CodeVisitor::Visit(Identifier_list *n)
     }
     catch (std::exception e)
     {
-        cout << "Habidator" <<endl;
+        cout << "Habidator" << endl;
     }
 }
 void CodeVisitor::Visit(Id *n)
@@ -2057,10 +2084,14 @@ void CodeVisitor::Visit(String *n)
     }
     Print("Pushs \"" + s + "\"");
 }
-void CodeVisitor::Visit(Bool *n) {
-    if (n->value) {
+void CodeVisitor::Visit(Bool *n)
+{
+    if (n->value)
+    {
         Print("Pushi 1");
-    } else {
+    }
+    else
+    {
         Print("Pushi 0");
     }
 }
@@ -2070,7 +2101,6 @@ void CodeVisitor::Visit(Char *n)
 }
 void CodeVisitor::Visit(Expression *n)
 {
-
 }
 void CodeVisitor::Visit(IdExpr *n)
 {
@@ -2079,32 +2109,33 @@ void CodeVisitor::Visit(IdExpr *n)
 ///////////
 void CodeVisitor::Visit(IntNumExpr *n)
 {
-    n->intNum->accept(this) ;
+    n->intNum->accept(this);
 }
 void CodeVisitor::Visit(BoolExpr *n)
 {
-    n->aBool->accept(this) ;
+    n->aBool->accept(this);
 }
 void CodeVisitor::Visit(RealNumExpr *n)
 {
-    n->realNum->accept(this) ;
+    n->realNum->accept(this);
 }
 void CodeVisitor::Visit(StringExpr *n)
 {
-    n->aString->accept(this) ;
+    n->aString->accept(this);
 }
 void CodeVisitor::Visit(CharExpr *n)
 {
-    n->aChar->accept(this) ;
+    n->aChar->accept(this);
 }
 void CodeVisitor::Visit(ListWithExpr *n)
 {
-    if (n->expressionList) {
+    if (n->expressionList)
+    {
         for (int i = 0; i < n->expressionList->expressionList->size(); i++)
         {
             n->expressionList->expressionList->at(i)->accept(this);
             if (n->expressionList->expressionList->at(i)->type == 1 &&
-            n->id->symbol->subprogram_head->arguments->parameterList->parameters->at(i).second->type == 2)
+                n->id->symbol->subprogram_head->arguments->parameterList->parameters->at(i).second->type == 2)
                 Print("itof");
         }
     }
@@ -2120,7 +2151,7 @@ void CodeVisitor::Visit(ListWithExpr *n)
     Print("pusha " + label);
     Print("call");
 
-    Symbol * functionSymbol = n->id->symbol;
+    Symbol *functionSymbol = n->id->symbol;
     if (functionSymbol)
     {
         functions->push_back(functionSymbol);
@@ -2134,102 +2165,120 @@ void CodeVisitor::Visit(ListWithExpr *n)
         // Add errors
     }
 }
-void CodeVisitor::Visit(UnaryExpr *n) {
-    if (n->leftExpression != NULL) n->leftExpression->accept(this);
-    if (n->rightExpression != NULL) n->rightExpression->accept(this);
+void CodeVisitor::Visit(UnaryExpr *n)
+{
+    if (n->leftExpression != NULL)
+        n->leftExpression->accept(this);
+    if (n->rightExpression != NULL)
+        n->rightExpression->accept(this);
     int op = n->unaryOperator->index;
     if (op < 5) /// Mul Add Sub Div
     {
         string operation = "";
-        if (op == 1) operation = "mul";
-        if (op == 2) operation = "add";
-        if (op == 3) operation = "sub";
-        if (op == 4) operation = "div";
+        if (op == 1)
+            operation = "mul";
+        if (op == 2)
+            operation = "add";
+        if (op == 3)
+            operation = "sub";
+        if (op == 4)
+            operation = "div";
 
         if (n->rightExpression->type == 1 && n->rightExpression->type == 1)
             Print(operation);
-        else if (n->leftExpression->type == 1) {
+        else if (n->leftExpression->type == 1)
+        {
             Print("storeg " + std::to_string(gp));
             Print("itof");
             Print("pushg " + std::to_string(gp));
             Print("f" + operation);
-        } else if (n->rightExpression->type == 1) {
+        }
+        else if (n->rightExpression->type == 1)
+        {
             Print("itof");
             Print("f" + operation);
-        } else if (n->leftExpression->type == 2 && n->rightExpression->type == 2)
+        }
+        else if (n->leftExpression->type == 2 && n->rightExpression->type == 2)
             Print("f" + operation);
     }
-    if(op == 5) /// Mod
+    if (op == 5) /// Mod
     {
         if (n->rightExpression->type == 1 && n->rightExpression->type == 1)
             Print("mod");
     }
-    if(op == 14) /// And
+    if (op == 14) /// And
     {
         Print("add");
         Print("pushi 2");
         Print("equal");
     }
-    if(op == 13) /// Or
+    if (op == 13) /// Or
     {
         Print("add");
         Print("pushi 0");
         Print("equal");
         Print("not");
     }
-    if(op >=6  && op <= 11)
+    if (op >= 6 && op <= 11)
     {
         string operation = "";
-        if (op == 6) operation = "sup";
-        if (op == 7) operation = "infeq";
-        if (op == 8) operation = "inf";
-        if (op == 9) operation = "supeq";
-        if (op == 10) operation = "equal";
-        if (op == 11) operation = "equal";
+        if (op == 6)
+            operation = "sup";
+        if (op == 7)
+            operation = "infeq";
+        if (op == 8)
+            operation = "inf";
+        if (op == 9)
+            operation = "supeq";
+        if (op == 10)
+            operation = "equal";
+        if (op == 11)
+            operation = "equal";
         if (n->leftExpression->type == 1 && n->rightExpression->type == 1)
             Print(operation);
-        else
-        if (n->leftExpression->type == 1)
+        else if (n->leftExpression->type == 1)
         {
             Print("storeg " + std::to_string(cp));
             Print("itof");
             Print("pushg " + std::to_string(cp));
             Print(operation);
         }
-        else
-        if (n->rightExpression->type == 1)
+        else if (n->rightExpression->type == 1)
         {
             Print("itof");
             Print(operation);
         }
-        else
-        if (n->leftExpression->type == 2 && n->rightExpression->type == 2)
+        else if (n->leftExpression->type == 2 && n->rightExpression->type == 2)
             Print(operation);
-        if(op == 12)
+        if (op == 12)
             Print("not");
     }
-
 }
-void CodeVisitor::Visit(NotExpr *n) {
-    n->expression->accept(this) ;
-    Print("not") ;
+void CodeVisitor::Visit(NotExpr *n)
+{
+    n->expression->accept(this);
+    Print("not");
 }
-void CodeVisitor::Visit(BracketExpr *n) {
+void CodeVisitor::Visit(BracketExpr *n)
+{
     if (n->id != NULL)
         n->id->accept(this);
     int Location = n->id->symbol->location;
-    if (n->id->symbol->kind == 3) {
+    if (n->id->symbol->kind == 3)
+    {
         Print("Pushl " + std::to_string(Location));
     }
-    if (n->id->symbol->kind == 2) {
+    if (n->id->symbol->kind == 2)
+    {
         Print("Pushg " + std::to_string(Location));
     }
-    if(n->expression != NULL)
+    if (n->expression != NULL)
         n->expression->accept(this);
-    Print("loadn") ;
+    Print("loadn");
 }
-void CodeVisitor::Visit(ExpressionWithExpr *n) {
-    n->expression->accept(this) ;
+void CodeVisitor::Visit(ExpressionWithExpr *n)
+{
+    n->expression->accept(this);
 }
 /////////////////////////
 /*void CodeVisitor::Visit(Type *n) {
@@ -2237,14 +2286,14 @@ void CodeVisitor::Visit(ExpressionWithExpr *n) {
 };*/
 void CodeVisitor::Visit(Standard_type *n)
 {
-
 }
-void CodeVisitor::Visit(Array_type *n) {
-    int size = n->last->value - n->first->value + 1 ;
+void CodeVisitor::Visit(Array_type *n)
+{
+    int size = n->last->value - n->first->value + 1;
     Print("alloc " + std::to_string(size));
     Print("storel " + std::to_string(fp));
     int type = n->type;
-    for (int i = 0; i < size ; i++)
+    for (int i = 0; i < size; i++)
     {
         if (type == 1)
         {
@@ -2253,24 +2302,21 @@ void CodeVisitor::Visit(Array_type *n) {
             Print("pushi 0");
             Print("storen");
         }
-        else
-        if (type == 3)
+        else if (type == 3)
         {
             Print("pushl " + std::to_string(fp));
             Print("pushi " + std::to_string(i));
             Print("pushi 0");
             Print("storen");
         }
-        else
-        if (type == 2)
+        else if (type == 2)
         {
             Print("pushl " + std::to_string(fp));
             Print("pushi " + std::to_string(i));
             Print("pushf 0.0");
             Print("storen");
         }
-        else
-        if (type == 5)
+        else if (type == 5)
         {
             Print("pushl " + std::to_string(fp));
             Print("pushi " + std::to_string(i));
@@ -2279,12 +2325,12 @@ void CodeVisitor::Visit(Array_type *n) {
         }
     }
     Print("pushl " + std::to_string(fp));
-    //fp++;
-    fp += size ;
+    // fp++;
+    fp += size;
 }
 void CodeVisitor::Visit(Compound_statement *n)
 {
-    if(n->optionalStatement != NULL)
+    if (n->optionalStatement != NULL)
         n->optionalStatement->accept(this);
 }
 
@@ -2313,20 +2359,22 @@ void CodeVisitor::Visit(Subprogram_variables *n)
 };
 void CodeVisitor::Visit(Arguments *n)
 {
-    if(n->parameterList != NULL)
-    n->parameterList->accept(this);
+    if (n->parameterList != NULL)
+        n->parameterList->accept(this);
 }
 void CodeVisitor::Visit(Parameter_list *n)
 {
-    if(n->parameters != NULL) {
-        for (int i = 0; i < (int) (n->parameters->size()); i++) {
+    if (n->parameters != NULL)
+    {
+        for (int i = 0; i < (int)(n->parameters->size()); i++)
+        {
             n->parameters->at(i).first->accept(this);
         }
     }
 }
 void CodeVisitor::Visit(Statement_list *n)
 {
-    if(n->statement_list != NULL)
+    if (n->statement_list != NULL)
     {
         for (int i = 0; i < (int)(n->statement_list->size()); i++)
         {
@@ -2365,9 +2413,10 @@ void CodeVisitor::Visit(Procedure_statement *n)
             }
         }
         Print(label + ":");
-        if (n->id->symbol->subprogram_head->arguments->parameterList!=NULL)
+        if (n->id->symbol->subprogram_head->arguments->parameterList != NULL)
             n->id->symbol->subprogram_head->arguments->parameterList->accept(this);
-        if (n->expressionList != NULL)n->expressionList->accept(this);
+        if (n->expressionList != NULL)
+            n->expressionList->accept(this);
         Print("return");
     }
 }
@@ -2376,9 +2425,11 @@ void CodeVisitor::Visit(If *n)
     ifLabel++;
     int label = ifLabel;
     Print("IF_BEGIN" + std::to_string((label)) + ":");
-    if (n->expression != NULL) n->expression->accept(this);
+    if (n->expression != NULL)
+        n->expression->accept(this);
     Print("jz IF_END" + std::to_string((label)));
-    if (n->thenStatement != NULL) n->thenStatement->accept(this);
+    if (n->thenStatement != NULL)
+        n->thenStatement->accept(this);
     Print("IF_END" + std::to_string((label)) + ":");
 }
 void CodeVisitor::Visit(IfElse *n)
@@ -2386,13 +2437,16 @@ void CodeVisitor::Visit(IfElse *n)
     ifElseLabel++;
     int label = ifElseLabel;
     Print("IF_BEGIN" + std::to_string((label)) + ":");
-    if (n->expression != NULL) n->expression->accept(this);
+    if (n->expression != NULL)
+        n->expression->accept(this);
     Print("jz ELSE_BEGIN" + std::to_string((label)));
-    if (n->thenStatement != NULL) n->thenStatement->accept(this);
+    if (n->thenStatement != NULL)
+        n->thenStatement->accept(this);
     Print("IF_END" + std::to_string((label)) + ":");
     Print("jump ELSE_END" + std::to_string((label)));
     Print("ELSE_BEGIN" + std::to_string((label)) + ":");
-    if (n->elseStatement != NULL)n->elseStatement->accept(this);
+    if (n->elseStatement != NULL)
+        n->elseStatement->accept(this);
     Print("ELSE_END" + std::to_string((label)) + ":");
 }
 void CodeVisitor::Visit(While *n)
@@ -2430,7 +2484,8 @@ void CodeVisitor::Visit(For *n)
         }
         else if (n->variable->id->symbol->kind == 2)
         {
-            if (n->down->type == 1 && n->variable->id->symbol->type == 2) {
+            if (n->down->type == 1 && n->variable->id->symbol->type == 2)
+            {
                 Print("itof");
             }
             n->variable->id->symbol->location = fp;
@@ -2442,14 +2497,17 @@ void CodeVisitor::Visit(For *n)
     }
     Print("FOR_BEGIN" + std::to_string(label) + ":");
     ///// condition
-    if (n->variable != NULL) n->variable->accept(this);
-    if (n->up != NULL) n->up->accept(this);
+    if (n->variable != NULL)
+        n->variable->accept(this);
+    if (n->up != NULL)
+        n->up->accept(this);
     Print("infeq");
     Print("jz FOR_END" + std::to_string(label));
 
-    if (n->optionalStatement != NULL) n->optionalStatement->accept(this);
-    n->variable->accept(this) ;
-    Print("pushi 1") ;
+    if (n->optionalStatement != NULL)
+        n->optionalStatement->accept(this);
+    n->variable->accept(this);
+    Print("pushi 1");
     Print("add");
     Print("jump FOR_BEGIN" + std::to_string(label));
     Print("FOR_END" + std::to_string(label) + ":");
@@ -2459,9 +2517,10 @@ void CodeVisitor::Visit(Unary_operator *n){
 };
 void CodeVisitor::Visit(Variable_Expression *n)
 {
-    
-    if (n->ident != NULL) n->ident->accept(this);
-    //w("storeg " + std::to_string(g));
+
+    if (n->ident != NULL)
+        n->ident->accept(this);
+    // w("storeg " + std::to_string(g));
     if (n->ident->symbol->kind == 1)
     {
         w("pushg " + std::to_string(n->ident->symbol->location));
@@ -2470,9 +2529,11 @@ void CodeVisitor::Visit(Variable_Expression *n)
     {
         w("pushl " + std::to_string(n->ident->symbol->location));
     }
-    if (n->indexexpr != NULL) n->indexexpr->accept(this);
-    //w("pushg " + std::to_string(g));
-    if (n->equalExpr != NULL) n->equalExpr->accept(this);
+    if (n->indexexpr != NULL)
+        n->indexexpr->accept(this);
+    // w("pushg " + std::to_string(g));
+    if (n->equalExpr != NULL)
+        n->equalExpr->accept(this);
     w("storen");
 
     n->expression->accept(this);
@@ -2485,7 +2546,8 @@ void CodeVisitor::Visit(Variable_Expression *n)
     }
     else if (n->variable->id->symbol->kind == 2)
     {
-        if (n->expression->type == 1 && n->variable->id->symbol->type == 2) {
+        if (n->expression->type == 1 && n->variable->id->symbol->type == 2)
+        {
             Print("itof");
         }
         n->variable->id->symbol->location = fp;
@@ -2494,77 +2556,74 @@ void CodeVisitor::Visit(Variable_Expression *n)
         fp++;
     }
 };
-void CodeVisitor::Visit(Procedure_statementList *n)
-{
+void CodeVisitor::Visit(Procedure_statementList *n){
 
-};/*
-generateReadWriteFunction();
+}; /*
+ generateReadWriteFunction();
 
-void CodeGeneration::generateReadWriteFunction()
-{
-    w("\n\n\n");
-    w("\n\n\n");
-    ////writeline integer
-    w("write__int:");
-    w("pushl -1");
-    w("storel 0");
-    w("pushl 0");
-    w("pushl 0");
-    w("writei");
-    w("return\n\n\n");
+ void CodeGeneration::generateReadWriteFunction()
+ {
+     w("\n\n\n");
+     w("\n\n\n");
+     ////writeline integer
+     w("write__int:");
+     w("pushl -1");
+     w("storel 0");
+     w("pushl 0");
+     w("pushl 0");
+     w("writei");
+     w("return\n\n\n");
 
-    ////writeline real
-    w("write__double:");
-    w("pushl -1");
-    w("storel 0");
-    w("pushl 0");
-    w("pushl 0");
-    w("writef");
-    w("return\n\n\n");
+     ////writeline real
+     w("write__double:");
+     w("pushl -1");
+     w("storel 0");
+     w("pushl 0");
+     w("pushl 0");
+     w("writef");
+     w("return\n\n\n");
 
-    ////writeline real
-    w("write__string:");
-    w("pushl -1");
-    w("storel 0");
-    w("pushl 0");
-    w("pushl 0");
-    w("writes");
-    w("return\n\n\n");
+     ////writeline real
+     w("write__string:");
+     w("pushl -1");
+     w("storel 0");
+     w("pushl 0");
+     w("pushl 0");
+     w("writes");
+     w("return\n\n\n");
 
+     ////writeline boolean
+     w("write__boolean:");
+     w("pushl -1");
+     w("storel 0");
+     w("pushl 0");
+     w("pushl 0");
+     w("writei");
+     w("return\n\n\n");
 
+     ////read integer
+     w("readInt:");
+     w("read");
+     w("atoi");
+     w("storeg " + std::to_string(g) + "");
+     w("return\n\n\n");
 
-    ////writeline boolean
-    w("write__boolean:");
-    w("pushl -1");
-    w("storel 0");
-    w("pushl 0");
-    w("pushl 0");
-    w("writei");
-    w("return\n\n\n");
+     ////read real
+     w("readReal:");
+     w("read");
+     w("atof");
+     w("storeg " + std::to_string(g) + "");
+     w("return\n\n\n");
 
-    ////read integer
-    w("readInt:");
-    w("read");
-    w("atoi");
-    w("storeg " + std::to_string(g) + "");
-    w("return\n\n\n");
+     ////read string
+     w("readString:");
+     w("read");
+     w("storeg " + std::to_string(g) + "");
+     w("return\n\n\n");
 
-    ////read real
-    w("readReal:");
-    w("read");
-    w("atof");
-    w("storeg " + std::to_string(g) + "");
-    w("return\n\n\n");
-
-    ////read string
-    w("readString:");
-    w("read");
-    w("storeg " + std::to_string(g) + "");
-    w("return\n\n\n");
-
-    /////readkey
-    w("readKey:");
-    w("read");
-    w("pop 1");
-    w("return");
-}*/
+     /////readkey
+     w("readKey:");
+     w("read");
+     w("pop 1");
+     w("return");
+ }*/
