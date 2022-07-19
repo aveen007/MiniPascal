@@ -16,10 +16,11 @@ int main()
     system("pause");
     // cout << "somar";
     root;
-    Visitor *printVisitor = new PrintVisitor;
-    TypeChecker *typeChecker = new TypeChecker;
+    //Visitor *printVisitor = new PrintVisitor;
+    //TypeChecker *typeChecker = new TypeChecker;
+    CodeVisitor *codeVisitor = new CodeVisitor ;
     //  root->accept(printVisitor);
-    root->accept(typeChecker);
+    root->accept(codeVisitor);
 
     return 0;
 }

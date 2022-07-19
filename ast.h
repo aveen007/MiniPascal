@@ -13,11 +13,7 @@ using std::endl;
 using std::ofstream ;
 using std::ios ;
 
-extern int whileLabel ;
-extern int ifLabel ;
-extern int ifElseLabel ;
-extern int ifLabel;
-extern int forLabel ;
+
 
 static ofstream vout ("code.txt" , ios::out) ;
 
@@ -661,6 +657,7 @@ public:
     virtual void Visit(Program *n) = 0;
     virtual void Visit(Declarations *n) = 0;
     virtual void Visit(Declaration *n) = 0;
+    virtual void Visit(DeclarationVar *n) =0 ;
     virtual void Visit(Subprogram_declarations *n) = 0;
     virtual void Visit(Subprogram_declaration *n) = 0;
     virtual void Visit(Statement *n) = 0;
@@ -716,8 +713,8 @@ public:
     virtual void Visit(Program *n);
     virtual void Visit(Declarations *);
     virtual void Visit(Declaration *);
+    virtual void Visit(DeclarationVar *n) ;
     virtual void Visit(Array_type *);
-
     virtual void Visit(Statement *);
     virtual void Visit(Expression_list *);
     virtual void Visit(Identifier_list *);
@@ -774,6 +771,7 @@ public:
     virtual void Visit(Program *n);
     virtual void Visit(Declarations *);
     virtual void Visit(Declaration *);
+    virtual void Visit(DeclarationVar *n) ;
     virtual void Visit(Subprogram_declarations *);
     virtual void Visit(Subprogram_declaration *);
     virtual void Visit(Statement *);
@@ -878,7 +876,7 @@ public:
      virtual void Visit(Program *n);
      virtual void Visit(Declarations *);
      virtual void Visit(Declaration *);
-     virtual void Visit(DeclarationVar *);
+     virtual void Visit(DeclarationVar *n) ;
      virtual void Visit(Subprogram_declarations *);
      virtual void Visit(Subprogram_declaration *);
      virtual void Visit(Statement *);
@@ -902,9 +900,7 @@ public:
      virtual void Visit(NotExpr *);
      virtual void Visit(BracketExpr *);
      virtual void Visit(ExpressionWithExpr *);
-     //virtual void Visit(Type *);
-     virtual void Visit(Standard_type *) ;
-     virtual void Visit(Array_type *) ;
+     virtual void Visit(Type *);
      virtual void Visit(Subprogram_head *);
      virtual void Visit(Subprogram_variables *);
      virtual void Visit(Arguments *);
@@ -922,5 +918,6 @@ public:
      virtual void Visit(Unary_operator *);
      virtual void Visit(Procedure_statementList *);
      virtual void Visit(Variable_Expression *);
+     virtual void Visit(Array_type *);
      void  generateReadWriteFunction();
  };

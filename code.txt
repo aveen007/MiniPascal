@@ -1,0 +1,16 @@
+Start
+
+alloc 1
+storel 0
+pushl 0
+pushi 0
+pushi 0
+storen
+pushl 0
+Pushg 0
+Pushi 22
+loadn
+storel 1
+pushl 1
+Stop
+

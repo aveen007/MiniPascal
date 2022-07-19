@@ -2,7 +2,10 @@
 #include "ast.h"
 #include <algorithm>
 extern SymbolTable *symbolTable;
-
+extern int whileLabel = 0 ;
+extern int ifLabel = 0;
+extern int ifElseLabel = 0 ;
+extern int forLabel = 0;
 /// Node
 Node::Node(int line, int column)
 {
@@ -539,6 +542,10 @@ void PrintVisitor::Visit(Declarations *n)
     }
 }
 void PrintVisitor::Visit(Declaration *n)
+{
+    n->identifierList->accept(this);
+}
+void PrintVisitor::Visit(DeclarationVar *n)
 {
     n->identifierList->accept(this);
 }
@@ -1187,6 +1194,10 @@ void TypeChecker::Visit(Declarations *n)
     }
 }
 void TypeChecker::Visit(Declaration *n)
+{
+    n->identifierList->accept(this);
+}
+void TypeChecker::Visit(DeclarationVar *n)
 {
     n->identifierList->accept(this);
 }
@@ -1932,7 +1943,7 @@ void Print(string s)
 {
     vout << s << endl;
 }
-CodeVisitor::CodeVisitor()
+ CodeVisitor::CodeVisitor()
 {
     fp = 0;
     gp = 1024;
@@ -2027,25 +2038,23 @@ void CodeVisitor::Visit(Subprogram_declaration *n)
     n->subprogramVariables->accept(this);
     n->compoundStatement->accept(this);
 }
-/*void CodeVisitor::Visit(Statement *n)
+
+void CodeVisitor::Visit(Statement *n)
 {
-    cout << "bla";
-}*/
+    cout << "Habidator";
+}
 void CodeVisitor::Visit(Expression_list *n)
 {
-    // cout << "This is Declarations-" << endl;
     try
     {
         for (int i = 0; i < (int)(n->expressionList->size()); i++)
         {
             n->expressionList->at(i)->accept(this);
-            if (i != (int)(n->expressionList->size() - 1))
-                cout << ",";
         }
     }
     catch (std::exception e)
     {
-        cout << "";
+        cout << "Habidator 2";
     }
 }
 void CodeVisitor::Visit(Identifier_list *n)
@@ -2281,52 +2290,52 @@ void CodeVisitor::Visit(ExpressionWithExpr *n)
     n->expression->accept(this);
 }
 /////////////////////////
-/*void CodeVisitor::Visit(Type *n) {
-    n->
-};*/
-void CodeVisitor::Visit(Standard_type *n)
-{
-}
+void CodeVisitor::Visit(Type *n) {
+
+};
+//void CodeVisitor::Visit(Standard_type *n)
+//{
+//}
 void CodeVisitor::Visit(Array_type *n)
 {
-    int size = n->last->value - n->first->value + 1;
-    Print("alloc " + std::to_string(size));
-    Print("storel " + std::to_string(fp));
-    int type = n->type;
-    for (int i = 0; i < size; i++)
-    {
-        if (type == 1)
-        {
-            Print("pushl " + std::to_string(fp));
-            Print("pushi " + std::to_string(i));
-            Print("pushi 0");
-            Print("storen");
-        }
-        else if (type == 3)
-        {
-            Print("pushl " + std::to_string(fp));
-            Print("pushi " + std::to_string(i));
-            Print("pushi 0");
-            Print("storen");
-        }
-        else if (type == 2)
-        {
-            Print("pushl " + std::to_string(fp));
-            Print("pushi " + std::to_string(i));
-            Print("pushf 0.0");
-            Print("storen");
-        }
-        else if (type == 5)
-        {
-            Print("pushl " + std::to_string(fp));
-            Print("pushi " + std::to_string(i));
-            Print("pushs \"\"");
-            Print("storen");
-        }
-    }
-    Print("pushl " + std::to_string(fp));
-    // fp++;
-    fp += size;
+//    int size = n->last->value - n->first->value + 1;
+//    Print("alloc " + std::to_string(size));
+//    Print("storel " + std::to_string(fp));
+//    int type = n->type;
+//    for (int i = 0; i < size; i++)
+//    {
+//        if (type == 1)
+//        {
+//            Print("pushl " + std::to_string(fp));
+//            Print("pushi " + std::to_string(i));
+//            Print("pushi 0");
+//            Print("storen");
+//        }
+//        else if (type == 3)
+//        {
+//            Print("pushl " + std::to_string(fp));
+//            Print("pushi " + std::to_string(i));
+//            Print("pushi 0");
+//            Print("storen");
+//        }
+//        else if (type == 2)
+//        {
+//            Print("pushl " + std::to_string(fp));
+//            Print("pushi " + std::to_string(i));
+//            Print("pushf 0.0");
+//            Print("storen");
+//        }
+//        else if (type == 5)
+//        {
+//            Print("pushl " + std::to_string(fp));
+//            Print("pushi " + std::to_string(i));
+//            Print("pushs \"\"");
+//            Print("storen");
+//        }
+//    }
+//    Print("pushl " + std::to_string(fp));
+//    // fp++;
+//    fp += size;
 }
 void CodeVisitor::Visit(Compound_statement *n)
 {
