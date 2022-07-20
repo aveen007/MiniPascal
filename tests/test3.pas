@@ -8,7 +8,4 @@ factorial:=factorial*counter;
 counter:=counter-1;
 end;
 
-writeln(factorial);
-writeln('hi');
-
 end.

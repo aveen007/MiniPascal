@@ -12,7 +12,7 @@
 	extern int yyerror(const char *);
 	Program *root ;
 	extern int lin ,col;
-	int current_kind = 2;
+	int current_kind = 1;
 	
 	 SymbolTable *symbolTable =new SymbolTable();
 
@@ -141,7 +141,7 @@ program:
 		 root = $$ ;
 				// symbolTable->AddSymbol($2,1,1);
 // symbolTable->AddSymbol($2,4,6);
-		 cout<<"Somaaaaaaaaaar Avooooooooooooooo DONNNNNNNNNE"<<endl;
+		// cout<<"Somaaaaaaaaaar Avooooooooooooooo DONNNNNNNNNE"<<endl;
 				// symbolTable->CloseScope();
 
 
@@ -281,7 +281,7 @@ subprogram_head:
 			symbolTable->AddFunc($3 , 1 , $5 , $7->type , $$ );
 
 symbolTable->OpenScope();
-							current_kind = 3;
+							current_kind = 2;
 		}
 		| PROCEDURE {
 
@@ -297,7 +297,7 @@ symbolTable->OpenScope();
 			symbolTable->AddFunc($3 , 5 , $5 , 6 , $$ );
 												
 	symbolTable->OpenScope();		
-						current_kind = 3;
+						current_kind = 2;
 		}
 ;
 
@@ -342,7 +342,7 @@ compound_statement:
 				symbolTable->CloseScope();
 			}
 			
-			current_kind = 2;
+			current_kind = 1;
 		}
 		;
 optional_statement:
@@ -458,12 +458,16 @@ expression:
 		{
 			$$ = new IdExpr($1 ,lin, col);
 				 symbolTable->LookUp($1);
+				//  cout<<$1->name<<"********";
 			
 
 		}
 		|INTNUM
 		{
 			$$ = new IntNumExpr($1, lin, col);
+				    // cout<<$1->intNum->value<<" INTNUM "<<$1->type<<endl;
+// cout<<"xxxxxxx";
+
 		}
 		|REALNUM
 		{

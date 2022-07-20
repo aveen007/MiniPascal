@@ -304,7 +304,7 @@ class Subprogram_head : public Node
 public:
     Id *id;
     Arguments *arguments;
-
+    bool CG_visited;
     Subprogram_head(Id *, Arguments *, int, int);
     virtual void accept(Visitor *v);
 };
